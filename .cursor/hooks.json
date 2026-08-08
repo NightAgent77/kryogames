@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "hooks": {
+    "afterFileEdit": [
+      {
+        "command": "node .cursor/hooks/update-agents-md.mjs"
+      }
+    ],
+    "postToolUse": [
+      {
+        "command": "node .cursor/hooks/post-edit-handoff.mjs",
+        "matcher": "Write|StrReplace|EditNotebook|Delete"
+      }
+    ]
+  }
+}

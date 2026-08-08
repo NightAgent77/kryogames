@@ -1,0 +1,33 @@
+---
+description: Keep AGENTS.md updated for agent handoff after every code change
+alwaysApply: true
+---
+
+# Agent handoff — update AGENTS.md
+
+This project uses `AGENTS.md` at the repo root for agent continuity.
+
+## After every edit
+
+When you modify project files (code, config, env examples, deployment):
+
+1. **Read `AGENTS.md`** if you have not already in this session.
+2. **Update substantive sections** when relevant:
+   - Features implemented / Not yet implemented
+   - Architecture (file tree)
+   - Environment variables
+   - Supabase / Vercel config
+   - Agent instructions
+3. **Do not remove** the `<!-- AUTO:... -->` marker blocks — hooks depend on them.
+4. **Do not commit secrets** — never add `.env.local` contents or service role keys.
+
+## Automatic updates (hooks)
+
+- `afterFileEdit` → updates **Last updated** timestamp and **Recent edits** log
+- `postToolUse` (Write/StrReplace) → reminds you to update substantive sections
+
+Hooks skip edits to `AGENTS.md` itself to avoid loops. You must still update meaningful content manually when architecture or features change.
+
+## Handoff quality bar
+
+A good `AGENTS.md` update answers: *What changed? What's done? What's left? What would break?*
