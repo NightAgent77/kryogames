@@ -34,12 +34,12 @@ export function Header() {
   return (
     <>
       <header className="site-header">
-        <a href="#" className="logo" aria-label="KyroGames home">
+        <a href="#" className="logo" aria-label="KryoGames home">
           <span className="logo-mark" aria-hidden="true">
             K
           </span>
           <span className="logo-text">
-            Kyro<span className="logo-accent">Games</span>
+            Kryo<span className="logo-accent">Games</span>
           </span>
         </a>
 

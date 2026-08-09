@@ -1,16 +1,16 @@
-# KyroGames — Agent Handoff
+# KryoGames — Agent Handoff
 
 > Living document for AI agent continuity. Updated automatically on file edits and substantively by agents after meaningful changes.
 
 <!-- AUTO:LAST_UPDATED -->
-**Last updated:** 2026-08-08 02:24 (auto)
+**Last updated:** 2026-08-09 05:17 (auto)
 <!-- /AUTO:LAST_UPDATED -->
 
 ---
 
 ## Project summary
 
-**KyroGames** is a personal indie game studio website that hosts browser-based web games (with optional downloadable builds planned). Currently a marketing/landing page with placeholder game cards and full Supabase authentication.
+**KryoGames** is a personal indie game studio website that hosts browser-based web games (with optional downloadable builds planned). Currently a marketing/landing page with placeholder game cards and full Supabase authentication.
 
 | Item | Value |
 |------|-------|
@@ -186,6 +186,7 @@ When making changes to this project:
 ## Recent edits (auto)
 
 <!-- AUTO:RECENT_EDITS -->
+- `2026-08-09` — Brand rename: Kyro → Kryo across UI copy, page title/meta, package name (`kryogames`), and AGENTS.md (domain was already `kryogames.com`)
 - `2026-08-08 02:24` — `src/components/Header.tsx`
 - `2026-08-08` — Initial agent handoff doc created (project bootstrap through Supabase auth + Vercel config)
 <!-- /AUTO:RECENT_EDITS -->

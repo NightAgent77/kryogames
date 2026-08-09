@@ -9,7 +9,7 @@ export function Hero() {
           <span className="hero-highlight"> Built for the web.</span>
         </h1>
         <p className="hero-lead">
-          KyroGames is a home for small games you can launch instantly — no
+          KryoGames is a home for small games you can launch instantly — no
           install required. Some titles may also be available as downloads
           later.
         </p>

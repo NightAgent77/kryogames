@@ -4,7 +4,7 @@ export function Footer() {
   return (
     <footer className="site-footer">
       <p>
-        &copy; {year} KyroGames. Built for the web.
+        &copy; {year} KryoGames. Built for the web.
       </p>
       <p className="footer-note">More games coming soon.</p>
     </footer>

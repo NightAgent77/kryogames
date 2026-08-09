@@ -4,9 +4,9 @@ export function AboutSection() {
       <div className="about-grid">
         <div className="section-header about-copy">
           <p className="section-eyebrow">Studio</p>
-          <h2 id="about-heading">About KyroGames</h2>
+          <h2 id="about-heading">About KryoGames</h2>
           <p className="section-lead">
-            KyroGames is a personal studio for browser-native games — quick to
+            KryoGames is a personal studio for browser-native games — quick to
             load, easy to share, and built with modern web tech. The catalog
             will grow as new projects are finished.
           </p>
