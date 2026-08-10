@@ -6,15 +6,17 @@
 }
 
 .library-sidebar {
+  --sidebar-pad-x: 0.875rem;
   width: var(--sidebar-width);
   flex-shrink: 0;
   margin: 1rem 0 1rem 1rem;
-  padding: 1.5rem 1rem;
+  padding: 1.5rem 0;
   background: var(--bg-surface);
   border-radius: var(--radius-lg);
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  overflow: hidden;
 }
 
 .library-brand {
@@ -23,7 +25,7 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--text-bright);
-  padding: 0 0.5rem;
+  padding: 0 calc(var(--sidebar-pad-x) + 0.5rem);
 }
 
 .library-nav {
@@ -35,7 +37,8 @@
 .library-nav-item {
   display: flex;
   align-items: center;
-  width: 100%;
+  width: calc(100% - (var(--sidebar-pad-x) * 2));
+  margin-inline: var(--sidebar-pad-x);
   padding: 0.625rem 0.75rem;
   font-size: 0.9375rem;
   font-weight: 500;
@@ -61,22 +64,24 @@
 .library-nav-item--active::before {
   content: '';
   position: absolute;
-  left: 0;
-  top: 20%;
-  bottom: 20%;
+  left: calc(-1 * var(--sidebar-pad-x));
+  top: 18%;
+  bottom: 18%;
   width: 2px;
   background: var(--text-bright);
-  border-radius: 1px;
+  border-radius: 0 1px 1px 0;
 }
 
 .library-nav-sub {
   display: flex;
   flex-direction: column;
   gap: 0.125rem;
-  padding: 0.25rem 0 0.5rem 1.25rem;
+  padding: 0.25rem 0 0.5rem calc(var(--sidebar-pad-x) + 1.25rem);
 }
 
 .library-nav-sub .library-nav-item {
+  width: auto;
+  margin-inline: 0;
   font-size: 0.8125rem;
   padding: 0.375rem 0.75rem;
   font-weight: 400;
