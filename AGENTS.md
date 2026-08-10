@@ -3,7 +3,7 @@
 > Living document for AI agent continuity. Updated automatically on file edits and substantively by agents after meaningful changes.
 
 <!-- AUTO:LAST_UPDATED -->
-**Last updated:** 2026-08-10 17:48 (auto)
+**Last updated:** 2026-08-10 18:01 (auto)
 <!-- /AUTO:LAST_UPDATED -->
 
 ---
@@ -198,6 +198,14 @@ When making changes to this project:
 ## Recent edits (auto)
 
 <!-- AUTO:RECENT_EDITS -->
+- `2026-08-10 18:01` — `src/components/library/LibrarySidebar.tsx`
+- `2026-08-10 18:00` — `src/components/library/LibrarySidebar.tsx`
+- `2026-08-10 18:00` — `src/components/library/LibraryView.css`
+- `2026-08-10 17:59` — `src/components/library/LibrarySidebar.tsx`
+- `2026-08-10 17:53` — `src/components/library/LibraryView.css`
+- `2026-08-10 17:53` — `src/components/library/LibraryGameGrid.tsx`
+- `2026-08-10 17:52` — `src/components/IntroView.tsx`
+- `2026-08-10 17:52` — `src/components/library/LibraryGameGrid.tsx`
 - `2026-08-10 17:48` — `src/components/library/LibraryView.css`
 - `2026-08-10` — Dual auth views: slate design system; `IntroView` (signed-out) + `LibraryView` (signed-in sidebar/search/grid); removed old marketing sections (Hero/About/Downloads/Header/Footer/GameCard); games gain `platform` for Web/Android filter; Favorites empty state only
 - `2026-08-09` — Brand rename: Kyro → Kryo across UI copy, page title/meta, package name (`kryogames`), and AGENTS.md (domain was already `kryogames.com`)

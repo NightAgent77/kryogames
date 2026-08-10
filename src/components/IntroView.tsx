@@ -54,7 +54,7 @@ export function IntroView() {
         </div>
 
         <div className="intro-teaser" aria-hidden="true">
-          <div className="intro-tile intro-tile--label">game placeholder</div>
+          <div className="intro-tile" />
           <div className="intro-tile" />
           <div className="intro-tile" />
           <div className="intro-tile" />
