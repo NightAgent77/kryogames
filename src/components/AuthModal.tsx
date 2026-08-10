@@ -113,7 +113,6 @@ export function AuthModal({ mode, onClose, onSwitchMode }: AuthModalProps) {
         </button>
 
         <div className="auth-modal-header">
-          <p className="section-eyebrow">Account</p>
           <h2 id={titleId}>{title}</h2>
           <p className="auth-modal-lead">{lead}</p>
         </div>

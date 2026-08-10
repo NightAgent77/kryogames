@@ -3,14 +3,14 @@
 > Living document for AI agent continuity. Updated automatically on file edits and substantively by agents after meaningful changes.
 
 <!-- AUTO:LAST_UPDATED -->
-**Last updated:** 2026-08-09 05:17 (auto)
+**Last updated:** 2026-08-10 17:44 (auto)
 <!-- /AUTO:LAST_UPDATED -->
 
 ---
 
 ## Project summary
 
-**KryoGames** is a personal indie game studio website that hosts browser-based web games (with optional downloadable builds planned). Currently a marketing/landing page with placeholder game cards and full Supabase authentication.
+**KryoGames** is a personal indie game studio website that hosts browser-based web games (with optional downloadable builds planned). The UI splits by auth: a minimalist signed-out intro and a signed-in library dashboard (sidebar + game grid), with full Supabase authentication.
 
 | Item | Value |
 |------|-------|
@@ -27,7 +27,7 @@
 - **Build tool:** Vite 8
 - **Auth / backend:** Supabase (`@supabase/supabase-js`)
 - **Linting:** oxlint
-- **Fonts:** Orbitron (display), Inter (body) via Google Fonts
+- **Fonts:** Inter via Google Fonts
 - **Deployment:** Vercel (`vercel.json` SPA rewrites)
 
 ---
@@ -63,23 +63,24 @@ Copy `.env.example` → `.env.local` for local dev. Set the same vars in **Verce
 ```
 src/
 ├── main.tsx                 # App entry, wraps AuthProvider
-├── App.tsx                  # Page layout (Header + sections + Footer)
-├── App.css                  # Component styles
-├── index.css                # Global CSS variables & resets
+├── App.tsx                  # Auth gate: loading → IntroView | LibraryView
+├── App.css                  # Shared buttons + auth modal styles
+├── index.css                # Global CSS variables & resets (slate theme)
 ├── vite-env.d.ts            # Vite env type definitions
 ├── components/
-│   ├── Header.tsx           # Nav, auth buttons, logged-in user display
+│   ├── IntroView.tsx        # Signed-out minimalist landing
+│   ├── IntroView.css
 │   ├── AuthModal.tsx        # Login / signup / forgot-password modals
-│   ├── Hero.tsx             # Landing hero with animated cube
-│   ├── GamesSection.tsx     # Game catalog grid
-│   ├── GameCard.tsx         # Individual game card
-│   ├── AboutSection.tsx     # Studio about section
-│   ├── DownloadsSection.tsx # Placeholder downloads panel
-│   └── Footer.tsx
+│   └── library/
+│       ├── LibraryView.tsx  # Signed-in shell (sidebar + main)
+│       ├── LibraryView.css
+│       ├── LibrarySidebar.tsx
+│       ├── LibraryTopBar.tsx
+│       └── LibraryGameGrid.tsx
 ├── contexts/
 │   └── AuthContext.tsx      # Supabase auth state & methods
 ├── data/
-│   └── games.ts             # Placeholder game catalog data
+│   └── games.ts             # Placeholder catalog (platform: web | android)
 └── lib/
     ├── supabase.ts          # Supabase client init
     └── siteUrl.ts           # Site URL helper (VITE_SITE_URL fallback)
@@ -89,22 +90,30 @@ src/
 
 ## Features implemented
 
-### Landing page (markup)
-- Dark icy/cyber aesthetic (cyan `#3de8ff` + purple `#8b5cf6` accents)
-- Sticky header with logo and anchor nav (Games, About, Downloads)
-- Hero section with CTA buttons and CSS 3D cube animation
-- Games grid with 3 placeholder cards (`src/data/games.ts`)
-- About section with feature highlights
-- Downloads placeholder section
-- Footer
+### Dual auth views
+- **Signed out (`IntroView`):** minimalist brand landing — KRYO GAMES, short lead, Sign up / Log in, placeholder tile teaser
+- **Signed in (`LibraryView`):** library shell matching design mockup — sidebar, search, profile pill, game grid
+- **`App.tsx` gate:** `loading` → placeholder; `user` → library; else → intro (no React Router yet)
+
+### Design system
+- Slate/dark template: near-black `#121212`, surfaces `#2a2d37`, active `#334756`
+- White primary text, muted gray secondary; rounded panels (~12px); Inter only (no Orbitron / neon cyber look)
+- Auth modal restyled to the same surfaces
+
+### Library (signed-in)
+- Sidebar: **Games** → nested **Web** / **Android**, plus **Favorites**
+- Search filters current tab by title (client-side)
+- Web / Android filter via `game.platform` in `games.ts`
+- Favorites: empty state only (not persisted)
+- Profile pill: initials avatar + username (or email prefix); Log out in dropdown
+- Mobile: hamburger + slide-out sidebar
 
 ### Authentication (Supabase)
 - **Sign up:** email, password, username → stored in `user_metadata.username`
 - **Log in:** email + password via `signInWithPassword`
-- **Log out:** clears session, header updates
+- **Log out:** clears session → returns to intro
 - **Forgot password:** sends reset email, redirects to `VITE_SITE_URL`
 - **Session persistence:** `onAuthStateChange` listener in `AuthContext`
-- **Header states:** loading / guest (Log in + Sign up) / authenticated (username + Log out)
 - **Error handling:** friendly messages for common auth errors
 - **Email confirmation:** if enabled in Supabase, signup shows "check your email" message
 
@@ -153,6 +162,8 @@ src/
 - Real games (only placeholder cards in `games.ts`)
 - Game routes/pages (e.g. `/games/:id`)
 - React Router
+- Favorites persistence (UI empty state only)
+- Avatar uploads (initials only)
 - `profiles` table in Supabase (username only in `user_metadata` for now)
 - Password reset landing page (reset links go to `/` on live domain)
 - Downloadable game builds
@@ -166,6 +177,7 @@ src/
 - Username display: `user_metadata.username` → fallback to email prefix
 - Auth modals use native `<dialog>` element
 - Game statuses: `'playable' | 'coming-soon' | 'downloadable'`
+- Game platforms: `'web' | 'android'`
 - Do **not** commit `.env.local` or service role keys
 
 ---
@@ -186,7 +198,7 @@ When making changes to this project:
 ## Recent edits (auto)
 
 <!-- AUTO:RECENT_EDITS -->
+- `2026-08-10` — Dual auth views: slate design system; `IntroView` (signed-out) + `LibraryView` (signed-in sidebar/search/grid); removed old marketing sections (Hero/About/Downloads/Header/Footer/GameCard); games gain `platform` for Web/Android filter; Favorites empty state only
 - `2026-08-09` — Brand rename: Kyro → Kryo across UI copy, page title/meta, package name (`kryogames`), and AGENTS.md (domain was already `kryogames.com`)
-- `2026-08-08 02:24` — `src/components/Header.tsx`
 - `2026-08-08` — Initial agent handoff doc created (project bootstrap through Supabase auth + Vercel config)
 <!-- /AUTO:RECENT_EDITS -->
