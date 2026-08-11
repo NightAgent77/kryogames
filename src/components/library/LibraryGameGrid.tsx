@@ -10,9 +10,10 @@ const titles: Record<LibraryTab, string> = {
 interface LibraryGameGridProps {
   tab: LibraryTab
   games: Game[]
+  onSelectGame: (game: Game) => void
 }
 
-export function LibraryGameGrid({ tab, games }: LibraryGameGridProps) {
+export function LibraryGameGrid({ tab, games, onSelectGame }: LibraryGameGridProps) {
   if (tab === 'favorites') {
     return (
       <section
@@ -44,14 +45,22 @@ export function LibraryGameGrid({ tab, games }: LibraryGameGridProps) {
         <p className="library-empty">No games match your search.</p>
       ) : (
         <div className="library-grid">
-          {games.map((game, index) => (
-            <article
-              key={game.id}
-              className="library-card library-card--enter"
-              style={{ animationDelay: `${40 + index * 35}ms` }}
-              aria-label={game.title}
-            />
-          ))}
+          {games.map((game, index) => {
+            const showTitle = game.status === 'playable' || Boolean(game.playUrl)
+
+            return (
+              <button
+                key={game.id}
+                type="button"
+                className="library-card library-card--enter library-card--interactive"
+                style={{ animationDelay: `${40 + index * 35}ms` }}
+                onClick={() => onSelectGame(game)}
+                aria-label={game.title}
+              >
+                {showTitle ? game.title : null}
+              </button>
+            )
+          })}
           {Array.from({ length: placeholders }, (_, index) => (
             <div
               key={`empty-${index}`}

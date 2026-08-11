@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
-import { games } from '../../data/games'
+import { games, type Game } from '../../data/games'
+import { GameDetail } from './GameDetail'
 import { LibraryGameGrid } from './LibraryGameGrid'
 import { LibrarySidebar, type LibraryTab } from './LibrarySidebar'
 import { LibraryTopBar } from './LibraryTopBar'
@@ -9,6 +10,7 @@ export function LibraryView() {
   const [tab, setTab] = useState<LibraryTab>('web')
   const [search, setSearch] = useState('')
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [selectedGame, setSelectedGame] = useState<Game | null>(null)
 
   const filteredGames = useMemo(() => {
     if (tab === 'favorites') return []
@@ -23,6 +25,7 @@ export function LibraryView() {
 
   const handleSelect = (next: LibraryTab) => {
     setTab(next)
+    setSelectedGame(null)
     setSidebarOpen(false)
   }
 
@@ -46,10 +49,22 @@ export function LibraryView() {
       <div className="library-main">
         <LibraryTopBar
           search={search}
-          onSearchChange={setSearch}
+          onSearchChange={(value) => {
+            setSearch(value)
+            setSelectedGame(null)
+          }}
           onMenuToggle={() => setSidebarOpen((open) => !open)}
         />
-        <LibraryGameGrid tab={tab} games={filteredGames} />
+
+        {selectedGame ? (
+          <GameDetail game={selectedGame} onBack={() => setSelectedGame(null)} />
+        ) : (
+          <LibraryGameGrid
+            tab={tab}
+            games={filteredGames}
+            onSelectGame={setSelectedGame}
+          />
+        )}
       </div>
     </div>
   )

@@ -1,0 +1,65 @@
+import type { Game } from '../../data/games'
+
+interface GameDetailProps {
+  game: Game
+  onBack: () => void
+}
+
+export function GameDetail({ game, onBack }: GameDetailProps) {
+  const canPlay = game.status === 'playable' && Boolean(game.playUrl)
+
+  return (
+    <section
+      className="game-detail library-content--enter"
+      aria-labelledby="game-detail-title"
+    >
+      <button type="button" className="game-detail-back" onClick={onBack}>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path
+            d="M10 3L5 8l5 5"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+        Back
+      </button>
+
+      <div className="game-detail-layout">
+        <div className="game-detail-media" aria-hidden="true">
+          <span className="game-detail-media-label">Image placeholder</span>
+        </div>
+
+        <div className="game-detail-info">
+          <p className="game-detail-genre">{game.genre}</p>
+          <h2 id="game-detail-title" className="game-detail-title">
+            {game.title}
+          </h2>
+          <p className="game-detail-description">{game.description}</p>
+
+          <ul className="game-detail-tags" aria-label="Tags">
+            {game.tags.map((tag) => (
+              <li key={tag}>{tag}</li>
+            ))}
+          </ul>
+
+          {canPlay ? (
+            <a
+              className="btn btn-primary game-detail-play"
+              href={game.playUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Play
+            </a>
+          ) : (
+            <button type="button" className="btn btn-secondary game-detail-play" disabled>
+              Coming soon
+            </button>
+          )}
+        </div>
+      </div>
+    </section>
+  )
+}

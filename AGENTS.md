@@ -3,7 +3,7 @@
 > Living document for AI agent continuity. Updated automatically on file edits and substantively by agents after meaningful changes.
 
 <!-- AUTO:LAST_UPDATED -->
-**Last updated:** 2026-08-10 18:01 (auto)
+**Last updated:** 2026-08-11 06:51 (auto)
 <!-- /AUTO:LAST_UPDATED -->
 
 ---
@@ -76,7 +76,8 @@ src/
 │       ├── LibraryView.css
 │       ├── LibrarySidebar.tsx
 │       ├── LibraryTopBar.tsx
-│       └── LibraryGameGrid.tsx
+│       ├── LibraryGameGrid.tsx
+│       └── GameDetail.tsx   # Expanded game view (desc + Play link)
 ├── contexts/
 │   └── AuthContext.tsx      # Supabase auth state & methods
 ├── data/
@@ -104,9 +105,15 @@ src/
 - Sidebar: **Games** → nested **Web** / **Android**, plus **Favorites**
 - Search filters current tab by title (client-side)
 - Web / Android filter via `game.platform` in `games.ts`
+- Clicking a game card expands to **GameDetail** (image placeholder, description, tags, Play / Coming soon)
 - Favorites: empty state only (not persisted)
 - Profile pill: initials avatar + username (or email prefix); Log out in dropdown
 - Mobile: hamburger + slide-out sidebar
+
+### Games catalog
+- **Snake Run** (`snake-run`) — first Web title, `status: playable`, hosted on Cloudflare R2: `https://pub-e379ba287a9f4d8ba4cdbd6b6095cb6c.r2.dev/snake-run/index.html`
+- Optional `playUrl` on `Game` opens in a new tab from the Play button
+- Other catalog entries remain placeholders (`coming-soon`)
 
 ### Authentication (Supabase)
 - **Sign up:** email, password, username → stored in `user_metadata.username`
@@ -159,9 +166,9 @@ src/
 
 ## Not yet implemented
 
-- Real games (only placeholder cards in `games.ts`)
-- Game routes/pages (e.g. `/games/:id`)
-- React Router
+- In-page game embed (Play currently opens hosted URL in a new tab)
+- Real cover art (image placeholder in GameDetail)
+- Game routes/pages (e.g. `/games/:id`) / React Router
 - Favorites persistence (UI empty state only)
 - Avatar uploads (initials only)
 - `profiles` table in Supabase (username only in `user_metadata` for now)
@@ -198,15 +205,7 @@ When making changes to this project:
 ## Recent edits (auto)
 
 <!-- AUTO:RECENT_EDITS -->
-- `2026-08-10 18:01` — `src/components/library/LibrarySidebar.tsx`
-- `2026-08-10 18:00` — `src/components/library/LibrarySidebar.tsx`
-- `2026-08-10 18:00` — `src/components/library/LibraryView.css`
-- `2026-08-10 17:59` — `src/components/library/LibrarySidebar.tsx`
-- `2026-08-10 17:53` — `src/components/library/LibraryView.css`
-- `2026-08-10 17:53` — `src/components/library/LibraryGameGrid.tsx`
-- `2026-08-10 17:52` — `src/components/IntroView.tsx`
-- `2026-08-10 17:52` — `src/components/library/LibraryGameGrid.tsx`
-- `2026-08-10 17:48` — `src/components/library/LibraryView.css`
+- `2026-08-11` — Snake Run: first Web game with expand-to-detail view (`GameDetail`), image placeholder, Play → Cloudflare R2 host
 - `2026-08-10` — Dual auth views: slate design system; `IntroView` (signed-out) + `LibraryView` (signed-in sidebar/search/grid); removed old marketing sections (Hero/About/Downloads/Header/Footer/GameCard); games gain `platform` for Web/Android filter; Favorites empty state only
 - `2026-08-09` — Brand rename: Kyro → Kryo across UI copy, page title/meta, package name (`kryogames`), and AGENTS.md (domain was already `kryogames.com`)
 - `2026-08-08` — Initial agent handoff doc created (project bootstrap through Supabase auth + Vercel config)

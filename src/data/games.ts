@@ -9,18 +9,22 @@ export interface Game {
   status: GameStatus
   platform: GamePlatform
   tags: string[]
+  /** External playable URL (e.g. Cloudflare R2 / Pages host) */
+  playUrl?: string
 }
 
 export const games: Game[] = [
   {
-    id: 'placeholder-1',
-    title: 'game placeholder',
+    id: 'snake-run',
+    title: 'Snake Run',
     description:
-      'A short teaser for your first browser game. Replace this with a real description when you are ready to ship.',
+      'A fast arcade snake game you can play in the browser. Grow longer, dodge yourself, and chase a high score — no install required.',
     genre: 'Arcade',
-    status: 'coming-soon',
+    status: 'playable',
     platform: 'web',
-    tags: ['Web', 'Single-player'],
+    tags: ['Web', 'Arcade', 'Single-player'],
+    playUrl:
+      'https://pub-e379ba287a9f4d8ba4cdbd6b6095cb6c.r2.dev/snake-run/index.html',
   },
   {
     id: 'placeholder-2',
