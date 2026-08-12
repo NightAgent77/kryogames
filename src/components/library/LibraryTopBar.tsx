@@ -13,6 +13,9 @@ interface LibraryTopBarProps {
   search: string
   onSearchChange: (value: string) => void
   onMenuToggle: () => void
+  onMenuHoverStart: () => void
+  onMenuHoverEnd: () => void
+  menuExpanded: boolean
   onViewProfile: () => void
 }
 
@@ -20,6 +23,9 @@ export function LibraryTopBar({
   search,
   onSearchChange,
   onMenuToggle,
+  onMenuHoverStart,
+  onMenuHoverEnd,
+  menuExpanded,
   onViewProfile,
 }: LibraryTopBarProps) {
   const { user, signOut } = useAuth()
@@ -63,7 +69,12 @@ export function LibraryTopBar({
         type="button"
         className="library-menu-toggle"
         onClick={onMenuToggle}
+        onMouseEnter={onMenuHoverStart}
+        onMouseLeave={onMenuHoverEnd}
+        onFocus={onMenuHoverStart}
+        onBlur={onMenuHoverEnd}
         aria-label="Open menu"
+        aria-expanded={menuExpanded}
       >
         <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
           <rect x="3" y="5" width="14" height="1.5" rx="0.75" />

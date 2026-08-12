@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { games, type Game } from '../../data/games'
 import { GameDetail } from './GameDetail'
 import { LibraryGameGrid } from './LibraryGameGrid'
@@ -10,9 +10,35 @@ import './LibraryView.css'
 export function LibraryView() {
   const [tab, setTab] = useState<LibraryTab>('web')
   const [search, setSearch] = useState('')
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [sidebarPinned, setSidebarPinned] = useState(false)
+  const [sidebarHovered, setSidebarHovered] = useState(false)
   const [selectedGame, setSelectedGame] = useState<Game | null>(null)
   const [showProfile, setShowProfile] = useState(false)
+  const hideTimerRef = useRef<number | null>(null)
+
+  const sidebarOpen = sidebarPinned || sidebarHovered
+
+  const clearHideTimer = () => {
+    if (hideTimerRef.current !== null) {
+      window.clearTimeout(hideTimerRef.current)
+      hideTimerRef.current = null
+    }
+  }
+
+  const revealSidebar = () => {
+    clearHideTimer()
+    setSidebarHovered(true)
+  }
+
+  const scheduleHideSidebar = () => {
+    clearHideTimer()
+    hideTimerRef.current = window.setTimeout(() => {
+      setSidebarHovered(false)
+      hideTimerRef.current = null
+    }, 280)
+  }
+
+  useEffect(() => () => clearHideTimer(), [])
 
   const filteredGames = useMemo(() => {
     if (tab === 'favorites') return []
@@ -29,17 +55,19 @@ export function LibraryView() {
     setTab(next)
     setSelectedGame(null)
     setShowProfile(false)
-    setSidebarOpen(false)
+    setSidebarPinned(false)
+    setSidebarHovered(false)
+    clearHideTimer()
   }
 
   return (
     <div className="library">
-      {sidebarOpen && (
+      {sidebarPinned && (
         <button
           type="button"
           className="library-backdrop"
           aria-label="Close menu"
-          onClick={() => setSidebarOpen(false)}
+          onClick={() => setSidebarPinned(false)}
         />
       )}
 
@@ -47,6 +75,8 @@ export function LibraryView() {
         activeTab={tab}
         onSelect={handleSelect}
         open={sidebarOpen}
+        onHoverStart={revealSidebar}
+        onHoverEnd={scheduleHideSidebar}
       />
 
       <div className="library-main">
@@ -57,7 +87,10 @@ export function LibraryView() {
             setSelectedGame(null)
             setShowProfile(false)
           }}
-          onMenuToggle={() => setSidebarOpen((open) => !open)}
+          onMenuToggle={() => setSidebarPinned((open) => !open)}
+          onMenuHoverStart={revealSidebar}
+          onMenuHoverEnd={scheduleHideSidebar}
+          menuExpanded={sidebarOpen}
           onViewProfile={() => {
             setSelectedGame(null)
             setShowProfile(true)

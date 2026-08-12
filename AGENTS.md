@@ -3,7 +3,7 @@
 > Living document for AI agent continuity. Updated automatically on file edits and substantively by agents after meaningful changes.
 
 <!-- AUTO:LAST_UPDATED -->
-**Last updated:** 2026-08-12 17:47 (auto)
+**Last updated:** 2026-08-12 19:49 (auto)
 <!-- /AUTO:LAST_UPDATED -->
 
 ---
@@ -113,9 +113,9 @@ src/
 - Web / Android filter via `game.platform` in `games.ts`
 - Clicking a game card expands to **GameDetail** (image placeholder, description, tags, Play / Coming soon)
 - Favorites: empty state only (not persisted)
+- Mobile / narrow: small hamburger stays visible; hovering it reveals the floating nav pill (hides on leave); tap still pins it open on touch
 - Profile pill: initials or uploaded avatar + username; dropdown with View profile, Appearance → Dark/Light, Settings (placeholder), Log out
 - Profile page (`ProfileView`): change photo (compressed into `user_metadata.avatar`) and username via Supabase `updateUser`
-- Mobile: hamburger + slide-out sidebar
 
 ### Games catalog
 - **Snake Run** (`snake-run`) — first Web title, `status: playable`, hosted on Cloudflare R2: `https://pub-e379ba287a9f4d8ba4cdbd6b6095cb6c.r2.dev/snake-run/index.html`
@@ -214,6 +214,14 @@ When making changes to this project:
 ## Recent edits (auto)
 
 <!-- AUTO:RECENT_EDITS -->
+- `2026-08-12 19:49` — `src/components/library/LibraryView.css`
+- `2026-08-12 19:48` — `src/components/library/LibraryView.tsx`
+- `2026-08-12 19:47` — `src/components/library/LibraryView.css`
+- `2026-08-12 19:47` — `src/components/library/LibrarySidebar.tsx`
+- `2026-08-12 19:47` — `src/components/library/LibraryTopBar.tsx`
+- `2026-08-12 19:47` — `src/components/library/LibraryView.tsx`
+- `2026-08-12 19:35` — `src/components/library/LibraryView.css`
+- `2026-08-12 19:32` — `src/components/library/LibraryView.css`
 - `2026-08-12 17:47` — `src/components/library/ProfileView.tsx`
 - `2026-08-12 17:47` — `src/components/library/LibraryView.css`
 - `2026-08-12 17:47` — `src/components/library/LibraryView.tsx`
@@ -236,6 +244,4 @@ When making changes to this project:
 - `2026-08-12 16:58` — `.env.local`
 - `2026-08-11` — Snake Run: first Web game with expand-to-detail view (`GameDetail`), image placeholder, Play → Cloudflare R2 host
 - `2026-08-10` — Dual auth views: slate design system; `IntroView` (signed-out) + `LibraryView` (signed-in sidebar/search/grid); removed old marketing sections (Hero/About/Downloads/Header/Footer/GameCard); games gain `platform` for Web/Android filter; Favorites empty state only
-- `2026-08-09` — Brand rename: Kyro → Kryo across UI copy, page title/meta, package name (`kryogames`), and AGENTS.md (domain was already `kryogames.com`)
-- `2026-08-08` — Initial agent handoff doc created (project bootstrap through Supabase auth + Vercel config)
 <!-- /AUTO:RECENT_EDITS -->

@@ -640,19 +640,24 @@
   border-radius: 10px;
   color: var(--text-bright);
   flex-shrink: 0;
+  transition: background 0.15s ease;
+}
+
+.library-menu-toggle:hover,
+.library-menu-toggle[aria-expanded='true'] {
+  background: var(--bg-elevated);
 }
 
 .library-backdrop {
   display: none;
 }
 
+/* Collapsed: small nav button stays visible; floating pill shows on hover/open. */
 @media (max-width: 1100px) {
   .library-grid {
     grid-template-columns: repeat(3, 1fr);
   }
-}
 
-@media (max-width: 768px) {
   .library-menu-toggle {
     display: inline-flex;
   }
@@ -660,17 +665,21 @@
   .library-sidebar {
     position: fixed;
     z-index: 40;
-    top: 0;
-    left: 0;
-    bottom: 0;
+    top: 1rem;
+    bottom: 1rem;
+    left: 1rem;
     margin: 0;
-    border-radius: 0;
-    transform: translateX(-105%);
-    transition: transform 0.2s ease;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-dropdown);
+    transform: translateX(calc(-100% - 1.5rem));
+    pointer-events: none;
+    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .library-sidebar--open {
     transform: translateX(0);
+    pointer-events: auto;
+    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .library-backdrop {
@@ -686,7 +695,9 @@
   .library-main {
     padding: 1rem;
   }
+}
 
+@media (max-width: 768px) {
   .library-topbar {
     flex-wrap: wrap;
   }

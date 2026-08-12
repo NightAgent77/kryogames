@@ -6,6 +6,8 @@ interface LibrarySidebarProps {
   activeTab: LibraryTab
   onSelect: (tab: LibraryTab) => void
   open: boolean
+  onHoverStart: () => void
+  onHoverEnd: () => void
 }
 
 interface IndicatorBox {
@@ -13,7 +15,13 @@ interface IndicatorBox {
   height: number
 }
 
-export function LibrarySidebar({ activeTab, onSelect, open }: LibrarySidebarProps) {
+export function LibrarySidebar({
+  activeTab,
+  onSelect,
+  open,
+  onHoverStart,
+  onHoverEnd,
+}: LibrarySidebarProps) {
   const gamesOpen = activeTab === 'web' || activeTab === 'android'
   const navRef = useRef<HTMLElement>(null)
   const gamesRef = useRef<HTMLButtonElement>(null)
@@ -54,6 +62,9 @@ export function LibrarySidebar({ activeTab, onSelect, open }: LibrarySidebarProp
     <aside
       className={`library-sidebar${open ? ' library-sidebar--open' : ''}`}
       aria-label="Library"
+      aria-hidden={!open}
+      onMouseEnter={onHoverStart}
+      onMouseLeave={onHoverEnd}
     >
       <div className="library-brand">Kryo Games</div>
 
