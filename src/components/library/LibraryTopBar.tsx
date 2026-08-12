@@ -1,28 +1,31 @@
 import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
+import { useTheme, type Theme } from '../../contexts/ThemeContext'
+import {
+  getAvatarUrl,
+  getDisplayName,
+  getInitials,
+} from '../../lib/userDisplay'
 
-function getDisplayName(email: string, username?: string) {
-  if (username) return username
-  return email.split('@')[0]
-}
-
-function getInitials(name: string) {
-  return name.slice(0, 2).toUpperCase()
-}
+type MenuPanel = 'main' | 'appearance'
 
 interface LibraryTopBarProps {
   search: string
   onSearchChange: (value: string) => void
   onMenuToggle: () => void
+  onViewProfile: () => void
 }
 
 export function LibraryTopBar({
   search,
   onSearchChange,
   onMenuToggle,
+  onViewProfile,
 }: LibraryTopBarProps) {
   const { user, signOut } = useAuth()
+  const { theme, setTheme } = useTheme()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [panel, setPanel] = useState<MenuPanel>('main')
   const menuRef = useRef<HTMLDivElement>(null)
 
   const displayName = user
@@ -31,6 +34,7 @@ export function LibraryTopBar({
         user.user_metadata?.username as string | undefined,
       )
     : 'Player'
+  const avatarUrl = getAvatarUrl(user)
 
   useEffect(() => {
     if (!menuOpen) return
@@ -44,6 +48,14 @@ export function LibraryTopBar({
     document.addEventListener('mousedown', handlePointer)
     return () => document.removeEventListener('mousedown', handlePointer)
   }, [menuOpen])
+
+  useEffect(() => {
+    if (!menuOpen) setPanel('main')
+  }, [menuOpen])
+
+  const chooseTheme = (next: Theme) => {
+    setTheme(next)
+  }
 
   return (
     <div className="library-topbar">
@@ -83,23 +95,104 @@ export function LibraryTopBar({
           aria-haspopup="menu"
         >
           <span className="library-profile-avatar" aria-hidden="true">
-            {getInitials(displayName)}
+            {avatarUrl ? (
+              <img src={avatarUrl} alt="" className="library-profile-avatar-img" />
+            ) : (
+              getInitials(displayName)
+            )}
           </span>
           <span className="library-profile-name">{displayName}</span>
         </button>
 
         {menuOpen && (
           <div className="library-profile-dropdown" role="menu">
-            <button
-              type="button"
-              role="menuitem"
-              onClick={async () => {
-                setMenuOpen(false)
-                await signOut()
-              }}
-            >
-              Log out
-            </button>
+            {panel === 'main' ? (
+              <>
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => {
+                    setMenuOpen(false)
+                    onViewProfile()
+                  }}
+                >
+                  View profile
+                </button>
+                <button
+                  type="button"
+                  role="menuitem"
+                  className="library-profile-dropdown-row"
+                  onClick={() => setPanel('appearance')}
+                >
+                  <span>Appearance</span>
+                  <span className="library-profile-dropdown-chevron" aria-hidden="true">
+                    ›
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  role="menuitem"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Settings
+                </button>
+                <div className="library-profile-dropdown-sep" role="separator" />
+                <button
+                  type="button"
+                  role="menuitem"
+                  className="library-profile-dropdown-danger"
+                  onClick={async () => {
+                    setMenuOpen(false)
+                    await signOut()
+                  }}
+                >
+                  Log out
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  role="menuitem"
+                  className="library-profile-dropdown-row"
+                  onClick={() => setPanel('main')}
+                >
+                  <span className="library-profile-dropdown-chevron library-profile-dropdown-chevron--back" aria-hidden="true">
+                    ‹
+                  </span>
+                  <span>Appearance</span>
+                </button>
+                <div className="library-profile-dropdown-sep" role="separator" />
+                <button
+                  type="button"
+                  role="menuitemradio"
+                  aria-checked={theme === 'dark'}
+                  className="library-profile-dropdown-row"
+                  onClick={() => chooseTheme('dark')}
+                >
+                  <span>Dark</span>
+                  {theme === 'dark' && (
+                    <span className="library-profile-dropdown-check" aria-hidden="true">
+                      ✓
+                    </span>
+                  )}
+                </button>
+                <button
+                  type="button"
+                  role="menuitemradio"
+                  aria-checked={theme === 'light'}
+                  className="library-profile-dropdown-row"
+                  onClick={() => chooseTheme('light')}
+                >
+                  <span>Light</span>
+                  {theme === 'light' && (
+                    <span className="library-profile-dropdown-check" aria-hidden="true">
+                      ✓
+                    </span>
+                  )}
+                </button>
+              </>
+            )}
           </div>
         )}
       </div>

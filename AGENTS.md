@@ -3,7 +3,7 @@
 > Living document for AI agent continuity. Updated automatically on file edits and substantively by agents after meaningful changes.
 
 <!-- AUTO:LAST_UPDATED -->
-**Last updated:** 2026-08-11 06:51 (auto)
+**Last updated:** 2026-08-12 17:47 (auto)
 <!-- /AUTO:LAST_UPDATED -->
 
 ---
@@ -62,10 +62,10 @@ Copy `.env.example` → `.env.local` for local dev. Set the same vars in **Verce
 
 ```
 src/
-├── main.tsx                 # App entry, wraps AuthProvider
+├── main.tsx                 # App entry, wraps ThemeProvider + AuthProvider
 ├── App.tsx                  # Auth gate: loading → IntroView | LibraryView
 ├── App.css                  # Shared buttons + auth modal styles
-├── index.css                # Global CSS variables & resets (slate theme)
+├── index.css                # Global CSS variables & resets (dark + light themes)
 ├── vite-env.d.ts            # Vite env type definitions
 ├── components/
 │   ├── IntroView.tsx        # Signed-out minimalist landing
@@ -77,14 +77,17 @@ src/
 │       ├── LibrarySidebar.tsx
 │       ├── LibraryTopBar.tsx
 │       ├── LibraryGameGrid.tsx
-│       └── GameDetail.tsx   # Expanded game view (desc + Play link)
+│       ├── GameDetail.tsx   # Expanded game view (desc + Play link)
+│       └── ProfileView.tsx  # Profile template (avatar + username)
 ├── contexts/
-│   └── AuthContext.tsx      # Supabase auth state & methods
+│   ├── AuthContext.tsx      # Supabase auth state & methods
+│   └── ThemeContext.tsx     # Dark / light theme (localStorage `kryogames-theme`)
 ├── data/
 │   └── games.ts             # Placeholder catalog (platform: web | android)
 └── lib/
     ├── supabase.ts          # Supabase client init
-    └── siteUrl.ts           # Site URL helper (VITE_SITE_URL fallback)
+    ├── siteUrl.ts           # Site URL helper (VITE_SITE_URL fallback)
+    └── userDisplay.ts       # Display name / initials / avatar helpers
 ```
 
 ---
@@ -97,8 +100,11 @@ src/
 - **`App.tsx` gate:** `loading` → placeholder; `user` → library; else → intro (no React Router yet)
 
 ### Design system
-- Slate/dark template: near-black `#121212`, surfaces `#2a2d37`, active `#334756`
-- White primary text, muted gray secondary; rounded panels (~12px); Inter only (no Orbitron / neon cyber look)
+- Slate template with **dark** (default) and **light** themes via `data-theme` on `<html>`
+- Dark: near-black `#121212`, surfaces `#2a2d37`, active `#334756`
+- Light: cool gray `#eef0f3` page, white surfaces, dark text `#12141a`
+- Theme tokens live in `index.css`; preference persisted in `localStorage` (`kryogames-theme`)
+- Rounded panels (~12px); Inter only (no Orbitron / neon cyber look)
 - Auth modal restyled to the same surfaces
 
 ### Library (signed-in)
@@ -107,7 +113,8 @@ src/
 - Web / Android filter via `game.platform` in `games.ts`
 - Clicking a game card expands to **GameDetail** (image placeholder, description, tags, Play / Coming soon)
 - Favorites: empty state only (not persisted)
-- Profile pill: initials avatar + username (or email prefix); Log out in dropdown
+- Profile pill: initials or uploaded avatar + username; dropdown with View profile, Appearance → Dark/Light, Settings (placeholder), Log out
+- Profile page (`ProfileView`): change photo (compressed into `user_metadata.avatar`) and username via Supabase `updateUser`
 - Mobile: hamburger + slide-out sidebar
 
 ### Games catalog
@@ -117,6 +124,7 @@ src/
 
 ### Authentication (Supabase)
 - **Sign up:** email, password, username → stored in `user_metadata.username`
+- **Profile edits:** username + avatar via `updateUser` (`user_metadata`; avatar is a compressed data URL for now)
 - **Log in:** email + password via `signInWithPassword`
 - **Log out:** clears session → returns to intro
 - **Forgot password:** sends reset email, redirects to `VITE_SITE_URL`
@@ -170,8 +178,9 @@ src/
 - Real cover art (image placeholder in GameDetail)
 - Game routes/pages (e.g. `/games/:id`) / React Router
 - Favorites persistence (UI empty state only)
-- Avatar uploads (initials only)
-- `profiles` table in Supabase (username only in `user_metadata` for now)
+- Settings panel (profile menu item is a placeholder)
+- Supabase Storage for avatars (currently compressed data URL in `user_metadata`)
+- `profiles` table in Supabase (username/avatar only in `user_metadata` for now)
 - Password reset landing page (reset links go to `/` on live domain)
 - Downloadable game builds
 - Production deploy verification on `kryogames.com`
@@ -205,6 +214,26 @@ When making changes to this project:
 ## Recent edits (auto)
 
 <!-- AUTO:RECENT_EDITS -->
+- `2026-08-12 17:47` — `src/components/library/ProfileView.tsx`
+- `2026-08-12 17:47` — `src/components/library/LibraryView.css`
+- `2026-08-12 17:47` — `src/components/library/LibraryView.tsx`
+- `2026-08-12 17:47` — `src/components/library/LibraryTopBar.tsx`
+- `2026-08-12 17:47` — `src/contexts/AuthContext.tsx`
+- `2026-08-12 17:47` — `src/lib/userDisplay.ts`
+- `2026-08-12 17:17` — `src/components/library/LibraryView.css`
+- `2026-08-12 17:16` — `src/contexts/ThemeContext.tsx`
+- `2026-08-12 17:16` — `src/App.css`
+- `2026-08-12 17:16` — `src/components/library/LibraryView.css`
+- `2026-08-12 17:16` — `src/components/library/LibraryTopBar.tsx`
+- `2026-08-12 17:15` — `src/components/library/LibraryView.css`
+- `2026-08-12 17:15` — `src/App.css`
+- `2026-08-12 17:15` — `src/index.css`
+- `2026-08-12 17:15` — `index.html`
+- `2026-08-12 17:15` — `src/main.tsx`
+- `2026-08-12 17:15` — `src/contexts/ThemeContext.tsx`
+- `2026-08-12 17:13` — `src/components/library/LibraryTopBar.tsx`
+- `2026-08-12 17:04` — `.env.local`
+- `2026-08-12 16:58` — `.env.local`
 - `2026-08-11` — Snake Run: first Web game with expand-to-detail view (`GameDetail`), image placeholder, Play → Cloudflare R2 host
 - `2026-08-10` — Dual auth views: slate design system; `IntroView` (signed-out) + `LibraryView` (signed-in sidebar/search/grid); removed old marketing sections (Hero/About/Downloads/Header/Footer/GameCard); games gain `platform` for Web/Android filter; Favorites empty state only
 - `2026-08-09` — Brand rename: Kyro → Kryo across UI copy, page title/meta, package name (`kryogames`), and AGENTS.md (domain was already `kryogames.com`)

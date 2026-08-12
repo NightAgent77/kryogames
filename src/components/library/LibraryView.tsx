@@ -4,6 +4,7 @@ import { GameDetail } from './GameDetail'
 import { LibraryGameGrid } from './LibraryGameGrid'
 import { LibrarySidebar, type LibraryTab } from './LibrarySidebar'
 import { LibraryTopBar } from './LibraryTopBar'
+import { ProfileView } from './ProfileView'
 import './LibraryView.css'
 
 export function LibraryView() {
@@ -11,6 +12,7 @@ export function LibraryView() {
   const [search, setSearch] = useState('')
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [selectedGame, setSelectedGame] = useState<Game | null>(null)
+  const [showProfile, setShowProfile] = useState(false)
 
   const filteredGames = useMemo(() => {
     if (tab === 'favorites') return []
@@ -26,6 +28,7 @@ export function LibraryView() {
   const handleSelect = (next: LibraryTab) => {
     setTab(next)
     setSelectedGame(null)
+    setShowProfile(false)
     setSidebarOpen(false)
   }
 
@@ -52,11 +55,18 @@ export function LibraryView() {
           onSearchChange={(value) => {
             setSearch(value)
             setSelectedGame(null)
+            setShowProfile(false)
           }}
           onMenuToggle={() => setSidebarOpen((open) => !open)}
+          onViewProfile={() => {
+            setSelectedGame(null)
+            setShowProfile(true)
+          }}
         />
 
-        {selectedGame ? (
+        {showProfile ? (
+          <ProfileView onBack={() => setShowProfile(false)} />
+        ) : selectedGame ? (
           <GameDetail game={selectedGame} onBack={() => setSelectedGame(null)} />
         ) : (
           <LibraryGameGrid

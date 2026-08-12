@@ -31,6 +31,10 @@ interface AuthContextValue {
   signIn: (email: string, password: string) => Promise<AuthResult>
   signOut: () => Promise<void>
   resetPassword: (email: string) => Promise<AuthResult>
+  updateProfile: (updates: {
+    username?: string
+    avatar?: string | null
+  }) => Promise<AuthResult>
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null)
@@ -128,6 +132,48 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: null }
   }, [])
 
+  const updateProfile = useCallback(
+    async (updates: { username?: string; avatar?: string | null }) => {
+      if (!isSupabaseConfigured) {
+        return { error: supabaseConfigError }
+      }
+
+      const data: Record<string, unknown> = {}
+
+      if (updates.username !== undefined) {
+        const username = updates.username.trim()
+        if (username.length < 2) {
+          return { error: 'Username must be at least 2 characters.' }
+        }
+        if (username.length > 24) {
+          return { error: 'Username must be 24 characters or fewer.' }
+        }
+        data.username = username
+      }
+
+      if (updates.avatar !== undefined) {
+        data.avatar = updates.avatar
+      }
+
+      if (Object.keys(data).length === 0) {
+        return { error: null }
+      }
+
+      const { data: result, error } = await supabase.auth.updateUser({ data })
+
+      if (error) {
+        return { error: formatAuthError(error.message) }
+      }
+
+      if (result.user) {
+        setUser(result.user)
+      }
+
+      return { error: null }
+    },
+    [],
+  )
+
   const value = useMemo(
     () => ({
       user,
@@ -137,8 +183,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signIn,
       signOut,
       resetPassword,
+      updateProfile,
     }),
-    [user, session, loading, signUp, signIn, signOut, resetPassword],
+    [user, session, loading, signUp, signIn, signOut, resetPassword, updateProfile],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
