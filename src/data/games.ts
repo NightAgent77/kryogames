@@ -1,5 +1,5 @@
 export type GameStatus = 'playable' | 'coming-soon' | 'downloadable'
-export type GamePlatform = 'web' | 'android'
+export type GamePlatform = 'web' | 'android' | 'windows' | 'mac' | 'ios'
 
 export interface Game {
   id: string
@@ -11,6 +11,8 @@ export interface Game {
   tags: string[]
   /** External playable URL (e.g. Cloudflare R2 / Pages host) */
   playUrl?: string
+  /** Cover art path under /public */
+  coverImage?: string
 }
 
 export const games: Game[] = [
@@ -25,43 +27,6 @@ export const games: Game[] = [
     tags: ['Web', 'Arcade', 'Single-player'],
     playUrl:
       'https://pub-e379ba287a9f4d8ba4cdbd6b6095cb6c.r2.dev/snake-run/index.html',
-  },
-  {
-    id: 'placeholder-2',
-    title: 'Another Game',
-    description:
-      'Room for a second project — puzzle, platformer, or whatever you build next.',
-    genre: 'Puzzle',
-    status: 'coming-soon',
-    platform: 'web',
-    tags: ['Web', 'Casual'],
-  },
-  {
-    id: 'placeholder-3',
-    title: 'Desktop Build',
-    description:
-      'Some titles may also be available as downloads. This card is a placeholder for that flow.',
-    genre: 'Adventure',
-    status: 'coming-soon',
-    platform: 'web',
-    tags: ['Download', 'Web'],
-  },
-  {
-    id: 'placeholder-4',
-    title: 'Mobile Runner',
-    description: 'Placeholder Android title for the mobile library tab.',
-    genre: 'Action',
-    status: 'coming-soon',
-    platform: 'android',
-    tags: ['Android', 'Casual'],
-  },
-  {
-    id: 'placeholder-5',
-    title: 'Pocket Puzzle',
-    description: 'Another Android placeholder so the Android tab has more than one card.',
-    genre: 'Puzzle',
-    status: 'coming-soon',
-    platform: 'android',
-    tags: ['Android', 'Puzzle'],
+    coverImage: '/games/snake-run.png',
   },
 ]

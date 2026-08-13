@@ -3,7 +3,7 @@
 > Living document for AI agent continuity. Updated automatically on file edits and substantively by agents after meaningful changes.
 
 <!-- AUTO:LAST_UPDATED -->
-**Last updated:** 2026-08-12 19:49 (auto)
+**Last updated:** 2026-08-13 06:34 (auto)
 <!-- /AUTO:LAST_UPDATED -->
 
 ---
@@ -61,6 +61,9 @@ Copy `.env.example` → `.env.local` for local dev. Set the same vars in **Verce
 ## Architecture
 
 ```
+public/
+└── games/
+    └── snake-run.png        # Snake Run cover art
 src/
 ├── main.tsx                 # App entry, wraps ThemeProvider + AuthProvider
 ├── App.tsx                  # Auth gate: loading → IntroView | LibraryView
@@ -77,13 +80,14 @@ src/
 │       ├── LibrarySidebar.tsx
 │       ├── LibraryTopBar.tsx
 │       ├── LibraryGameGrid.tsx
+│       ├── PlatformIcon.tsx # Web / Android / Windows / Mac / iOS icons
 │       ├── GameDetail.tsx   # Expanded game view (desc + Play link)
 │       └── ProfileView.tsx  # Profile template (avatar + username)
 ├── contexts/
 │   ├── AuthContext.tsx      # Supabase auth state & methods
 │   └── ThemeContext.tsx     # Dark / light theme (localStorage `kryogames-theme`)
 ├── data/
-│   └── games.ts             # Placeholder catalog (platform: web | android)
+│   └── games.ts             # Catalog (platform, playUrl, coverImage)
 └── lib/
     ├── supabase.ts          # Supabase client init
     ├── siteUrl.ts           # Site URL helper (VITE_SITE_URL fallback)
@@ -111,16 +115,18 @@ src/
 - Sidebar: **Games** → nested **Web** / **Android**, plus **Favorites**
 - Search filters current tab by title (client-side)
 - Web / Android filter via `game.platform` in `games.ts`
-- Clicking a game card expands to **GameDetail** (image placeholder, description, tags, Play / Coming soon)
+- Each game card has a bottom meta bar: title + platform icon (`PlatformIcon`)
+- Clicking a game card expands to **GameDetail** (cover, description, tags, Play / Coming soon)
 - Favorites: empty state only (not persisted)
 - Mobile / narrow: small hamburger stays visible; hovering it reveals the floating nav pill (hides on leave); tap still pins it open on touch
 - Profile pill: initials or uploaded avatar + username; dropdown with View profile, Appearance → Dark/Light, Settings (placeholder), Log out
 - Profile page (`ProfileView`): change photo (compressed into `user_metadata.avatar`) and username via Supabase `updateUser`
 
 ### Games catalog
-- **Snake Run** (`snake-run`) — first Web title, `status: playable`, hosted on Cloudflare R2: `https://pub-e379ba287a9f4d8ba4cdbd6b6095cb6c.r2.dev/snake-run/index.html`
+- **Snake Run** (`snake-run`) — sole catalog title for now; Web, `status: playable`, Cloudflare R2: `https://pub-e379ba287a9f4d8ba4cdbd6b6095cb6c.r2.dev/snake-run/index.html`
+- Cover art: `public/games/snake-run.png` via optional `coverImage` (CSS `object-fit: cover` on grid card + detail)
 - Optional `playUrl` on `Game` opens in a new tab from the Play button
-- Other catalog entries remain placeholders (`coming-soon`)
+- No filler/empty placeholder cards in the library grid
 
 ### Authentication (Supabase)
 - **Sign up:** email, password, username → stored in `user_metadata.username`
@@ -175,7 +181,7 @@ src/
 ## Not yet implemented
 
 - In-page game embed (Play currently opens hosted URL in a new tab)
-- Real cover art (image placeholder in GameDetail)
+- Additional games beyond Snake Run
 - Game routes/pages (e.g. `/games/:id`) / React Router
 - Favorites persistence (UI empty state only)
 - Settings panel (profile menu item is a placeholder)
@@ -193,7 +199,8 @@ src/
 - Username display: `user_metadata.username` → fallback to email prefix
 - Auth modals use native `<dialog>` element
 - Game statuses: `'playable' | 'coming-soon' | 'downloadable'`
-- Game platforms: `'web' | 'android'`
+- Game platforms: `'web' | 'android' | 'windows' | 'mac' | 'ios'` (library tabs currently filter Web / Android)
+- Game cards show a bottom meta bar: title + platform icon
 - Do **not** commit `.env.local` or service role keys
 
 ---
@@ -214,34 +221,34 @@ When making changes to this project:
 ## Recent edits (auto)
 
 <!-- AUTO:RECENT_EDITS -->
+- `2026-08-13 06:34` — `src/components/library/LibraryView.css`
+- `2026-08-13 06:32` — `src/components/library/LibraryView.css`
+- `2026-08-13 06:31` — `src/components/library/LibraryView.css`
+- `2026-08-13 06:30` — `src/components/library/LibraryView.css`
+- `2026-08-13 06:27` — `src/index.css`
+- `2026-08-13 06:26` — `src/index.css`
+- `2026-08-13 06:25` — `src/index.css`
+- `2026-08-13 06:24` — `src/components/library/LibraryView.css`
+- `2026-08-13 06:23` — `src/components/library/LibraryView.css`
+- `2026-08-13 06:23` — `src/components/library/LibraryGameGrid.tsx`
+- `2026-08-13 06:23` — `src/data/games.ts`
+- `2026-08-13 06:22` — `src/components/library/LibraryView.css`
+- `2026-08-13 06:21` — `src/components/library/LibraryView.css`
+- `2026-08-13 06:20` — `src/components/library/LibraryView.css`
+- `2026-08-13 06:19` — `src/data/games.ts`
+- `2026-08-13 06:19` — `src/components/library/LibraryView.css`
+- `2026-08-13 06:19` — `src/components/library/LibraryGameGrid.tsx`
+- `2026-08-13 06:18` — `src/components/library/PlatformIcon.tsx`
+- `2026-08-13 06:18` — `src/data/games.ts`
+- `2026-08-13 06:18` — `../../../../../../Users/elmopr77/.cursor/projects/Volumes-REDDRIVE-App-Portfolio-Development-Builds-Personal-website-portfolio-KryoGames/assets/Screenshot_2026-08-13_at_2.15.21_AM__2_-fbc242c5-a6fc-428a-b0d5-47fcd1cc042f.png`
+- `2026-08-13 06:12` — `src/index.css`
+- `2026-08-13 06:11` — `src/index.css`
+- `2026-08-13 06:10` — `src/index.css`
+- `2026-08-13 06:00` — `src/components/library/LibraryView.css`
+- `2026-08-13 06:00` — `src/components/library/LibraryGameGrid.tsx`
+- `2026-08-13 06:00` — `src/components/library/GameDetail.tsx`
+- `2026-08-13 06:00` — `src/data/games.ts`
+- `2026-08-13 05:59` — `../../../../../../Users/elmopr77/.cursor/projects/Volumes-REDDRIVE-App-Portfolio-Development-Builds-Personal-website-portfolio-KryoGames/assets/snake-run-2d73cd49-4eeb-4802-aac2-8bbaaa9ffbfd.png`
 - `2026-08-12 19:49` — `src/components/library/LibraryView.css`
 - `2026-08-12 19:48` — `src/components/library/LibraryView.tsx`
-- `2026-08-12 19:47` — `src/components/library/LibraryView.css`
-- `2026-08-12 19:47` — `src/components/library/LibrarySidebar.tsx`
-- `2026-08-12 19:47` — `src/components/library/LibraryTopBar.tsx`
-- `2026-08-12 19:47` — `src/components/library/LibraryView.tsx`
-- `2026-08-12 19:35` — `src/components/library/LibraryView.css`
-- `2026-08-12 19:32` — `src/components/library/LibraryView.css`
-- `2026-08-12 17:47` — `src/components/library/ProfileView.tsx`
-- `2026-08-12 17:47` — `src/components/library/LibraryView.css`
-- `2026-08-12 17:47` — `src/components/library/LibraryView.tsx`
-- `2026-08-12 17:47` — `src/components/library/LibraryTopBar.tsx`
-- `2026-08-12 17:47` — `src/contexts/AuthContext.tsx`
-- `2026-08-12 17:47` — `src/lib/userDisplay.ts`
-- `2026-08-12 17:17` — `src/components/library/LibraryView.css`
-- `2026-08-12 17:16` — `src/contexts/ThemeContext.tsx`
-- `2026-08-12 17:16` — `src/App.css`
-- `2026-08-12 17:16` — `src/components/library/LibraryView.css`
-- `2026-08-12 17:16` — `src/components/library/LibraryTopBar.tsx`
-- `2026-08-12 17:15` — `src/components/library/LibraryView.css`
-- `2026-08-12 17:15` — `src/App.css`
-- `2026-08-12 17:15` — `src/index.css`
-- `2026-08-12 17:15` — `index.html`
-- `2026-08-12 17:15` — `src/main.tsx`
-- `2026-08-12 17:15` — `src/contexts/ThemeContext.tsx`
-- `2026-08-12 17:13` — `src/components/library/LibraryTopBar.tsx`
-- `2026-08-12 17:04` — `.env.local`
-- `2026-08-12 16:58` — `.env.local`
-- `2026-08-11` — Snake Run: first Web game with expand-to-detail view (`GameDetail`), image placeholder, Play → Cloudflare R2 host
-- `2026-08-10` — Dual auth views: slate design system; `IntroView` (signed-out) + `LibraryView` (signed-in sidebar/search/grid); removed old marketing sections (Hero/About/Downloads/Header/Footer/GameCard); games gain `platform` for Web/Android filter; Favorites empty state only
 <!-- /AUTO:RECENT_EDITS -->

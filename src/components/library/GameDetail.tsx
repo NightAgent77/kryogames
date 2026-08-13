@@ -27,8 +27,18 @@ export function GameDetail({ game, onBack }: GameDetailProps) {
       </button>
 
       <div className="game-detail-layout">
-        <div className="game-detail-media" aria-hidden="true">
-          <span className="game-detail-media-label">Image placeholder</span>
+        <div className="game-detail-media">
+          {game.coverImage ? (
+            <img
+              src={game.coverImage}
+              alt=""
+              className="game-detail-cover"
+            />
+          ) : (
+            <span className="game-detail-media-label" aria-hidden="true">
+              Image placeholder
+            </span>
+          )}
         </div>
 
         <div className="game-detail-info">

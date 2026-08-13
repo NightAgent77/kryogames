@@ -1,4 +1,5 @@
 import type { Game } from '../../data/games'
+import { PlatformIcon } from './PlatformIcon'
 import type { LibraryTab } from './LibrarySidebar'
 
 const titles: Record<LibraryTab, string> = {
@@ -29,8 +30,6 @@ export function LibraryGameGrid({ tab, games, onSelectGame }: LibraryGameGridPro
     )
   }
 
-  const placeholders = Math.max(0, 8 - games.length)
-
   return (
     <section
       key={tab}
@@ -42,32 +41,36 @@ export function LibraryGameGrid({ tab, games, onSelectGame }: LibraryGameGridPro
       </h2>
 
       {games.length === 0 ? (
-        <p className="library-empty">No games match your search.</p>
+        <p className="library-empty">No games yet</p>
       ) : (
         <div className="library-grid">
-          {games.map((game, index) => {
-            const showTitle = game.status === 'playable' || Boolean(game.playUrl)
+          {games.map((game, index) => (
+            <button
+              key={game.id}
+              type="button"
+              className="library-card library-card--enter library-card--interactive library-card--with-meta"
+              style={{ animationDelay: `${40 + index * 35}ms` }}
+              onClick={() => onSelectGame(game)}
+              aria-label={`${game.title}, ${game.platform}`}
+            >
+              <div className="library-card-media">
+                {game.coverImage ? (
+                  <img
+                    src={game.coverImage}
+                    alt=""
+                    className="library-card-cover"
+                  />
+                ) : null}
+              </div>
 
-            return (
-              <button
-                key={game.id}
-                type="button"
-                className="library-card library-card--enter library-card--interactive"
-                style={{ animationDelay: `${40 + index * 35}ms` }}
-                onClick={() => onSelectGame(game)}
-                aria-label={game.title}
-              >
-                {showTitle ? game.title : null}
-              </button>
-            )
-          })}
-          {Array.from({ length: placeholders }, (_, index) => (
-            <div
-              key={`empty-${index}`}
-              className="library-card library-card--empty library-card--enter"
-              style={{ animationDelay: `${40 + (games.length + index) * 35}ms` }}
-              aria-hidden="true"
-            />
+              <div className="library-card-meta">
+                <span className="library-card-title">{game.title}</span>
+                <PlatformIcon
+                  platform={game.platform}
+                  className="library-card-platform"
+                />
+              </div>
+            </button>
           ))}
         </div>
       )}

@@ -316,6 +316,8 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
+  padding: 0.35rem;
+  margin: -0.35rem;
 }
 
 .library-card {
@@ -324,26 +326,101 @@
   border-radius: var(--radius);
   display: grid;
   place-items: center;
-  padding: 1rem;
+  padding: 0;
   border: none;
   color: var(--text-bright);
   font-size: 0.875rem;
   font-weight: 500;
   text-align: center;
-  transition: background 0.15s, transform 0.2s;
+  transform-origin: center center;
+  transition:
+    background 0.25s ease,
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  overflow: hidden;
+}
+
+.library-card--with-meta {
+  display: flex;
+  flex-direction: column;
+  place-items: stretch;
+  text-align: left;
+}
+
+.library-card-media {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  background: var(--bg-surface);
+}
+
+.library-card-cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 55%;
+  display: block;
+}
+
+.library-card-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-shrink: 0;
+  padding: 0.7rem 0.85rem;
+  background: color-mix(in srgb, var(--bg-deep) 72%, #3a4a62);
+  color: var(--text-bright);
+}
+
+[data-theme='light'] .library-card-meta {
+  background: color-mix(in srgb, var(--bg-surface) 82%, #d8dee8);
+}
+
+.library-card-title {
+  min-width: 0;
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.library-card-platform {
+  display: inline-flex;
+  flex-shrink: 0;
+  width: 1.1rem;
+  height: 1.1rem;
+  color: var(--text-bright);
+}
+
+.library-card-platform svg {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 .library-card--enter {
+  /* Opacity only — animating transform with fill-mode blocked hover scale. */
   animation: library-card-in 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .library-card--interactive {
   cursor: pointer;
+  will-change: transform;
 }
 
 .library-card--interactive:hover {
+  z-index: 2;
   background: var(--bg-elevated);
-  transform: translateY(-2px);
+  transform: scale(1.08) translateY(-6px);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.32);
+}
+
+.library-card--interactive:active {
+  transform: scale(1.04) translateY(-2px);
+  transition-duration: 0.15s;
 }
 
 .library-card--interactive:focus-visible {
@@ -351,8 +428,8 @@
   outline-offset: 2px;
 }
 
-.library-card:hover {
-  background: var(--bg-elevated);
+[data-theme='light'] .library-card--interactive:hover {
+  box-shadow: 0 12px 28px rgba(18, 20, 26, 0.12);
 }
 
 .library-card--empty {
@@ -363,6 +440,7 @@
 .library-card--empty:hover {
   background: var(--bg-surface);
   transform: none;
+  box-shadow: none;
 }
 
 .library-empty {
@@ -420,6 +498,15 @@
   place-items: center;
   color: var(--text-muted);
   font-size: 0.875rem;
+  overflow: hidden;
+}
+
+.game-detail-cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 55%;
+  display: block;
 }
 
 .game-detail-media-label {
@@ -613,11 +700,9 @@
 @keyframes library-card-in {
   from {
     opacity: 0;
-    transform: translateY(12px) scale(0.98);
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
   }
 }
 
@@ -625,6 +710,14 @@
   .library-content--enter,
   .library-card--enter {
     animation: none;
+  }
+
+  .library-card,
+  .library-card--interactive:hover,
+  .library-card--interactive:active {
+    transition: none;
+    transform: none;
+    box-shadow: none;
   }
 }
 
