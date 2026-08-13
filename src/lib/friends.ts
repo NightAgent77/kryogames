@@ -179,6 +179,22 @@ export async function listFriends(
   return { friends, error: null }
 }
 
+export async function countFriends(
+  userId: string,
+): Promise<{ count: number; error: string | null }> {
+  const { count, error } = await supabase
+    .from('friendships')
+    .select('id', { count: 'exact', head: true })
+    .eq('status', 'accepted')
+    .or(`requester_id.eq.${userId},addressee_id.eq.${userId}`)
+
+  if (error) {
+    return { count: 0, error: error.message }
+  }
+
+  return { count: count ?? 0, error: null }
+}
+
 export async function listIncomingRequests(
   userId: string,
 ): Promise<{ requests: FriendRequestEntry[]; error: string | null }> {

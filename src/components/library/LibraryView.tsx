@@ -3,6 +3,8 @@ import { useAuth } from '../../contexts/AuthContext'
 import { games, type Game } from '../../data/games'
 import { loadFavorites, saveFavorites, toggleFavoriteId } from '../../lib/favorites'
 import { upsertProfileFromUser } from '../../lib/friends'
+import { flushPlaySession, startPlaySession } from '../../lib/playActivity'
+import { recordPlayedGame } from '../../lib/playedGames'
 import { FriendsView } from './FriendsView'
 import { GameDetail } from './GameDetail'
 import { LibraryGameGrid } from './LibraryGameGrid'
@@ -44,6 +46,27 @@ export function LibraryView() {
     if (!user) return
     void upsertProfileFromUser(user)
   }, [user])
+
+  useEffect(() => {
+    if (!user?.id) return
+
+    const flush = () => {
+      void flushPlaySession(user.id)
+    }
+
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') flush()
+    }
+
+    window.addEventListener('focus', flush)
+    document.addEventListener('visibilitychange', onVisibility)
+    flush()
+
+    return () => {
+      window.removeEventListener('focus', flush)
+      document.removeEventListener('visibilitychange', onVisibility)
+    }
+  }, [user?.id])
 
   const sidebarOpen = sidebarPinned || sidebarHovered
   const washActive = Boolean(washGame) && !washExiting
@@ -117,7 +140,7 @@ export function LibraryView() {
     const query = search.trim().toLowerCase()
     const favoriteSet = new Set(favoriteIds)
 
-    if (tab === 'friends') return []
+    if (tab === 'friends' || tab === 'my-games') return []
 
     return games.filter((game) => {
       if (tab === 'favorites') {
@@ -217,12 +240,17 @@ export function LibraryView() {
         />
 
         {showProfile ? (
-          <ProfileView onBack={() => setShowProfile(false)} />
+          <ProfileView />
         ) : selectedGame ? (
           <GameDetail
             game={selectedGame}
             favorited={favoriteIds.includes(selectedGame.id)}
             onToggleFavorite={() => toggleFavorite(selectedGame.id)}
+            onPlay={() => {
+              if (!user?.id) return
+              void recordPlayedGame(user.id, selectedGame.id)
+              startPlaySession(user.id)
+            }}
             onBack={closeGameView}
           />
         ) : tab === 'friends' ? (

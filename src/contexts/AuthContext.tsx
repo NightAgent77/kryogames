@@ -35,6 +35,8 @@ interface AuthContextValue {
   updateProfile: (updates: {
     username?: string
     avatar?: string | null
+    banner?: string | null
+    bio?: string
   }) => Promise<AuthResult>
 }
 
@@ -139,7 +141,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const updateProfile = useCallback(
-    async (updates: { username?: string; avatar?: string | null }) => {
+    async (updates: {
+      username?: string
+      avatar?: string | null
+      banner?: string | null
+      bio?: string
+    }) => {
       if (!isSupabaseConfigured) {
         return { error: supabaseConfigError }
       }
@@ -161,6 +168,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (updates.avatar !== undefined) {
         data.avatar = updates.avatar
+      }
+
+      if (updates.banner !== undefined) {
+        data.banner = updates.banner
+      }
+
+      if (updates.bio !== undefined) {
+        const bio = updates.bio.trim()
+        if (bio.length > 280) {
+          return { error: 'About me must be 280 characters or fewer.' }
+        }
+        data.bio = bio
       }
 
       if (Object.keys(data).length === 0) {

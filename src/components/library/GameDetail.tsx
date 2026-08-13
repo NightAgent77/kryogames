@@ -5,6 +5,7 @@ interface GameDetailProps {
   game: Game
   favorited: boolean
   onToggleFavorite: () => void
+  onPlay?: () => void
   onBack: () => void
 }
 
@@ -12,6 +13,7 @@ export function GameDetail({
   game,
   favorited,
   onToggleFavorite,
+  onPlay,
   onBack,
 }: GameDetailProps) {
   const canPlay = game.status === 'playable' && Boolean(game.playUrl)
@@ -69,6 +71,7 @@ export function GameDetail({
                 href={game.playUrl}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={() => onPlay?.()}
               >
                 Play
               </a>

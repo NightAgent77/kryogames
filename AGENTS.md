@@ -3,7 +3,7 @@
 > Living document for AI agent continuity. Updated automatically on file edits and substantively by agents after meaningful changes.
 
 <!-- AUTO:LAST_UPDATED -->
-**Last updated:** 2026-08-13 18:48 (auto)
+**Last updated:** 2026-08-13 22:26 (auto)
 <!-- /AUTO:LAST_UPDATED -->
 
 ---
@@ -84,6 +84,7 @@ src/
 │       ├── GameDetail.tsx   # Expanded game view (blurred cover wash + desc + Play)
 │       ├── FavoriteGemButton.tsx # Facet-diamond favorite toggle (animates red)
 │       ├── FriendsView.tsx  # Friends search, requests, list
+│       ├── ActivityHeatmap.tsx # Monthly play-hours calendar heatmap
 │       └── ProfileView.tsx  # Profile template (avatar + username)
 ├── contexts/
 │   ├── AuthContext.tsx      # Supabase auth state & methods
@@ -94,10 +95,13 @@ src/
 │   ├── supabase.ts          # Supabase client init
 │   ├── siteUrl.ts           # Site URL helper (VITE_SITE_URL fallback)
 │   ├── favorites.ts         # Per-user favorite game IDs (localStorage)
+│   ├── playedGames.ts       # Distinct games played (Supabase + local migrate)
+│   ├── playActivity.ts      # Daily play minutes (Supabase + session flush)
 │   ├── friends.ts           # Profiles search + friendships helpers
 │   └── userDisplay.ts       # Display name / initials / avatar helpers
 └── supabase/
     ├── friends.sql          # profiles + friendships schema/RLS (run in SQL editor)
+    ├── play-stats.sql       # played_games + play_activity schema/RLS (run in SQL editor)
     └── backfill-profiles.sql # one-time: seed profiles + Auth display names for existing users
 ```
 
@@ -107,7 +111,7 @@ src/
 
 ### Dual auth views
 - **Signed out (`IntroView`):** minimalist brand landing — KRYO GAMES, short lead, Sign up / Log in, placeholder tile teaser
-- **Signed in (`LibraryView`):** library shell matching design mockup — sidebar, search, profile pill, game grid
+- **Signed in (`LibraryView`):** library shell matching design mockup — sidebar, search, profile pill, game grid; shell is viewport-locked so only `.library-main` scrolls — desktop sidebar pill stays fully visible (narrow screens still use the existing collapse/hover drawer)
 - **`App.tsx` gate:** `loading` → placeholder; `user` → library; else → intro (no React Router yet)
 
 ### Design system
@@ -119,9 +123,10 @@ src/
 - Auth modal restyled to the same surfaces
 
 ### Library (signed-in)
-- Sidebar: **Games** + **Favorites** + **Friends** (Android / platform submenu removed for now — web only)
-- Search filters current tab by title (client-side) on Games / Favorites
-- Games tab lists `platform: 'web'` titles from `games.ts`
+- Sidebar: **Home** (web catalog) + **Game library** (nested **My Games**, **Favorites**) + **Friends**
+- Search filters current tab by title (client-side) on Home / Favorites
+- Home tab lists `platform: 'web'` titles from `games.ts`
+- My Games: empty placeholder for now
 - **Friends:** top-bar search switches to “Search usernames” (games search hidden); send friend requests, accept/decline incoming (section only when pending); **Online** / **All** filter tabs (presence not wired — Online empty for now); remove from All; data in Supabase `profiles` + `friendships` (see `supabase/friends.sql`)
 - Each game card has a bottom meta bar: title + platform icon (`PlatformIcon`)
 - Clicking a game card expands to **GameDetail** (cover, description, tags, Play / Coming soon, favorite gem)
@@ -129,11 +134,14 @@ src/
 - **Favorites:** facet-diamond gem beside Play on GameDetail; toggle persists per signed-in user in `localStorage` (`kryogames-favorites:<userId>`); Favorites sidebar tab lists favorited games (search works); empty state when none. On wash: white glass outline → red + pop/burst when favorited, soft spin-out when removed.
 - Mobile / narrow: small hamburger stays visible; hovering it reveals the floating nav pill (hides on leave); tap still pins it open on touch
 - Profile pill: initials or uploaded avatar + username; dropdown with View profile, Appearance → Dark/Light, Settings (placeholder), Log out
-- Profile page (`ProfileView`): change photo (compressed into `user_metadata.avatar`) and username via Supabase `updateUser`; top-bar game search hidden while open; content sits higher under a compact top bar
+- Profile page (`ProfileView`): gamer-style banner header aligned with the sidebar pill top — cover art fills the whole card; avatar, username, and About me overlay the bottom of the art (light-on-dark); frosted profile pill overlays the banner top-right (no Back, search hidden). Stats bar under banner: long horizontal surface holding compact sub-chips (**Friends**, **Games played**) with cyan numbers. Below that: **Activity heatmap** (`ActivityHeatmap`) — month calendar of daily play hours with blue intensity (0h / >2h / >4h / >8h), month picker. **Edit profile** switches into edit mode (live banner/avatar preview + form); **Apply changes** saves via `updateUser` (`avatar`, `banner`, `bio`, `username`) and returns to view mode; Cancel discards the draft
+- **Games played tracker:** Supabase `played_games` (distinct `game_id` per user); recorded when Play is clicked; one-time migrate from legacy `localStorage` (`kryogames-played:<userId>`)
+- **Play activity tracker:** Supabase `play_activity` (minutes per day) via `add_play_minutes` RPC; Play starts a `sessionStorage` timer, minutes flush when returning to the tab (capped); one-time migrate from legacy `localStorage` (`kryogames-play-activity:<userId>`)
+- Run [`supabase/play-stats.sql`](supabase/play-stats.sql) once in the Supabase SQL editor (after `friends.sql`) so Games played + heatmap persist across devices
 
 ### Games catalog
 - **Snake Run** (`snake-run`) — sole catalog title for now; Web, `status: playable`, Cloudflare R2: `https://pub-e379ba287a9f4d8ba4cdbd6b6095cb6c.r2.dev/snake-run/index.html`
-- Cover art: `public/games/snake-run.png` via optional `coverImage` (CSS `object-fit: cover` on grid card + detail)
+- Cover art: `public/games/snake-run.png` (magenta title hero) via optional `coverImage` (CSS `object-fit: cover` on grid card + detail)
 - Optional `playUrl` on `Game` opens in a new tab from the Play button
 - No filler/empty placeholder cards in the library grid
 
@@ -152,6 +160,12 @@ src/
 - Run [`supabase/friends.sql`](supabase/friends.sql) once in the Supabase SQL editor before using Friends
 - Run [`supabase/backfill-profiles.sql`](supabase/backfill-profiles.sql) once so existing users appear in username search (and Auth Display name is filled from username)
 - Friend search uses `public.profiles`, not the Auth Users list; Auth “Display name” is `full_name` / `name` metadata (synced from username on signup/profile edit)
+
+### Supabase SQL (play stats)
+- Run [`supabase/play-stats.sql`](supabase/play-stats.sql) once after friends schema exists
+- Tables: `played_games` (user_id + game_id), `play_activity` (user_id + day + minutes)
+- RLS: any authenticated user can **read** (future public profiles / friends); only the owner can write
+- RPC: `add_play_minutes(p_day, p_minutes)` atomically increments the signed-in user’s day
 
 ### Deployment config
 - `vercel.json` — SPA rewrite so client routes work when added later
@@ -200,6 +214,7 @@ src/
 - Additional games beyond Snake Run
 - Game routes/pages (e.g. `/games/:id`) / React Router
 - Favorites sync across devices (currently localStorage only)
+- Played-games list UI (count + tracker exist in Supabase)
 - Settings panel (profile menu item is a placeholder)
 - Supabase Storage for avatars (currently compressed data URL in `user_metadata` + `profiles.avatar`)
 - Friend activity / chat / game invites
@@ -219,6 +234,8 @@ src/
 - Game cards show a bottom meta bar: title + platform icon
 - **GameDetail wash (locked):** full-library blurred cover; light-on-dark type in both themes. Frost: light = white glass; dark = bluish glass. White Play button. No dark text or milky overlay on the wash. Favorite gem on wash stays white when off and red when on.
 - Favorites: per-user `localStorage` via `lib/favorites.ts`; UI toggle is `FavoriteGemButton`
+- Games played: Supabase `played_games` via `lib/playedGames.ts`; recorded on Play click
+- Play activity: Supabase `play_activity` via `lib/playActivity.ts`; heatmap on profile; requires `supabase/play-stats.sql`
 - Friends: `lib/friends.ts` + `FriendsView`; requires `supabase/friends.sql` applied
 - Do **not** commit `.env.local` or service role keys
 
@@ -240,35 +257,35 @@ When making changes to this project:
 ## Recent edits (auto)
 
 <!-- AUTO:RECENT_EDITS -->
-- `2026-08-13 18:48` — `src/components/library/LibraryView.css`
-- `2026-08-13 18:48` — `src/components/library/FriendsView.tsx`
-- `2026-08-13 18:47` — `src/components/library/FriendsView.tsx`
-- `2026-08-13 18:44` — `src/components/library/LibraryView.css`
-- `2026-08-13 18:39` — `supabase/backfill-profiles.sql`
-- `2026-08-13 18:39` — `src/components/library/FriendsView.tsx`
-- `2026-08-13 18:39` — `src/lib/friends.ts`
-- `2026-08-13 18:38` — `src/lib/friends.ts`
-- `2026-08-13 18:34` — `supabase/backfill-profiles.sql`
-- `2026-08-13 18:34` — `src/contexts/AuthContext.tsx`
-- `2026-08-13 18:34` — `src/components/library/FriendsView.tsx`
-- `2026-08-13 18:34` — `src/lib/friends.ts`
-- `2026-08-13 18:31` — `src/components/library/LibraryView.css`
-- `2026-08-13 18:31` — `src/components/library/FriendsView.tsx`
-- `2026-08-13 18:30` — `src/components/library/FriendsView.tsx`
-- `2026-08-13 18:30` — `src/components/library/LibraryView.css`
-- `2026-08-13 18:26` — `src/components/library/FriendsView.tsx`
-- `2026-08-13 17:32` — `src/components/library/LibraryView.css`
-- `2026-08-13 17:31` — `src/components/library/LibraryView.css`
-- `2026-08-13 17:31` — `src/components/library/LibraryView.tsx`
-- `2026-08-13 17:31` — `src/components/library/LibraryTopBar.tsx`
-- `2026-08-13 17:28` — `src/components/library/LibraryView.css`
-- `2026-08-13 17:28` — `src/components/library/FriendsView.tsx`
-- `2026-08-13 17:28` — `src/components/library/LibraryView.tsx`
-- `2026-08-13 17:28` — `src/components/library/LibraryTopBar.tsx`
-- `2026-08-13 17:24` — `src/lib/friends.ts`
-- `2026-08-13 17:24` — `src/components/library/FriendsView.tsx`
-- `2026-08-13 17:24` — `src/components/library/LibraryView.css`
-- `2026-08-13 17:23` — `src/components/library/FriendsView.tsx`
-- `2026-08-13 17:23` — `src/components/library/LibraryView.tsx`
+- `2026-08-13 22:26` — `src/components/library/LibraryView.css`
+- `2026-08-13 22:25` — `src/components/library/LibraryView.css`
+- `2026-08-13 22:22` — `src/components/library/LibraryView.tsx`
+- `2026-08-13 22:22` — `src/components/library/ProfileView.tsx`
+- `2026-08-13 22:22` — `src/components/library/ActivityHeatmap.tsx`
+- `2026-08-13 22:22` — `src/lib/playActivity.ts`
+- `2026-08-13 22:22` — `src/lib/playedGames.ts`
+- `2026-08-13 22:22` — `supabase/play-stats.sql`
+- `2026-08-13 22:19` — `src/components/library/ActivityHeatmap.tsx`
+- `2026-08-13 22:19` — `src/components/library/LibraryView.css`
+- `2026-08-13 22:19` — `src/components/library/ProfileView.tsx`
+- `2026-08-13 22:19` — `src/components/library/LibraryView.tsx`
+- `2026-08-13 22:18` — `../../../../../../Users/elmopr77/.cursor/projects/Volumes-REDDRIVE-App-Portfolio-Development-Builds-Personal-website-portfolio-KryoGames/assets/Screenshot_2026-08-13_at_6.17.25_PM__2_-d2826a8c-3f98-4a75-a088-002370df3c22.png`
+- `2026-08-13 22:10` — `src/components/library/LibraryView.css`
+- `2026-08-13 22:10` — `../../../../../../Users/elmopr77/.cursor/projects/Volumes-REDDRIVE-App-Portfolio-Development-Builds-Personal-website-portfolio-KryoGames/assets/Screenshot_2026-08-13_at_6.08.50_PM__2_-699c76d6-4a41-42d3-a829-ad05c6fc5e73.png`
+- `2026-08-13 21:19` — `src/components/library/LibraryView.css`
+- `2026-08-13 21:19` — `src/components/library/ProfileView.tsx`
+- `2026-08-13 21:19` — `src/components/library/LibraryView.tsx`
+- `2026-08-13 21:18` — `src/components/library/GameDetail.tsx`
+- `2026-08-13 21:18` — `src/lib/friends.ts`
+- `2026-08-13 21:18` — `src/lib/playedGames.ts`
+- `2026-08-13 20:57` — `src/components/library/LibraryView.css`
+- `2026-08-13 20:57` — `src/components/library/ProfileView.tsx`
+- `2026-08-13 20:53` — `src/components/library/LibraryView.css`
+- `2026-08-13 20:53` — `src/components/library/ProfileView.tsx`
+- `2026-08-13 20:50` — `src/components/library/LibraryView.css`
+- `2026-08-13 20:50` — `src/components/library/ProfileView.tsx`
+- `2026-08-13 20:50` — `src/components/library/LibraryView.tsx`
+- `2026-08-13 20:45` — `src/components/library/LibraryView.css`
+- `2026-08-13 20:45` — `src/components/library/ProfileView.tsx`
 <!-- /AUTO:RECENT_EDITS -->
 -->
