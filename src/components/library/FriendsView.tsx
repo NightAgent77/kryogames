@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import {
   listFriends,
   listIncomingRequests,
   listOutgoingPendingIds,
+  profileLabel,
   removeFriend,
   respondToRequest,
   searchProfiles,
@@ -19,6 +20,12 @@ interface FriendsViewProps {
 }
 
 type ResultAction = 'add' | 'pending' | 'friends'
+type FriendsFilter = 'online' | 'all'
+
+interface FilterIndicator {
+  left: number
+  width: number
+}
 
 function relationFor(
   profileId: string,
@@ -37,7 +44,7 @@ function PersonAvatar({ profile }: { profile: Profile }) {
       {profile.avatar ? (
         <img src={profile.avatar} alt="" className="friends-avatar-img" />
       ) : (
-        getInitials(profile.username)
+        getInitials(profileLabel(profile.username))
       )}
     </span>
   )
@@ -53,9 +60,38 @@ export function FriendsView({ query }: FriendsViewProps) {
   const [busyId, setBusyId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [status, setStatus] = useState<string | null>(null)
+  const [filter, setFilter] = useState<FriendsFilter>('online')
+  const [indicator, setIndicator] = useState<FilterIndicator | null>(null)
+  const [indicatorReady, setIndicatorReady] = useState(false)
+  const filterRef = useRef<HTMLDivElement>(null)
+  const onlineRef = useRef<HTMLButtonElement>(null)
+  const allRef = useRef<HTMLButtonElement>(null)
   const searchGen = useRef(0)
 
   const userId = user?.id
+
+  useLayoutEffect(() => {
+    const track = filterRef.current
+    const target = filter === 'online' ? onlineRef.current : allRef.current
+    if (!track || !target) return
+
+    const update = () => {
+      setIndicator({
+        left: target.offsetLeft,
+        width: target.offsetWidth,
+      })
+    }
+
+    update()
+    const readyId = window.requestAnimationFrame(() => setIndicatorReady(true))
+    const observer = new ResizeObserver(update)
+    observer.observe(track)
+
+    return () => {
+      window.cancelAnimationFrame(readyId)
+      observer.disconnect()
+    }
+  }, [filter])
 
   const refreshLists = async () => {
     if (!userId) return
@@ -116,7 +152,7 @@ export function FriendsView({ query }: FriendsViewProps) {
     if (!userId) return
 
     const trimmed = query.trim()
-    if (trimmed.length < 2) {
+    if (trimmed.length < 1) {
       setResults([])
       setSearching(false)
       return
@@ -154,7 +190,7 @@ export function FriendsView({ query }: FriendsViewProps) {
       return
     }
     setPendingOutIds((prev) => new Set(prev).add(profile.id))
-    setStatus(`Request sent to ${profile.username}.`)
+    setStatus(`Request sent to ${profileLabel(profile.username)}.`)
   }
 
   const handleRespond = async (
@@ -197,7 +233,7 @@ export function FriendsView({ query }: FriendsViewProps) {
       {error ? <p className="friends-banner friends-banner--error">{error}</p> : null}
       {status ? <p className="friends-banner friends-banner--ok">{status}</p> : null}
 
-      {query.trim().length >= 2 ? (
+      {query.trim().length >= 1 ? (
         <div className="friends-block">
           <h3 className="friends-block-title">Search results</h3>
           {searching ? (
@@ -216,7 +252,7 @@ export function FriendsView({ query }: FriendsViewProps) {
                 return (
                   <li key={profile.id} className="friends-row">
                     <PersonAvatar profile={profile} />
-                    <span className="friends-name">{profile.username}</span>
+                    <span className="friends-name">{profileLabel(profile.username)}</span>
                     {action === 'add' ? (
                       <button
                         type="button"
@@ -239,16 +275,14 @@ export function FriendsView({ query }: FriendsViewProps) {
         </div>
       ) : null}
 
-      <div className="friends-block">
-        <h3 className="friends-block-title">Incoming requests</h3>
-        {requests.length === 0 ? (
-          <p className="library-empty">No requests right now</p>
-        ) : (
+      {requests.length > 0 ? (
+        <div className="friends-block">
+          <h3 className="friends-block-title">Incoming requests</h3>
           <ul className="friends-list">
             {requests.map((req) => (
               <li key={req.friendshipId} className="friends-row">
                 <PersonAvatar profile={req.profile} />
-                <span className="friends-name">{req.profile.username}</span>
+                <span className="friends-name">{profileLabel(req.profile.username)}</span>
                 <div className="friends-row-actions">
                   <button
                     type="button"
@@ -270,31 +304,77 @@ export function FriendsView({ query }: FriendsViewProps) {
               </li>
             ))}
           </ul>
-        )}
-      </div>
+        </div>
+      ) : null}
 
       <div className="friends-block">
-        <h3 className="friends-block-title">Your friends</h3>
-        {friends.length === 0 ? (
-          <p className="library-empty">No friends yet — search a username to add someone</p>
-        ) : (
-          <ul className="friends-list">
-            {friends.map((entry) => (
-              <li key={entry.friendshipId} className="friends-row">
-                <PersonAvatar profile={entry.profile} />
-                <span className="friends-name">{entry.profile.username}</span>
-                <button
-                  type="button"
-                  className="btn btn-secondary friends-action"
-                  disabled={busyId === entry.friendshipId}
-                  onClick={() => void handleRemove(entry.friendshipId, entry.profile.username)}
-                >
-                  Remove
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
+        <div
+          ref={filterRef}
+          className="friends-filter"
+          role="tablist"
+          aria-label="Friends filter"
+        >
+          {indicator ? (
+            <div
+              className={`friends-filter-indicator${indicatorReady ? ' friends-filter-indicator--ready' : ''}`}
+              style={{
+                transform: `translateX(${indicator.left}px)`,
+                width: indicator.width,
+              }}
+              aria-hidden="true"
+            />
+          ) : null}
+          <button
+            ref={onlineRef}
+            type="button"
+            role="tab"
+            aria-selected={filter === 'online'}
+            className={`friends-filter-btn${filter === 'online' ? ' friends-filter-btn--active' : ''}`}
+            onClick={() => setFilter('online')}
+          >
+            Online
+          </button>
+          <button
+            ref={allRef}
+            type="button"
+            role="tab"
+            aria-selected={filter === 'all'}
+            className={`friends-filter-btn${filter === 'all' ? ' friends-filter-btn--active' : ''}`}
+            onClick={() => setFilter('all')}
+          >
+            All
+          </button>
+        </div>
+
+        <div key={filter} className="friends-panel library-content--enter">
+          {filter === 'online' ? (
+            <p className="library-empty">No one online</p>
+          ) : friends.length === 0 ? (
+            <p className="library-empty">No friends yet — search a username to add someone</p>
+          ) : (
+            <ul className="friends-list">
+              {friends.map((entry) => (
+                <li key={entry.friendshipId} className="friends-row">
+                  <PersonAvatar profile={entry.profile} />
+                  <span className="friends-name">{profileLabel(entry.profile.username)}</span>
+                  <button
+                    type="button"
+                    className="btn btn-secondary friends-action"
+                    disabled={busyId === entry.friendshipId}
+                    onClick={() =>
+                      void handleRemove(
+                        entry.friendshipId,
+                        profileLabel(entry.profile.username),
+                      )
+                    }
+                  >
+                    Remove
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       </div>
     </section>
   )

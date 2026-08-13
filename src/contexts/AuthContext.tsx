@@ -83,7 +83,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         email,
         password,
         options: {
-          data: { username },
+          // full_name fills Supabase Auth "Display name"; username is what we search
+          data: { username, full_name: username, name: username },
         },
       })
 
@@ -154,6 +155,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           return { error: 'Username must be 24 characters or fewer.' }
         }
         data.username = username
+        data.full_name = username
+        data.name = username
       }
 
       if (updates.avatar !== undefined) {

@@ -3,7 +3,7 @@
 > Living document for AI agent continuity. Updated automatically on file edits and substantively by agents after meaningful changes.
 
 <!-- AUTO:LAST_UPDATED -->
-**Last updated:** 2026-08-13 17:32 (auto)
+**Last updated:** 2026-08-13 18:48 (auto)
 <!-- /AUTO:LAST_UPDATED -->
 
 ---
@@ -97,7 +97,8 @@ src/
 │   ├── friends.ts           # Profiles search + friendships helpers
 │   └── userDisplay.ts       # Display name / initials / avatar helpers
 └── supabase/
-    └── friends.sql          # profiles + friendships schema/RLS (run in SQL editor)
+    ├── friends.sql          # profiles + friendships schema/RLS (run in SQL editor)
+    └── backfill-profiles.sql # one-time: seed profiles + Auth display names for existing users
 ```
 
 ---
@@ -121,7 +122,7 @@ src/
 - Sidebar: **Games** + **Favorites** + **Friends** (Android / platform submenu removed for now — web only)
 - Search filters current tab by title (client-side) on Games / Favorites
 - Games tab lists `platform: 'web'` titles from `games.ts`
-- **Friends:** top-bar search switches to “Search usernames” (games search hidden); send friend requests, accept/decline incoming, friends list + remove; data in Supabase `profiles` + `friendships` (see `supabase/friends.sql`)
+- **Friends:** top-bar search switches to “Search usernames” (games search hidden); send friend requests, accept/decline incoming (section only when pending); **Online** / **All** filter tabs (presence not wired — Online empty for now); remove from All; data in Supabase `profiles` + `friendships` (see `supabase/friends.sql`)
 - Each game card has a bottom meta bar: title + platform icon (`PlatformIcon`)
 - Clicking a game card expands to **GameDetail** (cover, description, tags, Play / Coming soon, favorite gem)
 - GameDetail **art wash (locked, both themes):** full-library `.library-wash` blurred cover behind the sidebar pill **and** search / profile / nav; sharp cover in the media slot; light-on-dark type (white title/description/tags/Back; white Play with dark label). Frost widgets: light = white glass; dark = deeper bluish glass (`--wash-frost*`). Light theme uses almost no veil so cover color still reads — never dark ink or a milky white overlay on the wash. Leaving GameDetail **fades the wash and widget colors** (~420ms) instead of a hard cut.
@@ -149,6 +150,8 @@ src/
 
 ### Supabase SQL (friends)
 - Run [`supabase/friends.sql`](supabase/friends.sql) once in the Supabase SQL editor before using Friends
+- Run [`supabase/backfill-profiles.sql`](supabase/backfill-profiles.sql) once so existing users appear in username search (and Auth Display name is filled from username)
+- Friend search uses `public.profiles`, not the Auth Users list; Auth “Display name” is `full_name` / `name` metadata (synced from username on signup/profile edit)
 
 ### Deployment config
 - `vercel.json` — SPA rewrite so client routes work when added later
@@ -237,6 +240,23 @@ When making changes to this project:
 ## Recent edits (auto)
 
 <!-- AUTO:RECENT_EDITS -->
+- `2026-08-13 18:48` — `src/components/library/LibraryView.css`
+- `2026-08-13 18:48` — `src/components/library/FriendsView.tsx`
+- `2026-08-13 18:47` — `src/components/library/FriendsView.tsx`
+- `2026-08-13 18:44` — `src/components/library/LibraryView.css`
+- `2026-08-13 18:39` — `supabase/backfill-profiles.sql`
+- `2026-08-13 18:39` — `src/components/library/FriendsView.tsx`
+- `2026-08-13 18:39` — `src/lib/friends.ts`
+- `2026-08-13 18:38` — `src/lib/friends.ts`
+- `2026-08-13 18:34` — `supabase/backfill-profiles.sql`
+- `2026-08-13 18:34` — `src/contexts/AuthContext.tsx`
+- `2026-08-13 18:34` — `src/components/library/FriendsView.tsx`
+- `2026-08-13 18:34` — `src/lib/friends.ts`
+- `2026-08-13 18:31` — `src/components/library/LibraryView.css`
+- `2026-08-13 18:31` — `src/components/library/FriendsView.tsx`
+- `2026-08-13 18:30` — `src/components/library/FriendsView.tsx`
+- `2026-08-13 18:30` — `src/components/library/LibraryView.css`
+- `2026-08-13 18:26` — `src/components/library/FriendsView.tsx`
 - `2026-08-13 17:32` — `src/components/library/LibraryView.css`
 - `2026-08-13 17:31` — `src/components/library/LibraryView.css`
 - `2026-08-13 17:31` — `src/components/library/LibraryView.tsx`
@@ -250,22 +270,5 @@ When making changes to this project:
 - `2026-08-13 17:24` — `src/components/library/LibraryView.css`
 - `2026-08-13 17:23` — `src/components/library/FriendsView.tsx`
 - `2026-08-13 17:23` — `src/components/library/LibraryView.tsx`
-- `2026-08-13 17:23` — `src/components/library/LibraryGameGrid.tsx`
-- `2026-08-13 17:23` — `src/components/library/LibrarySidebar.tsx`
-- `2026-08-13 17:23` — `src/contexts/AuthContext.tsx`
-- `2026-08-13 17:23` — `src/lib/friends.ts`
-- `2026-08-13 17:22` — `supabase/friends.sql`
-- `2026-08-13 17:15` — `src/components/library/LibraryView.css`
-- `2026-08-13 17:14` — `src/components/library/LibraryView.css`
-- `2026-08-13 17:13` — `src/components/library/LibraryGameGrid.tsx`
-- `2026-08-13 17:13` — `src/components/library/LibrarySidebar.tsx`
-- `2026-08-13 17:11` — `src/components/library/LibraryView.css`
-- `2026-08-13 17:06` — `src/components/library/LibraryView.css`
-- `2026-08-13 17:04` — `src/components/library/LibraryView.css`
-- `2026-08-13 17:03` — `src/components/library/LibraryView.css`
-- `2026-08-13 17:03` — `.cursor/rules/game-detail-wash.mdc`
-- `2026-08-13 16:59` — `.cursor/rules/game-detail-wash.mdc`
-- `2026-08-13 16:59` — `src/components/library/LibraryView.css`
-- `2026-08-13 16:59` — `src/components/library/LibraryView.tsx`
 <!-- /AUTO:RECENT_EDITS -->
 -->

@@ -1,6 +1,5 @@
 import type { User } from '@supabase/supabase-js'
 import { isSupabaseConfigured, supabase } from './supabase'
-import { getDisplayName } from './userDisplay'
 
 export type FriendshipStatus = 'pending' | 'accepted' | 'declined'
 
@@ -8,6 +7,26 @@ export interface Profile {
   id: string
   username: string
   avatar: string | null
+}
+
+/** Prefer real username metadata — never email. */
+function usernameFromMetadata(meta: Record<string, unknown>): string | null {
+  for (const key of ['username', 'full_name', 'name'] as const) {
+    const value = meta[key]
+    if (typeof value !== 'string') continue
+    const trimmed = value.trim()
+    if (trimmed.length < 2 || trimmed.includes('@')) continue
+    return trimmed.slice(0, 24)
+  }
+  return null
+}
+
+/** UI-safe label: strip accidental emails down to local-part, else username. */
+export function profileLabel(username: string): string {
+  const trimmed = username.trim()
+  if (!trimmed) return 'Player'
+  if (trimmed.includes('@')) return trimmed.split('@')[0] || 'Player'
+  return trimmed
 }
 
 export interface FriendshipRow {
@@ -34,7 +53,7 @@ function asProfile(row: {
 }): Profile {
   return {
     id: row.id,
-    username: row.username,
+    username: profileLabel(row.username),
     avatar: row.avatar ?? null,
   }
 }
@@ -45,17 +64,36 @@ export async function upsertProfileFromUser(user: User): Promise<{ error: string
   }
 
   const meta = user.user_metadata ?? {}
-  const username = getDisplayName(
-    user.email ?? 'player',
-    typeof meta.username === 'string' ? meta.username : null,
-  ).trim()
+  const username = usernameFromMetadata(meta)
   const avatar =
     typeof meta.avatar === 'string' && meta.avatar.length > 0 ? meta.avatar : null
+
+  // Never invent a name from email — skip username write if metadata has none.
+  if (!username) {
+    const { data: existing } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('id', user.id)
+      .maybeSingle()
+
+    if (existing) {
+      if (avatar !== null) {
+        const { error } = await supabase
+          .from('profiles')
+          .update({ avatar, updated_at: new Date().toISOString() })
+          .eq('id', user.id)
+        if (error) return { error: error.message }
+      }
+      return { error: null }
+    }
+
+    return { error: null }
+  }
 
   const { error } = await supabase.from('profiles').upsert(
     {
       id: user.id,
-      username: username.slice(0, 24) || 'player',
+      username,
       avatar,
       updated_at: new Date().toISOString(),
     },
@@ -77,7 +115,7 @@ export async function searchProfiles(
   excludeUserId: string,
 ): Promise<{ profiles: Profile[]; error: string | null }> {
   const q = query.trim()
-  if (q.length < 2) {
+  if (q.length < 1) {
     return { profiles: [], error: null }
   }
 
