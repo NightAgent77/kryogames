@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 
-export type LibraryTab = 'web' | 'android' | 'favorites'
+export type LibraryTab = 'web' | 'favorites' | 'friends'
 
 interface LibrarySidebarProps {
   activeTab: LibraryTab
@@ -22,16 +22,21 @@ export function LibrarySidebar({
   onHoverStart,
   onHoverEnd,
 }: LibrarySidebarProps) {
-  const gamesOpen = activeTab === 'web' || activeTab === 'android'
   const navRef = useRef<HTMLElement>(null)
   const gamesRef = useRef<HTMLButtonElement>(null)
   const favoritesRef = useRef<HTMLButtonElement>(null)
+  const friendsRef = useRef<HTMLButtonElement>(null)
   const [indicator, setIndicator] = useState<IndicatorBox | null>(null)
   const [indicatorReady, setIndicatorReady] = useState(false)
 
   useLayoutEffect(() => {
     const nav = navRef.current
-    const target = gamesOpen ? gamesRef.current : favoritesRef.current
+    const target =
+      activeTab === 'web'
+        ? gamesRef.current
+        : activeTab === 'favorites'
+          ? favoritesRef.current
+          : friendsRef.current
     if (!nav || !target) return
 
     const update = () => {
@@ -45,18 +50,14 @@ export function LibrarySidebar({
 
     // Enable transitions after the first layout so the pill doesn’t animate in from 0.
     const readyId = window.requestAnimationFrame(() => setIndicatorReady(true))
-
-    // Keep the highlight aligned while the Web/Android submenu animates.
-    const timers = [90, 180, 300].map((ms) => window.setTimeout(update, ms))
     const observer = new ResizeObserver(update)
     observer.observe(nav)
 
     return () => {
       window.cancelAnimationFrame(readyId)
-      timers.forEach((id) => window.clearTimeout(id))
       observer.disconnect()
     }
-  }, [activeTab, gamesOpen])
+  }, [activeTab])
 
   return (
     <aside
@@ -83,36 +84,11 @@ export function LibrarySidebar({
         <button
           ref={gamesRef}
           type="button"
-          className={`library-nav-item${gamesOpen ? ' library-nav-item--active' : ''}`}
+          className={`library-nav-item${activeTab === 'web' ? ' library-nav-item--active' : ''}`}
           onClick={() => onSelect('web')}
-          aria-expanded={gamesOpen}
         >
           Games
         </button>
-
-        <div
-          className={`library-nav-sub${gamesOpen ? ' library-nav-sub--open' : ''}`}
-          aria-hidden={!gamesOpen}
-        >
-          <div className="library-nav-sub-inner">
-            <button
-              type="button"
-              className={`library-nav-item${activeTab === 'web' ? ' library-nav-item--active' : ''}`}
-              onClick={() => onSelect('web')}
-              tabIndex={gamesOpen ? 0 : -1}
-            >
-              Web
-            </button>
-            <button
-              type="button"
-              className={`library-nav-item${activeTab === 'android' ? ' library-nav-item--active' : ''}`}
-              onClick={() => onSelect('android')}
-              tabIndex={gamesOpen ? 0 : -1}
-            >
-              Android
-            </button>
-          </div>
-        </div>
 
         <button
           ref={favoritesRef}
@@ -121,6 +97,15 @@ export function LibrarySidebar({
           onClick={() => onSelect('favorites')}
         >
           Favorites
+        </button>
+
+        <button
+          ref={friendsRef}
+          type="button"
+          className={`library-nav-item${activeTab === 'friends' ? ' library-nav-item--active' : ''}`}
+          onClick={() => onSelect('friends')}
+        >
+          Friends
         </button>
       </nav>
     </aside>

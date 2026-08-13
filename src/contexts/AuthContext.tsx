@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from 'react'
 import type { Session, User } from '@supabase/supabase-js'
+import { upsertProfileFromUser } from '../lib/friends'
 import { isSupabaseConfigured, supabase, supabaseConfigError } from '../lib/supabase'
 import { getSiteUrl } from '../lib/siteUrl'
 
@@ -90,6 +91,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { error: formatAuthError(error.message), needsConfirmation: false }
       }
 
+      if (data.user && data.session) {
+        await upsertProfileFromUser(data.user)
+      }
+
       return {
         error: null,
         needsConfirmation: !data.session,
@@ -167,6 +172,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (result.user) {
         setUser(result.user)
+        const sync = await upsertProfileFromUser(result.user)
+        if (sync.error) {
+          return { error: sync.error }
+        }
       }
 
       return { error: null }

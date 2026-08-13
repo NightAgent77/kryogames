@@ -1,0 +1,34 @@
+---
+description: Locked GameDetail art-wash look for both light and dark themes
+globs: src/components/library/{GameDetail.tsx,LibraryView.tsx,LibraryView.css}
+alwaysApply: true
+---
+
+# Game detail art wash (locked)
+
+The signed-in game description view uses a **full-main blurred cover wash**. This look is approved for **both light and dark**. Do not revert it or restyle it toward milky light-mode ink.
+
+## Backdrop
+
+- Cover fills the full `.library` shell (`.library-wash`) — behind the sidebar pill **and** main (search, profile, nav), not only the description block.
+- Sharp cover stays in the media slot.
+- Dark: black-tinted overlay so color still shows.
+- Light: **no white/gray milk**. Tiny darken only (`rgba(18, 20, 26, 0.06)`). Keep saturation so the art color reads like dark mode.
+
+## Chrome on the wash (both themes)
+
+Cover art is dark. Type stays **light-on-dark** (white / near-white). Frost glass differs by theme via `--wash-frost*` on `.library--game`:
+
+- **Light:** white frost (`rgba(255,255,255,~0.16)`).
+- **Dark:** deeper bluish frost (`rgba(24,34,52,~0.58)` + cool blue border) — not the same white glass as light.
+- Tags, Back, favorite gem (off), search, profile, menu, profile dropdown, **sidebar pill** (desktop + narrow): use those frost tokens + white type. Not solid opaque slabs.
+- Favorite gem on: red gem / red glass glow — never dark ink.
+- Play: **white button, dark label** (`#ffffff` / `#12141a`).
+
+## Do not
+
+- Dark title/description/Play on the wash in light mode (vanishes on dark covers).
+- Heavy white overlays that bleach the blur.
+- Solid white search/profile slabs on the wash.
+
+Implementation: `.library-main--game` in `LibraryView.css`. Back from GameDetail fades the wash and chrome (~420ms); do not snap to the library palette.

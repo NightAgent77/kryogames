@@ -1,5 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useAuth } from '../../contexts/AuthContext'
 import { games, type Game } from '../../data/games'
+import { loadFavorites, saveFavorites, toggleFavoriteId } from '../../lib/favorites'
+import { upsertProfileFromUser } from '../../lib/friends'
+import { FriendsView } from './FriendsView'
 import { GameDetail } from './GameDetail'
 import { LibraryGameGrid } from './LibraryGameGrid'
 import { LibrarySidebar, type LibraryTab } from './LibrarySidebar'
@@ -7,21 +11,54 @@ import { LibraryTopBar } from './LibraryTopBar'
 import { ProfileView } from './ProfileView'
 import './LibraryView.css'
 
+const WASH_MS = 420
+
+function prefersReducedMotion() {
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
 export function LibraryView() {
+  const { user } = useAuth()
   const [tab, setTab] = useState<LibraryTab>('web')
   const [search, setSearch] = useState('')
+  const [friendsSearch, setFriendsSearch] = useState('')
   const [sidebarPinned, setSidebarPinned] = useState(false)
   const [sidebarHovered, setSidebarHovered] = useState(false)
   const [selectedGame, setSelectedGame] = useState<Game | null>(null)
   const [showProfile, setShowProfile] = useState(false)
+  const [washGame, setWashGame] = useState<Game | null>(null)
+  const [washExiting, setWashExiting] = useState(false)
+  const [favoriteIds, setFavoriteIds] = useState<string[]>([])
   const hideTimerRef = useRef<number | null>(null)
+  const washTimerRef = useRef<number | null>(null)
+
+  useEffect(() => {
+    if (!user?.id) {
+      setFavoriteIds([])
+      return
+    }
+    setFavoriteIds(loadFavorites(user.id))
+  }, [user?.id])
+
+  useEffect(() => {
+    if (!user) return
+    void upsertProfileFromUser(user)
+  }, [user])
 
   const sidebarOpen = sidebarPinned || sidebarHovered
+  const washActive = Boolean(washGame) && !washExiting
 
   const clearHideTimer = () => {
     if (hideTimerRef.current !== null) {
       window.clearTimeout(hideTimerRef.current)
       hideTimerRef.current = null
+    }
+  }
+
+  const clearWashTimer = () => {
+    if (washTimerRef.current !== null) {
+      window.clearTimeout(washTimerRef.current)
+      washTimerRef.current = null
     }
   }
 
@@ -38,22 +75,78 @@ export function LibraryView() {
     }, 280)
   }
 
-  useEffect(() => () => clearHideTimer(), [])
+  const openGame = (game: Game) => {
+    clearWashTimer()
+    setShowProfile(false)
+    setSelectedGame(game)
+    setWashExiting(false)
+    setWashGame(game.coverImage ? game : null)
+  }
+
+  const closeGameView = () => {
+    setSelectedGame(null)
+    if (!washGame) return
+
+    if (prefersReducedMotion()) {
+      clearWashTimer()
+      setWashGame(null)
+      setWashExiting(false)
+      return
+    }
+
+    if (washExiting) return
+
+    setWashExiting(true)
+    clearWashTimer()
+    washTimerRef.current = window.setTimeout(() => {
+      setWashGame(null)
+      setWashExiting(false)
+      washTimerRef.current = null
+    }, WASH_MS)
+  }
+
+  useEffect(
+    () => () => {
+      clearHideTimer()
+      clearWashTimer()
+    },
+    [],
+  )
 
   const filteredGames = useMemo(() => {
-    if (tab === 'favorites') return []
-
     const query = search.trim().toLowerCase()
+    const favoriteSet = new Set(favoriteIds)
+
+    if (tab === 'friends') return []
+
     return games.filter((game) => {
-      if (game.platform !== tab) return false
+      if (tab === 'favorites') {
+        if (!favoriteSet.has(game.id)) return false
+      } else if (game.platform !== tab) {
+        return false
+      }
       if (!query) return true
       return game.title.toLowerCase().includes(query)
     })
-  }, [tab, search])
+  }, [tab, search, favoriteIds])
+
+  const toggleFavorite = (gameId: string) => {
+    if (!user?.id) return
+    setFavoriteIds((prev) => {
+      const next = toggleFavoriteId(prev, gameId)
+      saveFavorites(user.id, next)
+      return next
+    })
+  }
 
   const handleSelect = (next: LibraryTab) => {
     setTab(next)
-    setSelectedGame(null)
+    if (next === 'friends') {
+      setFriendsSearch('')
+    } else {
+      setSearch('')
+    }
+    closeGameView()
     setShowProfile(false)
     setSidebarPinned(false)
     setSidebarHovered(false)
@@ -61,7 +154,16 @@ export function LibraryView() {
   }
 
   return (
-    <div className="library">
+    <div className={`library${washActive ? ' library--game' : ''}`}>
+      {washGame ? (
+        <div
+          className={`library-wash${washExiting ? ' library-wash--exit' : ''}`}
+          aria-hidden="true"
+        >
+          <img src={washGame.coverImage} alt="" />
+        </div>
+      ) : null}
+
       {sidebarPinned && (
         <button
           type="button"
@@ -79,12 +181,29 @@ export function LibraryView() {
         onHoverEnd={scheduleHideSidebar}
       />
 
-      <div className="library-main">
+      <div
+        className={[
+          'library-main',
+          washActive ? 'library-main--game' : '',
+          showProfile ? 'library-main--profile' : '',
+        ]
+          .filter(Boolean)
+          .join(' ')}
+      >
         <LibraryTopBar
-          search={search}
+          search={tab === 'friends' ? friendsSearch : search}
+          searchPlaceholder={
+            tab === 'friends' ? 'Search usernames' : 'Search for games'
+          }
+          showSearch={!showProfile}
           onSearchChange={(value) => {
+            if (tab === 'friends') {
+              setFriendsSearch(value)
+              setShowProfile(false)
+              return
+            }
             setSearch(value)
-            setSelectedGame(null)
+            closeGameView()
             setShowProfile(false)
           }}
           onMenuToggle={() => setSidebarPinned((open) => !open)}
@@ -92,7 +211,7 @@ export function LibraryView() {
           onMenuHoverEnd={scheduleHideSidebar}
           menuExpanded={sidebarOpen}
           onViewProfile={() => {
-            setSelectedGame(null)
+            closeGameView()
             setShowProfile(true)
           }}
         />
@@ -100,12 +219,19 @@ export function LibraryView() {
         {showProfile ? (
           <ProfileView onBack={() => setShowProfile(false)} />
         ) : selectedGame ? (
-          <GameDetail game={selectedGame} onBack={() => setSelectedGame(null)} />
+          <GameDetail
+            game={selectedGame}
+            favorited={favoriteIds.includes(selectedGame.id)}
+            onToggleFavorite={() => toggleFavorite(selectedGame.id)}
+            onBack={closeGameView}
+          />
+        ) : tab === 'friends' ? (
+          <FriendsView query={friendsSearch} />
         ) : (
           <LibraryGameGrid
             tab={tab}
             games={filteredGames}
-            onSelectGame={setSelectedGame}
+            onSelectGame={openGame}
           />
         )}
       </div>

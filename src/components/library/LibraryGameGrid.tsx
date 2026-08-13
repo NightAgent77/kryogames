@@ -2,9 +2,8 @@ import type { Game } from '../../data/games'
 import { PlatformIcon } from './PlatformIcon'
 import type { LibraryTab } from './LibrarySidebar'
 
-const titles: Record<LibraryTab, string> = {
-  web: 'Web',
-  android: 'Android',
+const titles: Record<Exclude<LibraryTab, 'friends'>, string> = {
+  web: 'Games',
   favorites: 'Favorites',
 }
 
@@ -15,20 +14,9 @@ interface LibraryGameGridProps {
 }
 
 export function LibraryGameGrid({ tab, games, onSelectGame }: LibraryGameGridProps) {
-  if (tab === 'favorites') {
-    return (
-      <section
-        key={tab}
-        className="library-content library-content--enter"
-        aria-labelledby="library-heading"
-      >
-        <h2 id="library-heading" className="library-section-title">
-          {titles[tab]}
-        </h2>
-        <p className="library-empty">No favorites yet</p>
-      </section>
-    )
-  }
+  if (tab === 'friends') return null
+
+  const emptyMessage = tab === 'favorites' ? 'No favorites yet' : 'No games yet'
 
   return (
     <section
@@ -41,7 +29,7 @@ export function LibraryGameGrid({ tab, games, onSelectGame }: LibraryGameGridPro
       </h2>
 
       {games.length === 0 ? (
-        <p className="library-empty">No games yet</p>
+        <p className="library-empty">{emptyMessage}</p>
       ) : (
         <div className="library-grid">
           {games.map((game, index) => (

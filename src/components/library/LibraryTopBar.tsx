@@ -12,6 +12,8 @@ type MenuPanel = 'main' | 'appearance'
 interface LibraryTopBarProps {
   search: string
   onSearchChange: (value: string) => void
+  searchPlaceholder?: string
+  showSearch?: boolean
   onMenuToggle: () => void
   onMenuHoverStart: () => void
   onMenuHoverEnd: () => void
@@ -22,6 +24,8 @@ interface LibraryTopBarProps {
 export function LibraryTopBar({
   search,
   onSearchChange,
+  searchPlaceholder = 'Search for games',
+  showSearch = true,
   onMenuToggle,
   onMenuHoverStart,
   onMenuHoverEnd,
@@ -83,19 +87,24 @@ export function LibraryTopBar({
         </svg>
       </button>
 
-      <label className="library-search">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-          <circle cx="7" cy="7" r="4.5" stroke="currentColor" strokeWidth="1.5" />
-          <path d="M10.5 10.5L14 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-        </svg>
-        <span className="visually-hidden">Search for games</span>
-        <input
-          type="search"
-          placeholder="Search for games"
-          value={search}
-          onChange={(event) => onSearchChange(event.target.value)}
-        />
-      </label>
+      {showSearch ? (
+        <label className="library-search">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <circle cx="7" cy="7" r="4.5" stroke="currentColor" strokeWidth="1.5" />
+            <path d="M10.5 10.5L14 14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          </svg>
+          <span className="visually-hidden">{searchPlaceholder}</span>
+          <input
+            type="search"
+            placeholder={searchPlaceholder}
+            value={search}
+            onChange={(event) => onSearchChange(event.target.value)}
+            autoComplete="off"
+          />
+        </label>
+      ) : (
+        <div className="library-topbar-spacer" aria-hidden="true" />
+      )}
 
       <div className="library-profile-menu" ref={menuRef}>
         <button

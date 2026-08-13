@@ -1,16 +1,24 @@
 import type { Game } from '../../data/games'
+import { FavoriteGemButton } from './FavoriteGemButton'
 
 interface GameDetailProps {
   game: Game
+  favorited: boolean
+  onToggleFavorite: () => void
   onBack: () => void
 }
 
-export function GameDetail({ game, onBack }: GameDetailProps) {
+export function GameDetail({
+  game,
+  favorited,
+  onToggleFavorite,
+  onBack,
+}: GameDetailProps) {
   const canPlay = game.status === 'playable' && Boolean(game.playUrl)
 
   return (
     <section
-      className="game-detail library-content--enter"
+      className={`game-detail library-content--enter${game.coverImage ? ' game-detail--has-art' : ''}`}
       aria-labelledby="game-detail-title"
     >
       <button type="button" className="game-detail-back" onClick={onBack}>
@@ -54,20 +62,23 @@ export function GameDetail({ game, onBack }: GameDetailProps) {
             ))}
           </ul>
 
-          {canPlay ? (
-            <a
-              className="btn btn-primary game-detail-play"
-              href={game.playUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Play
-            </a>
-          ) : (
-            <button type="button" className="btn btn-secondary game-detail-play" disabled>
-              Coming soon
-            </button>
-          )}
+          <div className="game-detail-actions">
+            {canPlay ? (
+              <a
+                className="btn btn-primary game-detail-play"
+                href={game.playUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Play
+              </a>
+            ) : (
+              <button type="button" className="btn btn-secondary game-detail-play" disabled>
+                Coming soon
+              </button>
+            )}
+            <FavoriteGemButton favorited={favorited} onToggle={onToggleFavorite} />
+          </div>
         </div>
       </div>
     </section>
