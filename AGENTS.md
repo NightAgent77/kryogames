@@ -3,7 +3,7 @@
 > Living document for AI agent continuity. Updated automatically on file edits and substantively by agents after meaningful changes.
 
 <!-- AUTO:LAST_UPDATED -->
-**Last updated:** 2026-08-13 22:26 (auto)
+**Last updated:** 2026-08-13 22:33 (auto)
 <!-- /AUTO:LAST_UPDATED -->
 
 ---
@@ -141,7 +141,7 @@ src/
 
 ### Games catalog
 - **Snake Run** (`snake-run`) — sole catalog title for now; Web, `status: playable`, Cloudflare R2: `https://pub-e379ba287a9f4d8ba4cdbd6b6095cb6c.r2.dev/snake-run/index.html`
-- Cover art: `public/games/snake-run.png` (magenta title hero) via optional `coverImage` (CSS `object-fit: cover` on grid card + detail)
+- Cover art: `public/games/snake-run.png` (magenta title hero) via optional `coverImage` + `coverAspectRatio` — grid cards size to the image’s native ratio; GameDetail media slot matches so art scales bigger/smaller with no crop and no letterbox bars
 - Optional `playUrl` on `Game` opens in a new tab from the Play button
 - No filler/empty placeholder cards in the library grid
 
@@ -257,6 +257,10 @@ When making changes to this project:
 ## Recent edits (auto)
 
 <!-- AUTO:RECENT_EDITS -->
+- `2026-08-13 22:33` — `src/components/library/LibraryView.css`
+- `2026-08-13 22:33` — `src/components/library/GameDetail.tsx`
+- `2026-08-13 22:33` — `src/data/games.ts`
+- `2026-08-13 22:31` — `src/components/library/LibraryView.css`
 - `2026-08-13 22:26` — `src/components/library/LibraryView.css`
 - `2026-08-13 22:25` — `src/components/library/LibraryView.css`
 - `2026-08-13 22:22` — `src/components/library/LibraryView.tsx`
@@ -283,9 +287,5 @@ When making changes to this project:
 - `2026-08-13 20:53` — `src/components/library/LibraryView.css`
 - `2026-08-13 20:53` — `src/components/library/ProfileView.tsx`
 - `2026-08-13 20:50` — `src/components/library/LibraryView.css`
-- `2026-08-13 20:50` — `src/components/library/ProfileView.tsx`
-- `2026-08-13 20:50` — `src/components/library/LibraryView.tsx`
-- `2026-08-13 20:45` — `src/components/library/LibraryView.css`
-- `2026-08-13 20:45` — `src/components/library/ProfileView.tsx`
 <!-- /AUTO:RECENT_EDITS -->
 -->

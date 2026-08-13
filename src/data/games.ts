@@ -13,6 +13,8 @@ export interface Game {
   playUrl?: string
   /** Cover art path under /public */
   coverImage?: string
+  /** Width÷height of cover art — keeps media slot matched so art scales without crop/bars */
+  coverAspectRatio?: number
 }
 
 export const games: Game[] = [
@@ -28,5 +30,6 @@ export const games: Game[] = [
     playUrl:
       'https://pub-e379ba287a9f4d8ba4cdbd6b6095cb6c.r2.dev/snake-run/index.html',
     coverImage: '/games/snake-run.png',
+    coverAspectRatio: 1024 / 674,
   },
 ]

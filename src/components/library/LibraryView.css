@@ -684,6 +684,8 @@
 }
 
 .library-card--with-meta {
+  aspect-ratio: auto;
+  height: auto;
   display: flex;
   flex-direction: column;
   place-items: stretch;
@@ -691,17 +693,15 @@
 }
 
 .library-card-media {
-  flex: 1;
-  min-height: 0;
+  flex: 0 0 auto;
   width: 100%;
-  background: var(--bg-surface);
+  line-height: 0;
+  background: #0a0a0a;
 }
 
 .library-card-cover {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 55%;
+  height: auto;
   display: block;
 }
 
@@ -1013,9 +1013,10 @@
 }
 
 .game-detail-media {
-  aspect-ratio: 16 / 10;
+  /* Match Snake Run cover (1024×674); future covers can override via inline style */
+  aspect-ratio: 1024 / 674;
   width: 100%;
-  background: var(--bg-surface);
+  background: #0a0a0a;
   border-radius: var(--radius-lg);
   display: grid;
   place-items: center;
@@ -1033,7 +1034,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 55%;
+  object-position: center;
   display: block;
 }
 

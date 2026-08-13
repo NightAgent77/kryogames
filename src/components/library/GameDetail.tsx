@@ -37,7 +37,14 @@ export function GameDetail({
       </button>
 
       <div className="game-detail-layout">
-        <div className="game-detail-media">
+        <div
+          className="game-detail-media"
+          style={
+            game.coverAspectRatio
+              ? { aspectRatio: String(game.coverAspectRatio) }
+              : undefined
+          }
+        >
           {game.coverImage ? (
             <img
               src={game.coverImage}
