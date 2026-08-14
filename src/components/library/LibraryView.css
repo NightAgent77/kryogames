@@ -658,6 +658,8 @@
 .library-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
+  /* Cards keep their cover's native height — stretching would band the shorter art */
+  align-items: start;
   gap: 1rem;
   padding: 0.35rem;
   margin: -0.35rem;
@@ -711,6 +713,7 @@
   justify-content: space-between;
   gap: 0.75rem;
   flex-shrink: 0;
+  margin-top: auto;
   padding: 0.7rem 0.85rem;
   background: color-mix(in srgb, var(--bg-deep) 72%, #3a4a62);
   color: var(--text-bright);

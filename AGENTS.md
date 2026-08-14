@@ -3,7 +3,7 @@
 > Living document for AI agent continuity. Updated automatically on file edits and substantively by agents after meaningful changes.
 
 <!-- AUTO:LAST_UPDATED -->
-**Last updated:** 2026-08-13 22:33 (auto)
+**Last updated:** 2026-08-14 03:03 (auto)
 <!-- /AUTO:LAST_UPDATED -->
 
 ---
@@ -140,7 +140,10 @@ src/
 - Run [`supabase/play-stats.sql`](supabase/play-stats.sql) once in the Supabase SQL editor (after `friends.sql`) so Games played + heatmap persist across devices
 
 ### Games catalog
-- **Snake Run** (`snake-run`) — sole catalog title for now; Web, `status: playable`, Cloudflare R2: `https://pub-e379ba287a9f4d8ba4cdbd6b6095cb6c.r2.dev/snake-run/index.html`
+- **Snake Run** (`snake-run`) — Web, `status: playable`, Cloudflare R2: `https://pub-e379ba287a9f4d8ba4cdbd6b6095cb6c.r2.dev/snake-run/index.html`
+- **Fruit Rally** (`fruit-rally`) — comic-book arcade racer; Web, `status: playable`, Cloudflare R2: `https://pub-e379ba287a9f4d8ba4cdbd6b6095cb6c.r2.dev/fruit-rally/index.html`
+- Cover art: `public/games/fruit-rally.jpg` — comic hero cropped to 874×575 (`874 / 575` ≈ Snake Run's 1.52) so the card matches Snake Run's shape; source screenshot's white side bars are cropped off, art bleeds edge to edge. Full parity with Snake Run (grid cover, GameDetail media slot, blurred wash, light + dark chrome)
+- Grid cards use `align-items: start` so each card keeps its cover's native height — mixed cover ratios must never be stretched (bands black space above the meta bar) or cropped
 - Cover art: `public/games/snake-run.png` (magenta title hero) via optional `coverImage` + `coverAspectRatio` — grid cards size to the image’s native ratio; GameDetail media slot matches so art scales bigger/smaller with no crop and no letterbox bars
 - Optional `playUrl` on `Game` opens in a new tab from the Play button
 - No filler/empty placeholder cards in the library grid
@@ -211,7 +214,7 @@ src/
 ## Not yet implemented
 
 - In-page game embed (Play currently opens hosted URL in a new tab)
-- Additional games beyond Snake Run
+- Additional games beyond Snake Run and Fruit Rally
 - Game routes/pages (e.g. `/games/:id`) / React Router
 - Favorites sync across devices (currently localStorage only)
 - Played-games list UI (count + tracker exist in Supabase)
@@ -257,6 +260,12 @@ When making changes to this project:
 ## Recent edits (auto)
 
 <!-- AUTO:RECENT_EDITS -->
+- `2026-08-14 03:03` — `src/data/games.ts`
+- `2026-08-14 03:00` — `src/components/library/LibraryView.css`
+- `2026-08-14 02:59` — `src/data/games.ts`
+- `2026-08-14 02:59` — `../../../../../../Users/elmopr77/.cursor/projects/Volumes-REDDRIVE-App-Portfolio-Development-Builds-Personal-website-portfolio-KryoGames/assets/Kryogames_2_-1b07d2ba-0c6b-4f2d-a93c-efdfe23a8320.png`
+- `2026-08-14 02:46` — `src/components/library/LibraryView.css`
+- `2026-08-14 02:42` — `src/data/games.ts`
 - `2026-08-13 22:33` — `src/components/library/LibraryView.css`
 - `2026-08-13 22:33` — `src/components/library/GameDetail.tsx`
 - `2026-08-13 22:33` — `src/data/games.ts`
@@ -281,11 +290,5 @@ When making changes to this project:
 - `2026-08-13 21:19` — `src/components/library/LibraryView.tsx`
 - `2026-08-13 21:18` — `src/components/library/GameDetail.tsx`
 - `2026-08-13 21:18` — `src/lib/friends.ts`
-- `2026-08-13 21:18` — `src/lib/playedGames.ts`
-- `2026-08-13 20:57` — `src/components/library/LibraryView.css`
-- `2026-08-13 20:57` — `src/components/library/ProfileView.tsx`
-- `2026-08-13 20:53` — `src/components/library/LibraryView.css`
-- `2026-08-13 20:53` — `src/components/library/ProfileView.tsx`
-- `2026-08-13 20:50` — `src/components/library/LibraryView.css`
 <!-- /AUTO:RECENT_EDITS -->
 -->

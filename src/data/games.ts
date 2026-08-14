@@ -32,4 +32,18 @@ export const games: Game[] = [
     coverImage: '/games/snake-run.png',
     coverAspectRatio: 1024 / 674,
   },
+  {
+    id: 'fruit-rally',
+    title: 'Fruit Rally',
+    description:
+      'A comic-book arcade racer. Grab the red fruit, dodge the rest, and keep the run alive as the track speeds up — playable straight in the browser.',
+    genre: 'Arcade Racer',
+    status: 'playable',
+    platform: 'web',
+    tags: ['Web', 'Arcade', 'Single-player'],
+    playUrl:
+      'https://pub-e379ba287a9f4d8ba4cdbd6b6095cb6c.r2.dev/fruit-rally/index.html',
+    coverImage: '/games/fruit-rally.jpg',
+    coverAspectRatio: 874 / 575,
+  },
 ]
