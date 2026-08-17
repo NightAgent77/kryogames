@@ -48,6 +48,17 @@
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Indicator + items share one positioned track (Dock wraps this) */
+.library-nav-track {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  width: 100%;
 }
 
 .library-nav-indicator {
@@ -100,12 +111,19 @@
   transition: color var(--wash-duration) ease, background var(--wash-duration) ease;
 }
 
+/* Dock rows own height/padding via springs — don't double-pad */
+.dock-item.library-nav-item {
+  padding: 0;
+}
+
+.library-nav-track > .dock-item:hover:not(.dock-item--active),
 .library-nav > .library-nav-item:hover:not(.library-nav-item--active) {
   color: var(--text-bright);
   background: var(--hover-wash);
 }
 
-.library-nav-item--active {
+.library-nav-item--active,
+.dock-item--active .dock-icon {
   color: var(--text-bright);
 }
 
@@ -259,17 +277,33 @@
 
 .library--game .library-brand,
 .library--game .library-nav-item--active,
-.library--game .library-nav-sub .library-nav-item--active {
+.library--game .library-nav-sub .library-nav-item--active,
+.library--game .dock-item--active .dock-icon {
   color: #ffffff;
 }
 
-.library--game .library-nav-item {
+.library--game .library-nav-item,
+.library--game .dock-icon {
   color: rgba(255, 255, 255, 0.7);
 }
 
+.library--game .library-nav-track > .dock-item:hover:not(.dock-item--active),
+.library--game .library-nav-track > .dock-item:hover:not(.dock-item--active) .dock-icon,
 .library--game .library-nav > .library-nav-item:hover:not(.library-nav-item--active) {
   color: #ffffff;
   background: var(--wash-frost-soft);
+}
+
+.library--game .dock-item:hover:not(.dock-item--active) {
+  background: var(--wash-frost-soft);
+}
+
+.library--game .dock-label {
+  background: var(--wash-frost);
+  backdrop-filter: blur(12px) saturate(1.35);
+  -webkit-backdrop-filter: blur(12px) saturate(1.35);
+  border-color: var(--wash-frost-border);
+  color: #ffffff;
 }
 
 .library--game .library-nav-indicator {
@@ -329,14 +363,20 @@
   box-shadow: none;
 }
 
-.library-main--game .library-profile-dropdown button,
-.library-main--profile .library-profile-dropdown button {
+.library-main--game .library-profile-dropdown .dock-icon--menu,
+.library-main--profile .library-profile-dropdown .dock-icon--menu {
   color: #ffffff;
 }
 
-.library-main--game .library-profile-dropdown button:hover,
-.library-main--profile .library-profile-dropdown button:hover {
+.library-main--game .library-profile-dropdown .dock-item--menu:hover,
+.library-main--profile .library-profile-dropdown .dock-item--menu:hover,
+.library-main--game .library-profile-dropdown .dock-item--menu.dock-item--active,
+.library-main--profile .library-profile-dropdown .dock-item--menu.dock-item--active {
   background: var(--wash-frost-soft);
+}
+
+.library-main--game .library-profile-dropdown .dock-item--menu:hover .dock-icon--menu,
+.library-main--profile .library-profile-dropdown .dock-item--menu:hover .dock-icon--menu {
   color: #ffffff;
 }
 
@@ -355,9 +395,13 @@
   background: var(--wash-frost-sep);
 }
 
+.library-main--game .library-profile-dropdown-danger:hover .dock-icon--menu,
+.library-main--profile .library-profile-dropdown-danger:hover .dock-icon--menu {
+  color: #f0a0a0;
+}
+
 .library-main--game .library-profile-dropdown-danger:hover,
 .library-main--profile .library-profile-dropdown-danger:hover {
-  color: #f0a0a0;
   background: var(--wash-frost-soft);
 }
 
@@ -588,32 +632,12 @@
   z-index: 20;
 }
 
-.library-profile-dropdown button {
-  display: block;
-  width: 100%;
-  padding: 0.5rem 0.75rem;
-  text-align: left;
-  font-size: 0.875rem;
-  color: var(--text);
-  background: transparent;
-  border: none;
-  border-radius: 6px;
-}
-
-.library-profile-dropdown button.library-profile-dropdown-row {
-  display: flex;
-}
-
-.library-profile-dropdown button:hover {
-  background: var(--bg-elevated);
-  color: var(--text-bright);
-}
-
 .library-profile-dropdown-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
+  width: 100%;
 }
 
 .library-profile-dropdown-chevron {
@@ -635,10 +659,6 @@
   height: 1px;
   margin: 0.25rem 0.5rem;
   background: var(--border);
-}
-
-.library-profile-dropdown-danger:hover {
-  color: var(--danger-hover);
 }
 
 .library-content {

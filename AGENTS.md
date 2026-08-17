@@ -3,7 +3,7 @@
 > Living document for AI agent continuity. Updated automatically on file edits and substantively by agents after meaningful changes.
 
 <!-- AUTO:LAST_UPDATED -->
-**Last updated:** 2026-08-14 03:03 (auto)
+**Last updated:** 2026-08-17 17:57 (auto)
 <!-- /AUTO:LAST_UPDATED -->
 
 ---
@@ -26,6 +26,7 @@
 - **Framework:** React 19 + TypeScript
 - **Build tool:** Vite 8
 - **Auth / backend:** Supabase (`@supabase/supabase-js`)
+- **Motion:** `motion` (React Bits–style Dock springs in the library sidebar / profile menu)
 - **Linting:** oxlint
 - **Fonts:** Inter via Google Fonts
 - **Deployment:** Vercel (`vercel.json` SPA rewrites)
@@ -78,6 +79,8 @@ src/
 │       ├── LibraryView.tsx  # Signed-in shell (sidebar + main)
 │       ├── LibraryView.css
 │       ├── LibrarySidebar.tsx
+│       ├── Dock.tsx         # Vertical React Bits Dock (proximity springs)
+│       ├── Dock.css
 │       ├── LibraryTopBar.tsx
 │       ├── LibraryGameGrid.tsx
 │       ├── PlatformIcon.tsx # Web / Android / Windows / Mac / iOS icons
@@ -110,7 +113,7 @@ src/
 ## Features implemented
 
 ### Dual auth views
-- **Signed out (`IntroView`):** minimalist brand landing — KRYO GAMES, short lead, Sign up / Log in, placeholder tile teaser
+- **Signed out (`IntroView`):** minimalist brand landing — KRYO GAMES, short lead, Sign up / Log in, placeholder tile teaser; plain theme background (`--bg-deep`); header **theme toggle** (sun/moon) beside Log in / Sign up
 - **Signed in (`LibraryView`):** library shell matching design mockup — sidebar, search, profile pill, game grid; shell is viewport-locked so only `.library-main` scrolls — desktop sidebar pill stays fully visible (narrow screens still use the existing collapse/hover drawer)
 - **`App.tsx` gate:** `loading` → placeholder; `user` → library; else → intro (no React Router yet)
 
@@ -124,6 +127,8 @@ src/
 
 ### Library (signed-in)
 - Sidebar: **Home** (web catalog) + **Game library** (nested **My Games**, **Favorites**) + **Friends**
+- Sidebar nav uses a **vertical Dock** adaptation (`Dock.tsx` + `motion`): mouse-Y proximity springs grow row height; hover tooltips sit to the right of the pill; sliding active indicator and Game library submenu unchanged; theme tokens + game-wash frost (no dark `#120F17` dock chrome); `prefers-reduced-motion` disables springs
+- Profile dropdown (View profile / Appearance / Settings / Log out + theme radios) uses the same Dock springs inside the existing panel (`dock-panel--menu`); no side tooltips (labels already visible); wash frost styles target dock rows
 - Search filters current tab by title (client-side) on Home / Favorites
 - Home tab lists `platform: 'web'` titles from `games.ts`
 - My Games: empty placeholder for now
@@ -260,35 +265,35 @@ When making changes to this project:
 ## Recent edits (auto)
 
 <!-- AUTO:RECENT_EDITS -->
-- `2026-08-14 03:03` — `src/data/games.ts`
-- `2026-08-14 03:00` — `src/components/library/LibraryView.css`
-- `2026-08-14 02:59` — `src/data/games.ts`
-- `2026-08-14 02:59` — `../../../../../../Users/elmopr77/.cursor/projects/Volumes-REDDRIVE-App-Portfolio-Development-Builds-Personal-website-portfolio-KryoGames/assets/Kryogames_2_-1b07d2ba-0c6b-4f2d-a93c-efdfe23a8320.png`
-- `2026-08-14 02:46` — `src/components/library/LibraryView.css`
-- `2026-08-14 02:42` — `src/data/games.ts`
-- `2026-08-13 22:33` — `src/components/library/LibraryView.css`
-- `2026-08-13 22:33` — `src/components/library/GameDetail.tsx`
-- `2026-08-13 22:33` — `src/data/games.ts`
-- `2026-08-13 22:31` — `src/components/library/LibraryView.css`
-- `2026-08-13 22:26` — `src/components/library/LibraryView.css`
-- `2026-08-13 22:25` — `src/components/library/LibraryView.css`
-- `2026-08-13 22:22` — `src/components/library/LibraryView.tsx`
-- `2026-08-13 22:22` — `src/components/library/ProfileView.tsx`
-- `2026-08-13 22:22` — `src/components/library/ActivityHeatmap.tsx`
-- `2026-08-13 22:22` — `src/lib/playActivity.ts`
-- `2026-08-13 22:22` — `src/lib/playedGames.ts`
-- `2026-08-13 22:22` — `supabase/play-stats.sql`
-- `2026-08-13 22:19` — `src/components/library/ActivityHeatmap.tsx`
-- `2026-08-13 22:19` — `src/components/library/LibraryView.css`
-- `2026-08-13 22:19` — `src/components/library/ProfileView.tsx`
-- `2026-08-13 22:19` — `src/components/library/LibraryView.tsx`
-- `2026-08-13 22:18` — `../../../../../../Users/elmopr77/.cursor/projects/Volumes-REDDRIVE-App-Portfolio-Development-Builds-Personal-website-portfolio-KryoGames/assets/Screenshot_2026-08-13_at_6.17.25_PM__2_-d2826a8c-3f98-4a75-a088-002370df3c22.png`
-- `2026-08-13 22:10` — `src/components/library/LibraryView.css`
-- `2026-08-13 22:10` — `../../../../../../Users/elmopr77/.cursor/projects/Volumes-REDDRIVE-App-Portfolio-Development-Builds-Personal-website-portfolio-KryoGames/assets/Screenshot_2026-08-13_at_6.08.50_PM__2_-699c76d6-4a41-42d3-a829-ad05c6fc5e73.png`
-- `2026-08-13 21:19` — `src/components/library/LibraryView.css`
-- `2026-08-13 21:19` — `src/components/library/ProfileView.tsx`
-- `2026-08-13 21:19` — `src/components/library/LibraryView.tsx`
-- `2026-08-13 21:18` — `src/components/library/GameDetail.tsx`
-- `2026-08-13 21:18` — `src/lib/friends.ts`
+- `2026-08-17 17:57` — `src/components/IntroView.css`
+- `2026-08-17 17:57` — `src/components/IntroView.tsx`
+- `2026-08-17 17:55` — `src/components/ThinkingDots.tsx`
+- `2026-08-17 17:55` — `src/components/IntroView.css`
+- `2026-08-17 17:55` — `src/components/IntroView.tsx`
+- `2026-08-17 17:55` — `src/components/ThinkingDots.css`
+- `2026-08-17 17:51` — `tsconfig.app.json`
+- `2026-08-17 17:51` — `vite.config.ts`
+- `2026-08-17 17:51` — `.env.example`
+- `2026-08-17 17:51` — `src/components/ThinkingDots.tsx`
+- `2026-08-17 17:51` — `src/components/IntroView.css`
+- `2026-08-17 17:47` — `tsconfig.app.json`
+- `2026-08-17 17:47` — `vite.config.ts`
+- `2026-08-17 17:47` — `.env.example`
+- `2026-08-17 17:47` — `components.json`
+- `2026-08-17 17:42` — `src/components/Dither.tsx`
+- `2026-08-17 17:32` — `src/components/IntroView.tsx`
+- `2026-08-17 17:32` — `src/components/Dither.tsx`
+- `2026-08-17 17:31` — `src/components/Dither.tsx`
+- `2026-08-17 17:31` — `src/components/IntroView.css`
+- `2026-08-17 17:31` — `src/components/IntroView.tsx`
+- `2026-08-17 17:30` — `src/components/Dither.tsx`
+- `2026-08-17 17:30` — `src/components/Dither.css`
+- `2026-08-17 17:22` — `src/components/IntroView.tsx`
+- `2026-08-17 17:20` — `src/components/DotGrid.tsx`
+- `2026-08-17 17:19` — `src/components/IntroView.css`
+- `2026-08-17 17:19` — `src/components/IntroView.tsx`
+- `2026-08-17 17:19` — `src/components/DotGrid.tsx`
+- `2026-08-17 17:19` — `src/components/DotGrid.css`
+- `2026-08-17 17:19` — `../../../../../../Users/elmopr77/.cursor/projects/Volumes-REDDRIVE-App-Portfolio-Development-Builds-Personal-website-portfolio-KryoGames/agent-tools/e932ca0f-8147-402b-937f-2312b114f9b6.txt`
 <!-- /AUTO:RECENT_EDITS -->
 -->

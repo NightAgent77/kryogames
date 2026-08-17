@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type AriaRole, type ReactNode } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import { useTheme, type Theme } from '../../contexts/ThemeContext'
 import {
@@ -6,6 +6,7 @@ import {
   getDisplayName,
   getInitials,
 } from '../../lib/userDisplay'
+import Dock, { DockIcon, DockItem, useDockMotion } from './Dock'
 
 type MenuPanel = 'main' | 'appearance'
 
@@ -19,6 +20,44 @@ interface LibraryTopBarProps {
   onMenuHoverEnd: () => void
   menuExpanded: boolean
   onViewProfile: () => void
+}
+
+function MenuDockItem({
+  label,
+  onClick,
+  children,
+  className = '',
+  role = 'menuitem',
+  active = false,
+  ariaChecked,
+}: {
+  label: string
+  onClick: () => void
+  children: ReactNode
+  className?: string
+  role?: AriaRole
+  active?: boolean
+  ariaChecked?: boolean
+}) {
+  const { mouseY, spring, distance, baseItemSize, magnification } = useDockMotion()
+
+  return (
+    <DockItem
+      label={label}
+      onClick={onClick}
+      mouseY={mouseY}
+      spring={spring}
+      distance={distance}
+      baseItemSize={baseItemSize}
+      magnification={magnification}
+      role={role}
+      active={active}
+      aria-checked={ariaChecked}
+      className={`dock-item--menu${className ? ` ${className}` : ''}`}
+    >
+      <DockIcon className="dock-icon--menu">{children}</DockIcon>
+    </DockItem>
+  )
 }
 
 export function LibraryTopBar({
@@ -125,94 +164,101 @@ export function LibraryTopBar({
         </button>
 
         {menuOpen && (
-          <div className="library-profile-dropdown" role="menu">
-            {panel === 'main' ? (
-              <>
-                <button
-                  type="button"
-                  role="menuitem"
-                  onClick={() => {
-                    setMenuOpen(false)
-                    onViewProfile()
-                  }}
-                >
-                  View profile
-                </button>
-                <button
-                  type="button"
-                  role="menuitem"
-                  className="library-profile-dropdown-row"
-                  onClick={() => setPanel('appearance')}
-                >
-                  <span>Appearance</span>
-                  <span className="library-profile-dropdown-chevron" aria-hidden="true">
-                    ›
-                  </span>
-                </button>
-                <button
-                  type="button"
-                  role="menuitem"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  Settings
-                </button>
-                <div className="library-profile-dropdown-sep" role="separator" />
-                <button
-                  type="button"
-                  role="menuitem"
-                  className="library-profile-dropdown-danger"
-                  onClick={async () => {
-                    setMenuOpen(false)
-                    await signOut()
-                  }}
-                >
-                  Log out
-                </button>
-              </>
-            ) : (
-              <>
-                <button
-                  type="button"
-                  role="menuitem"
-                  className="library-profile-dropdown-row"
-                  onClick={() => setPanel('main')}
-                >
-                  <span className="library-profile-dropdown-chevron library-profile-dropdown-chevron--back" aria-hidden="true">
-                    ‹
-                  </span>
-                  <span>Appearance</span>
-                </button>
-                <div className="library-profile-dropdown-sep" role="separator" />
-                <button
-                  type="button"
-                  role="menuitemradio"
-                  aria-checked={theme === 'dark'}
-                  className="library-profile-dropdown-row"
-                  onClick={() => chooseTheme('dark')}
-                >
-                  <span>Dark</span>
-                  {theme === 'dark' && (
-                    <span className="library-profile-dropdown-check" aria-hidden="true">
-                      ✓
+          <div className="library-profile-dropdown">
+            <Dock
+              className="dock-panel--menu"
+              baseItemSize={36}
+              magnification={48}
+              distance={100}
+              fill
+              role="menu"
+              aria-label="Profile menu"
+            >
+              {panel === 'main' ? (
+                <>
+                  <MenuDockItem
+                    label="View profile"
+                    onClick={() => {
+                      setMenuOpen(false)
+                      onViewProfile()
+                    }}
+                  >
+                    View profile
+                  </MenuDockItem>
+                  <MenuDockItem label="Appearance" onClick={() => setPanel('appearance')}>
+                    <span className="library-profile-dropdown-row">
+                      <span>Appearance</span>
+                      <span className="library-profile-dropdown-chevron" aria-hidden="true">
+                        ›
+                      </span>
                     </span>
-                  )}
-                </button>
-                <button
-                  type="button"
-                  role="menuitemradio"
-                  aria-checked={theme === 'light'}
-                  className="library-profile-dropdown-row"
-                  onClick={() => chooseTheme('light')}
-                >
-                  <span>Light</span>
-                  {theme === 'light' && (
-                    <span className="library-profile-dropdown-check" aria-hidden="true">
-                      ✓
+                  </MenuDockItem>
+                  <MenuDockItem label="Settings" onClick={() => setMenuOpen(false)}>
+                    Settings
+                  </MenuDockItem>
+                  <div className="library-profile-dropdown-sep" role="separator" />
+                  <MenuDockItem
+                    label="Log out"
+                    className="library-profile-dropdown-danger"
+                    onClick={() => {
+                      void (async () => {
+                        setMenuOpen(false)
+                        await signOut()
+                      })()
+                    }}
+                  >
+                    Log out
+                  </MenuDockItem>
+                </>
+              ) : (
+                <>
+                  <MenuDockItem label="Back to menu" onClick={() => setPanel('main')}>
+                    <span className="library-profile-dropdown-row">
+                      <span
+                        className="library-profile-dropdown-chevron library-profile-dropdown-chevron--back"
+                        aria-hidden="true"
+                      >
+                        ‹
+                      </span>
+                      <span>Appearance</span>
                     </span>
-                  )}
-                </button>
-              </>
-            )}
+                  </MenuDockItem>
+                  <div className="library-profile-dropdown-sep" role="separator" />
+                  <MenuDockItem
+                    label="Dark"
+                    role="menuitemradio"
+                    active={theme === 'dark'}
+                    ariaChecked={theme === 'dark'}
+                    onClick={() => chooseTheme('dark')}
+                  >
+                    <span className="library-profile-dropdown-row">
+                      <span>Dark</span>
+                      {theme === 'dark' && (
+                        <span className="library-profile-dropdown-check" aria-hidden="true">
+                          ✓
+                        </span>
+                      )}
+                    </span>
+                  </MenuDockItem>
+                  <MenuDockItem
+                    label="Light"
+                    role="menuitemradio"
+                    active={theme === 'light'}
+                    ariaChecked={theme === 'light'}
+                    onClick={() => chooseTheme('light')}
+                  >
+                    <span className="library-profile-dropdown-row">
+                      <span>Light</span>
+                      {theme === 'light' && (
+                        <span className="library-profile-dropdown-check" aria-hidden="true">
+                          ✓
+                        </span>
+                      )}
+                    </span>
+                  </MenuDockItem>
+                </>
+              )}
+            </Dock>
           </div>
         )}
       </div>
