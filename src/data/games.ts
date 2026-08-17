@@ -46,4 +46,18 @@ export const games: Game[] = [
     coverImage: '/games/fruit-rally.jpg',
     coverAspectRatio: 874 / 575,
   },
+  {
+    id: 'tut-1',
+    title: 'Tutorial Game 1',
+    description:
+      'A short q5play platformer. Run and jump the red block over the grey steps to the gold finish — Enter to start, arrows to move, space to jump.',
+    genre: 'Platformer',
+    status: 'playable',
+    platform: 'web',
+    tags: ['Web', 'Platformer', 'Single-player'],
+    playUrl:
+      'https://pub-e379ba287a9f4d8ba4cdbd6b6095cb6c.r2.dev/tut-1/index.html',
+    coverImage: '/games/tut-1.png',
+    coverAspectRatio: 874 / 575,
+  },
 ]
