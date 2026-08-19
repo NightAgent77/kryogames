@@ -247,6 +247,7 @@
   Type stays light-on-dark in both themes (cover art is dark).
 */
 .library--game,
+.library--profile,
 .library-main--profile {
   --wash-frost: rgba(28, 30, 36, 0.42);
   --wash-frost-hover: rgba(40, 42, 50, 0.56);
@@ -257,6 +258,7 @@
 }
 
 [data-theme='light'] .library--game,
+[data-theme='light'] .library--profile,
 [data-theme='light'] .library-main--profile {
   --wash-frost: rgba(255, 255, 255, 0.16);
   --wash-frost-hover: rgba(255, 255, 255, 0.28);
@@ -491,7 +493,7 @@
 
 .library-topbar {
   position: relative;
-  z-index: 2;
+  z-index: 32;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -510,7 +512,7 @@
   top: calc(1rem + 0.85rem);
   left: calc(1.5rem + 0.85rem);
   right: calc(1.5rem + 0.85rem);
-  z-index: 6;
+  z-index: 32;
   margin: 0;
   padding: 0;
   justify-content: flex-end;
@@ -659,6 +661,157 @@
   height: 1px;
   margin: 0.25rem 0.5rem;
   background: var(--border);
+}
+
+.friend-toasts {
+  position: fixed;
+  top: 4.85rem;
+  right: 1.5rem;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+  width: min(22rem, calc(100% - 2rem));
+  pointer-events: none;
+}
+
+.friend-toast {
+  pointer-events: auto;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: start;
+  padding: 0.85rem 0.85rem 0.9rem 0.9rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-dropdown);
+  color: var(--text-bright);
+  animation: friend-toast-in 280ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.friend-toast-avatar {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--bg-elevated);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-bright);
+  overflow: hidden;
+}
+
+.friend-toast-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.friend-toast-body {
+  min-width: 0;
+}
+
+.friend-toast-title {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--text-bright);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.friend-toast-copy {
+  margin: 0.15rem 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+.friend-toast-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.7rem;
+}
+
+.friend-toast-dismiss {
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  margin: -0.2rem -0.2rem 0 0;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-muted);
+}
+
+.friend-toast-dismiss:hover {
+  background: var(--hover-wash);
+  color: var(--text-bright);
+}
+
+.library--game .friend-toast,
+.library--profile .friend-toast {
+  background: var(--wash-frost);
+  backdrop-filter: blur(16px) saturate(1.35);
+  -webkit-backdrop-filter: blur(16px) saturate(1.35);
+  border: 1px solid var(--wash-frost-border);
+  color: #ffffff;
+}
+
+.library--game .friend-toast-avatar,
+.library--profile .friend-toast-avatar {
+  background: var(--wash-frost-chip);
+  color: #ffffff;
+}
+
+.library--game .friend-toast-title,
+.library--game .friend-toast-dismiss,
+.library--profile .friend-toast-title,
+.library--profile .friend-toast-dismiss {
+  color: #ffffff;
+}
+
+.library--game .friend-toast-copy,
+.library--profile .friend-toast-copy {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.library--game .friend-toast .btn-primary,
+.library--profile .friend-toast .btn-primary {
+  background: #ffffff;
+  color: #12141a;
+}
+
+.library--game .friend-toast .btn-secondary,
+.library--profile .friend-toast .btn-secondary {
+  background: var(--wash-frost-chip);
+  border-color: var(--wash-frost-border);
+  color: #ffffff;
+}
+
+@keyframes friend-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .friend-toast {
+    animation: none;
+  }
 }
 
 .library-content {
@@ -2032,6 +2185,10 @@
     padding: 1rem;
   }
 
+  .friend-toasts {
+    right: 1rem;
+  }
+
   .library-main--profile .library-topbar {
     top: calc(1rem + 0.65rem);
     left: calc(1rem + 0.65rem);
@@ -2043,6 +2200,15 @@
 @media (max-width: 768px) {
   .library-topbar {
     flex-wrap: wrap;
+  }
+
+  .friend-toasts {
+    top: 8.25rem;
+    right: 1rem;
+  }
+
+  .library--profile .friend-toasts {
+    top: 4.6rem;
   }
 
   .library-search {

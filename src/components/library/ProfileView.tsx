@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
-import { countFriends } from '../../lib/friends'
+import { FRIENDS_CHANGED_EVENT, countFriends } from '../../lib/friends'
 import { countPlayedGames } from '../../lib/playedGames'
 import {
   fileToAvatarDataUrl,
@@ -65,15 +65,21 @@ export function ProfileView() {
     }
 
     let cancelled = false
-    void countFriends(user.id).then(({ count }) => {
-      if (!cancelled) setFriendCount(count)
-    })
-    void countPlayedGames(user.id).then(({ count }) => {
-      if (!cancelled) setGamesPlayedCount(count)
-    })
+    const loadCounts = () => {
+      void countFriends(user.id).then(({ count }) => {
+        if (!cancelled) setFriendCount(count)
+      })
+      void countPlayedGames(user.id).then(({ count }) => {
+        if (!cancelled) setGamesPlayedCount(count)
+      })
+    }
+
+    loadCounts()
+    window.addEventListener(FRIENDS_CHANGED_EVENT, loadCounts)
 
     return () => {
       cancelled = true
+      window.removeEventListener(FRIENDS_CHANGED_EVENT, loadCounts)
     }
   }, [user?.id, editing])
 

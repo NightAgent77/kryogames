@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import {
+  FRIENDS_CHANGED_EVENT,
   listFriends,
   listIncomingRequests,
   listOutgoingPendingIds,
@@ -122,7 +123,7 @@ export function FriendsView({ query }: FriendsViewProps) {
     if (!userId) return
     let cancelled = false
 
-    ;(async () => {
+    const load = async () => {
       const [friendsRes, requestsRes, pendingRes] = await Promise.all([
         listFriends(userId),
         listIncomingRequests(userId),
@@ -141,10 +142,16 @@ export function FriendsView({ query }: FriendsViewProps) {
       setFriends(friendsRes.friends)
       setRequests(requestsRes.requests)
       setPendingOutIds(pendingRes.ids)
-    })()
+    }
 
+    void load()
+    const onChange = () => {
+      void load()
+    }
+    window.addEventListener(FRIENDS_CHANGED_EVENT, onChange)
     return () => {
       cancelled = true
+      window.removeEventListener(FRIENDS_CHANGED_EVENT, onChange)
     }
   }, [userId])
 

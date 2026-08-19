@@ -3,7 +3,7 @@
 > Living document for AI agent continuity. Updated automatically on file edits and substantively by agents after meaningful changes.
 
 <!-- AUTO:LAST_UPDATED -->
-**Last updated:** 2026-08-17 21:05 (auto)
+**Last updated:** 2026-08-19 16:09 (auto)
 <!-- /AUTO:LAST_UPDATED -->
 
 ---
@@ -89,6 +89,7 @@ src/
 │       ├── GameDetail.tsx   # Expanded game view (blurred cover wash + desc + Play)
 │       ├── FavoriteGemButton.tsx # Facet-diamond favorite toggle (animates red)
 │       ├── FriendsView.tsx  # Friends search, requests, list
+│       ├── FriendToasts.tsx # Friend request / accept popups (under profile)
 │       ├── ActivityHeatmap.tsx # Monthly play-hours calendar heatmap
 │       └── ProfileView.tsx  # Profile template (avatar + username)
 ├── contexts/
@@ -103,9 +104,11 @@ src/
 │   ├── playedGames.ts       # Distinct games played (Supabase + local migrate)
 │   ├── playActivity.ts      # Daily play minutes (Supabase + session flush)
 │   ├── friends.ts           # Profiles search + friendships helpers
+│   ├── notificationSound.ts # Web Audio chime for friend toasts
 │   └── userDisplay.ts       # Display name / initials / avatar helpers
 └── supabase/
     ├── friends.sql          # profiles + friendships schema/RLS (run in SQL editor)
+    ├── friends-realtime.sql # additive: enable Realtime on friendships (if friends.sql already ran)
     ├── play-stats.sql       # played_games + play_activity schema/RLS (run in SQL editor)
     └── backfill-profiles.sql # one-time: seed profiles + Auth display names for existing users
 ```
@@ -134,7 +137,7 @@ src/
 - Search filters current tab by title (client-side) on Home / Favorites
 - Home tab lists `platform: 'web'` titles from `games.ts`
 - My Games: empty placeholder for now
-- **Friends:** top-bar search switches to “Search usernames” (games search hidden); send friend requests, accept/decline incoming (section only when pending); **Online** / **All** filter tabs (presence not wired — Online empty for now); remove from All; data in Supabase `profiles` + `friendships` (see `supabase/friends.sql`)
+- **Friends:** top-bar search switches to “Search usernames” (games search hidden); send friend requests, accept/decline incoming (section only when pending); **Online** / **All** filter tabs (presence not wired — Online empty for now); remove from All; data in Supabase `profiles` + `friendships` (see `supabase/friends.sql`). **Toasts** (`FriendToasts`) appear upper-right under the profile pill on every library view: incoming request (Accept / Decline) and “accepted your friend request”; auto-dismiss after 6s with a short Web Audio chime; Supabase Realtime plus an 8s poll fallback
 - Each game card has a bottom meta bar: title + platform icon (`PlatformIcon`)
 - Clicking a game card expands to **GameDetail** (cover, description, tags, Play / Coming soon, favorite gem)
 - GameDetail **art wash (locked, both themes):** full-library `.library-wash` blurred cover behind the sidebar pill **and** search / profile / nav; sharp cover in the media slot; light-on-dark type (white title/description/tags/Back; white Play with dark label). Frost widgets: light = white glass; dark = deeper bluish glass (`--wash-frost*`). Light theme uses almost no veil so cover color still reads — never dark ink or a milky white overlay on the wash. Leaving GameDetail **fades the wash and widget colors** (~420ms) instead of a hard cut.
@@ -170,8 +173,10 @@ src/
 
 ### Supabase SQL (friends)
 - Run [`supabase/friends.sql`](supabase/friends.sql) once in the Supabase SQL editor before using Friends
+- Run [`supabase/friends-realtime.sql`](supabase/friends-realtime.sql) once if `friends.sql` was applied before Realtime was added (new installs get it from `friends.sql`)
 - Run [`supabase/backfill-profiles.sql`](supabase/backfill-profiles.sql) once so existing users appear in username search (and Auth Display name is filled from username)
 - Friend search uses `public.profiles`, not the Auth Users list; Auth “Display name” is `full_name` / `name` metadata (synced from username on signup/profile edit)
+- Friend toasts need `friendships` in the `supabase_realtime` publication (Dashboard → Database → Publications, or the SQL above)
 
 ### Supabase SQL (play stats)
 - Run [`supabase/play-stats.sql`](supabase/play-stats.sql) once after friends schema exists
@@ -248,7 +253,7 @@ src/
 - Favorites: per-user `localStorage` via `lib/favorites.ts`; UI toggle is `FavoriteGemButton`
 - Games played: Supabase `played_games` via `lib/playedGames.ts`; recorded on Play click
 - Play activity: Supabase `play_activity` via `lib/playActivity.ts`; heatmap on profile; requires `supabase/play-stats.sql`
-- Friends: `lib/friends.ts` + `FriendsView`; requires `supabase/friends.sql` applied
+- Friends: `lib/friends.ts` + `FriendsView` + `FriendToasts`; requires `supabase/friends.sql` applied (and `friends-realtime.sql` if that schema was already live)
 - Do **not** commit `.env.local` or service role keys
 
 ---
@@ -269,6 +274,21 @@ When making changes to this project:
 ## Recent edits (auto)
 
 <!-- AUTO:RECENT_EDITS -->
+- `2026-08-19 16:09` — `src/components/library/FriendToasts.tsx`
+- `2026-08-19 16:09` — `src/lib/notificationSound.ts`
+- `2026-08-19 16:02` — `src/components/library/LibraryView.css`
+- `2026-08-19 16:02` — `src/components/library/LibraryView.tsx`
+- `2026-08-19 16:01` — `src/components/library/FriendToasts.tsx`
+- `2026-08-19 16:00` — `supabase/friends.sql`
+- `2026-08-19 16:00` — `supabase/friends-realtime.sql`
+- `2026-08-19 16:00` — `src/components/library/LibraryView.css`
+- `2026-08-19 15:59` — `src/components/library/LibraryView.css`
+- `2026-08-19 15:59` — `src/components/library/ProfileView.tsx`
+- `2026-08-19 15:59` — `src/components/library/FriendsView.tsx`
+- `2026-08-19 15:59` — `src/components/library/LibraryView.tsx`
+- `2026-08-19 15:59` — `src/components/library/FriendToasts.tsx`
+- `2026-08-19 15:59` — `src/lib/friends.ts`
+- `2026-08-19 15:58` — `src/lib/friends.ts`
 - `2026-08-17 21:05` — `src/data/games.ts`
 - `2026-08-17 17:57` — `src/components/IntroView.css`
 - `2026-08-17 17:57` — `src/components/IntroView.tsx`
@@ -284,20 +304,5 @@ When making changes to this project:
 - `2026-08-17 17:47` — `tsconfig.app.json`
 - `2026-08-17 17:47` — `vite.config.ts`
 - `2026-08-17 17:47` — `.env.example`
-- `2026-08-17 17:47` — `components.json`
-- `2026-08-17 17:42` — `src/components/Dither.tsx`
-- `2026-08-17 17:32` — `src/components/IntroView.tsx`
-- `2026-08-17 17:32` — `src/components/Dither.tsx`
-- `2026-08-17 17:31` — `src/components/Dither.tsx`
-- `2026-08-17 17:31` — `src/components/IntroView.css`
-- `2026-08-17 17:31` — `src/components/IntroView.tsx`
-- `2026-08-17 17:30` — `src/components/Dither.tsx`
-- `2026-08-17 17:30` — `src/components/Dither.css`
-- `2026-08-17 17:22` — `src/components/IntroView.tsx`
-- `2026-08-17 17:20` — `src/components/DotGrid.tsx`
-- `2026-08-17 17:19` — `src/components/IntroView.css`
-- `2026-08-17 17:19` — `src/components/IntroView.tsx`
-- `2026-08-17 17:19` — `src/components/DotGrid.tsx`
-- `2026-08-17 17:19` — `src/components/DotGrid.css`
 <!-- /AUTO:RECENT_EDITS -->
 -->

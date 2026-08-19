@@ -5,6 +5,7 @@ import { loadFavorites, saveFavorites, toggleFavoriteId } from '../../lib/favori
 import { upsertProfileFromUser } from '../../lib/friends'
 import { flushPlaySession, startPlaySession } from '../../lib/playActivity'
 import { recordPlayedGame } from '../../lib/playedGames'
+import { FriendToasts } from './FriendToasts'
 import { FriendsView } from './FriendsView'
 import { GameDetail } from './GameDetail'
 import { LibraryGameGrid } from './LibraryGameGrid'
@@ -177,7 +178,9 @@ export function LibraryView() {
   }
 
   return (
-    <div className={`library${washActive ? ' library--game' : ''}`}>
+    <div
+      className={`library${washActive ? ' library--game' : ''}${showProfile ? ' library--profile' : ''}`}
+    >
       {washGame ? (
         <div
           className={`library-wash${washExiting ? ' library-wash--exit' : ''}`}
@@ -238,6 +241,8 @@ export function LibraryView() {
             setShowProfile(true)
           }}
         />
+
+        <FriendToasts />
 
         {showProfile ? (
           <ProfileView />

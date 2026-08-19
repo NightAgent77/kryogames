@@ -148,6 +148,17 @@ async function loadProfilesByIds(ids: string[]): Promise<Map<string, Profile>> {
   return new Map(data.map((row) => [row.id, asProfile(row)]))
 }
 
+export async function loadProfile(id: string): Promise<Profile | null> {
+  const profiles = await loadProfilesByIds([id])
+  return profiles.get(id) ?? null
+}
+
+export const FRIENDS_CHANGED_EVENT = 'kryogames-friends-changed'
+
+export function emitFriendsChanged() {
+  window.dispatchEvent(new Event(FRIENDS_CHANGED_EVENT))
+}
+
 export async function listFriends(
   userId: string,
 ): Promise<{ friends: FriendEntry[]; error: string | null }> {
@@ -291,6 +302,7 @@ export async function sendFriendRequest(
     return { error: error.message }
   }
 
+  emitFriendsChanged()
   return { error: null }
 }
 
@@ -301,6 +313,7 @@ export async function removeFriend(friendshipId: string): Promise<{ error: strin
     return { error: error.message }
   }
 
+  emitFriendsChanged()
   return { error: null }
 }
 
@@ -322,5 +335,6 @@ export async function respondToRequest(
     return { error: error.message }
   }
 
+  emitFriendsChanged()
   return { error: null }
 }

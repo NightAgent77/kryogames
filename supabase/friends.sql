@@ -147,3 +147,19 @@ create policy "friendships_delete_participants"
   on public.friendships for delete
   to authenticated
   using (auth.uid() = requester_id or auth.uid() = addressee_id);
+
+-- Realtime: friend request / accept notification popups
+alter table public.friendships replica identity full;
+
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_publication_tables
+    where pubname = 'supabase_realtime'
+      and schemaname = 'public'
+      and tablename = 'friendships'
+  ) then
+    alter publication supabase_realtime add table public.friendships;
+  end if;
+end $$;
