@@ -78,18 +78,20 @@ dialog.auth-modal:modal {
   width: min(420px, calc(100vw - 2rem));
   border-radius: var(--radius-lg);
   overflow: hidden;
-  background: color-mix(in srgb, var(--bg-surface) 72%, transparent);
+  background: color-mix(in srgb, var(--bg-surface) 46%, transparent);
   border: 1px solid color-mix(in srgb, var(--text-bright) 14%, transparent);
   box-shadow: var(--shadow-modal);
+  backdrop-filter: blur(18px) saturate(1.25);
+  -webkit-backdrop-filter: blur(18px) saturate(1.25);
 }
 
 [data-theme='light'] .auth-modal-shell {
-  background: color-mix(in srgb, #ffffff 78%, transparent);
+  background: color-mix(in srgb, #ffffff 42%, transparent);
   border-color: color-mix(in srgb, var(--text-bright) 12%, transparent);
 }
 
 [data-theme='dark'] .auth-modal-shell {
-  background: color-mix(in srgb, var(--bg-surface) 70%, transparent);
+  background: color-mix(in srgb, var(--bg-surface) 48%, transparent);
 }
 
 .auth-modal-panel {
@@ -264,6 +266,11 @@ dialog.auth-modal:modal {
 @media (prefers-reduced-transparency: reduce) {
   .auth-modal::backdrop {
     background: color-mix(in srgb, var(--bg-deep) 55%, transparent);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .auth-modal-shell {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
   }

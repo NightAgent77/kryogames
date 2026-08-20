@@ -1,4 +1,5 @@
-.thinking-dots {
+.thinking-dots,
+.thinking-dots-gl {
   position: absolute;
   inset: 0;
   display: block;

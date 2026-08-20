@@ -1,11 +1,9 @@
 .intro {
   position: relative;
-  isolation: isolate;
   min-height: 100svh;
   display: flex;
   flex-direction: column;
   background: var(--bg-deep);
-  overflow: hidden;
 }
 
 .intro-dots {

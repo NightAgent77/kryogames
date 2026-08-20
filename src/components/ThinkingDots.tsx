@@ -161,6 +161,7 @@ export default function ThinkingDots({
   className = '',
 }: ThinkingDotsProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const viewCanvasRef = useRef<HTMLCanvasElement>(null)
   const propsRef = useRef({
     color,
     accentColor,
@@ -182,7 +183,8 @@ export default function ThinkingDots({
 
   useEffect(() => {
     const canvas = canvasRef.current
-    if (!canvas) return
+    const viewCanvas = viewCanvasRef.current
+    if (!canvas || !viewCanvas) return
 
     const gl = canvas.getContext('webgl', {
       alpha: false,
@@ -190,8 +192,11 @@ export default function ThinkingDots({
       depth: false,
       stencil: false,
       powerPreference: 'low-power',
+      // Needed so we can copy frames onto a 2D canvas that backdrop-filter can sample.
+      preserveDrawingBuffer: true,
     })
-    if (!gl || gl.isContextLost()) return
+    const viewCtx = viewCanvas.getContext('2d', { alpha: false })
+    if (!gl || gl.isContextLost() || !viewCtx) return
 
     const onLost = (event: Event) => {
       event.preventDefault()
@@ -255,13 +260,17 @@ export default function ThinkingDots({
     let dpr = Math.min(window.devicePixelRatio || 1, 1.75)
 
     const setSize = () => {
-      const w = Math.max(1, canvas.clientWidth)
-      const h = Math.max(1, canvas.clientHeight)
+      const w = Math.max(1, viewCanvas.clientWidth || canvas.clientWidth)
+      const h = Math.max(1, viewCanvas.clientHeight || canvas.clientHeight)
       const width = Math.max(1, Math.floor(w * dpr))
       const height = Math.max(1, Math.floor(h * dpr))
       if (canvas.width !== width || canvas.height !== height) {
         canvas.width = width
         canvas.height = height
+      }
+      if (viewCanvas.width !== width || viewCanvas.height !== height) {
+        viewCanvas.width = width
+        viewCanvas.height = height
       }
       gl.viewport(0, 0, width, height)
       gl.uniform2f(loc.resolution, width, height)
@@ -291,7 +300,7 @@ export default function ThinkingDots({
     window.addEventListener('pointermove', onMove, { passive: true })
     document.documentElement.addEventListener('mouseleave', onLeave)
     const ro = new ResizeObserver(setSize)
-    ro.observe(canvas)
+    ro.observe(viewCanvas)
     setSize()
 
     const draw = (now: number) => {
@@ -323,6 +332,7 @@ export default function ThinkingDots({
       gl.uniform3f(loc.bg, bg[0], bg[1], bg[2])
       gl.uniform1f(loc.ambient, p.ambient)
       gl.drawArrays(gl.TRIANGLES, 0, 3)
+      viewCtx.drawImage(canvas, 0, 0)
 
       raf = requestAnimationFrame(draw)
     }
@@ -342,10 +352,13 @@ export default function ThinkingDots({
   }, [])
 
   return (
-    <canvas
-      ref={canvasRef}
-      className={`thinking-dots${className ? ` ${className}` : ''}`}
-      aria-hidden="true"
-    />
+    <>
+      <canvas ref={canvasRef} className="thinking-dots-gl" aria-hidden="true" />
+      <canvas
+        ref={viewCanvasRef}
+        className={`thinking-dots${className ? ` ${className}` : ''}`}
+        aria-hidden="true"
+      />
+    </>
   )
 }

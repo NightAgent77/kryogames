@@ -3,7 +3,7 @@
 > Living document for AI agent continuity. Updated automatically on file edits and substantively by agents after meaningful changes.
 
 <!-- AUTO:LAST_UPDATED -->
-**Last updated:** 2026-08-20 17:05 (auto)
+**Last updated:** 2026-08-20 17:19 (auto)
 <!-- /AUTO:LAST_UPDATED -->
 
 ---
@@ -121,7 +121,7 @@ src/
 ## Features implemented
 
 ### Dual auth views
-- **Signed out (`IntroView`):** minimalist brand landing — KRYO GAMES, short lead, Sign up / Log in, placeholder tile teaser; full-bleed **Thinking Dots** WebGL backdrop (dense `#ff44af` grid + drifting density cloud; small-radius cursor highlight; pauses on `prefers-reduced-motion`); frosted hero / header chrome so type stays readable over the dots; header **theme toggle** (sun/moon) beside Log in / Sign up
+- **Signed out (`IntroView`):** minimalist brand landing — KRYO GAMES, short lead, Sign up / Log in, placeholder tile teaser; full-bleed **Thinking Dots** WebGL backdrop copied each frame onto a 2D canvas so intro frost (`backdrop-filter` on the title widget / header / tiles) can sample it the same way library wash samples cover art (raw WebGL is skipped by browsers); small-radius cursor highlight; pauses on `prefers-reduced-motion`; frosted hero / header chrome so type stays readable over the dots; header **theme toggle** (sun/moon) beside Log in / Sign up
 - **Signed in (`LibraryView`):** library shell matching design mockup — sidebar, search, profile pill, game grid; shell is viewport-locked so only `.library-main` scrolls — desktop sidebar pill stays fully visible (narrow screens still use the existing collapse/hover drawer)
 - **`App.tsx` gate:** `loading` → placeholder; `user` → library; else → intro (no React Router yet)
 
@@ -132,7 +132,7 @@ src/
 - Theme tokens live in `index.css`; preference persisted in `localStorage` (`kryogames-theme`)
 - Rounded panels (~12px); Inter only (no Orbitron / neon cyber look)
 - Auth modal restyled to the same surfaces
-- Sign up / Log in / forgot `<dialog>` panels use frosted glass (translucent fill + blur) in light and dark, matching the intro title widget
+- Sign up / Log in / forgot `<dialog>` panels use frosted glass (`backdrop-filter` on `.auth-modal-shell` plus dim `::backdrop`) in light and dark, matching the intro title widget
 
 ### Library (signed-in)
 - Sidebar: **Home** (web catalog) + **Game library** (nested **My Games**, **Favorites**) + **Friends**
@@ -278,6 +278,12 @@ When making changes to this project:
 ## Recent edits (auto)
 
 <!-- AUTO:RECENT_EDITS -->
+- `2026-08-20 17:19` — `src/components/IntroView.tsx`
+- `2026-08-20 17:19` — `src/App.css`
+- `2026-08-20 17:19` — `src/components/IntroView.css`
+- `2026-08-20 17:19` — `src/components/ThinkingDots.css`
+- `2026-08-20 17:19` — `src/components/ThinkingDots.tsx`
+- `2026-08-20 17:12` — `src/components/AuthModal.tsx`
 - `2026-08-20 17:05` — `src/App.css`
 - `2026-08-20 17:04` — `src/App.css`
 - `2026-08-20 17:03` — `../../../../../../Users/elmopr77/.cursor/projects/Volumes-REDDRIVE-App-Portfolio-Development-Builds-Personal-website-portfolio-KryoGames/assets/Screenshot_2026-08-20_at_1.02.57_PM__2_-d8402fa0-f733-41c0-84bb-d28617928daa.png`
@@ -302,11 +308,5 @@ When making changes to this project:
 - `2026-08-20 15:04` — `src/components/IntroView.css`
 - `2026-08-20 15:03` — `src/components/IntroView.css`
 - `2026-08-20 15:02` — `src/components/IntroView.css`
-- `2026-08-20 15:01` — `src/components/IntroView.css`
-- `2026-08-20 15:00` — `src/components/IntroView.css`
-- `2026-08-20 14:59` — `src/components/IntroView.css`
-- `2026-08-20 14:58` — `src/components/IntroView.css`
-- `2026-08-20 14:56` — `src/components/IntroView.css`
-- `2026-08-20 14:53` — `src/components/ThinkingDots.tsx`
 <!-- /AUTO:RECENT_EDITS -->
 -->
