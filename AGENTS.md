@@ -3,7 +3,7 @@
 > Living document for AI agent continuity. Updated automatically on file edits and substantively by agents after meaningful changes.
 
 <!-- AUTO:LAST_UPDATED -->
-**Last updated:** 2026-08-20 15:23 (auto)
+**Last updated:** 2026-08-20 16:40 (auto)
 <!-- /AUTO:LAST_UPDATED -->
 
 ---
@@ -278,6 +278,8 @@ When making changes to this project:
 ## Recent edits (auto)
 
 <!-- AUTO:RECENT_EDITS -->
+- `2026-08-20 16:40` — `src/components/IntroView.css`
+- `2026-08-20 16:40` — `src/App.css`
 - `2026-08-20 15:23` — `src/App.css`
 - `2026-08-20 15:16` — `src/components/ThinkingDots.tsx`
 - `2026-08-20 15:15` — `src/components/ThinkingDots.tsx`
@@ -306,7 +308,5 @@ When making changes to this project:
 - `2026-08-19 16:00` — `supabase/friends.sql`
 - `2026-08-19 16:00` — `supabase/friends-realtime.sql`
 - `2026-08-19 16:00` — `src/components/library/LibraryView.css`
-- `2026-08-19 15:59` — `src/components/library/LibraryView.css`
-- `2026-08-19 15:59` — `src/components/library/ProfileView.tsx`
 <!-- /AUTO:RECENT_EDITS -->
 -->

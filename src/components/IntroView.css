@@ -230,12 +230,13 @@
 
   .intro-header-actions,
   .intro-tile,
-  .intro .btn-secondary {
+  .intro .btn-secondary,
+  .intro-hero {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
   }
 
   .intro-hero {
-    background: transparent;
+    background: color-mix(in srgb, var(--bg-deep) 45%, transparent);
   }
 }
