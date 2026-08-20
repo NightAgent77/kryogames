@@ -3,7 +3,7 @@
 > Living document for AI agent continuity. Updated automatically on file edits and substantively by agents after meaningful changes.
 
 <!-- AUTO:LAST_UPDATED -->
-**Last updated:** 2026-08-19 16:09 (auto)
+**Last updated:** 2026-08-20 15:23 (auto)
 <!-- /AUTO:LAST_UPDATED -->
 
 ---
@@ -27,6 +27,7 @@
 - **Build tool:** Vite 8
 - **Auth / backend:** Supabase (`@supabase/supabase-js`)
 - **Motion:** `motion` (React Bits–style Dock springs in the library sidebar / profile menu)
+- **Intro backdrop:** custom WebGL `ThinkingDots` (React Bits Pro–style density cloud; no Pro license dep)
 - **Linting:** oxlint
 - **Fonts:** Inter via Google Fonts
 - **Deployment:** Vercel (`vercel.json` SPA rewrites)
@@ -74,8 +75,10 @@ src/
 ├── index.css                # Global CSS variables & resets (dark + light themes)
 ├── vite-env.d.ts            # Vite env type definitions
 ├── components/
-│   ├── IntroView.tsx        # Signed-out minimalist landing
+│   ├── IntroView.tsx        # Signed-out signup landing (Thinking Dots backdrop)
 │   ├── IntroView.css
+│   ├── ThinkingDots.tsx     # Intro dot-matrix density cloud (WebGL)
+│   ├── ThinkingDots.css
 │   ├── AuthModal.tsx        # Login / signup / forgot-password modals
 │   └── library/
 │       ├── LibraryView.tsx  # Signed-in shell (sidebar + main)
@@ -118,7 +121,7 @@ src/
 ## Features implemented
 
 ### Dual auth views
-- **Signed out (`IntroView`):** minimalist brand landing — KRYO GAMES, short lead, Sign up / Log in, placeholder tile teaser; plain theme background (`--bg-deep`); header **theme toggle** (sun/moon) beside Log in / Sign up
+- **Signed out (`IntroView`):** minimalist brand landing — KRYO GAMES, short lead, Sign up / Log in, placeholder tile teaser; full-bleed **Thinking Dots** WebGL backdrop (dense `#ff44af` grid + drifting density cloud; small-radius cursor highlight; pauses on `prefers-reduced-motion`); frosted hero / header chrome so type stays readable over the dots; header **theme toggle** (sun/moon) beside Log in / Sign up
 - **Signed in (`LibraryView`):** library shell matching design mockup — sidebar, search, profile pill, game grid; shell is viewport-locked so only `.library-main` scrolls — desktop sidebar pill stays fully visible (narrow screens still use the existing collapse/hover drawer)
 - **`App.tsx` gate:** `loading` → placeholder; `user` → library; else → intro (no React Router yet)
 
@@ -129,6 +132,7 @@ src/
 - Theme tokens live in `index.css`; preference persisted in `localStorage` (`kryogames-theme`)
 - Rounded panels (~12px); Inter only (no Orbitron / neon cyber look)
 - Auth modal restyled to the same surfaces
+- Sign up / Log in / forgot modals use frosted glass panels (translucent fill + blur) in both light and dark; inputs match
 
 ### Library (signed-in)
 - Sidebar: **Home** (web catalog) + **Game library** (nested **My Games**, **Favorites**) + **Friends**
@@ -274,6 +278,26 @@ When making changes to this project:
 ## Recent edits (auto)
 
 <!-- AUTO:RECENT_EDITS -->
+- `2026-08-20 15:23` — `src/App.css`
+- `2026-08-20 15:16` — `src/components/ThinkingDots.tsx`
+- `2026-08-20 15:15` — `src/components/ThinkingDots.tsx`
+- `2026-08-20 15:08` — `src/components/IntroView.css`
+- `2026-08-20 15:07` — `src/components/IntroView.css`
+- `2026-08-20 15:04` — `src/components/IntroView.css`
+- `2026-08-20 15:03` — `src/components/IntroView.css`
+- `2026-08-20 15:02` — `src/components/IntroView.css`
+- `2026-08-20 15:01` — `src/components/IntroView.css`
+- `2026-08-20 15:00` — `src/components/IntroView.css`
+- `2026-08-20 14:59` — `src/components/IntroView.css`
+- `2026-08-20 14:58` — `src/components/IntroView.css`
+- `2026-08-20 14:56` — `src/components/IntroView.css`
+- `2026-08-20 14:53` — `src/components/ThinkingDots.tsx`
+- `2026-08-20 14:51` — `src/components/ThinkingDots.tsx`
+- `2026-08-20 14:48` — `src/components/IntroView.tsx`
+- `2026-08-20 14:45` — `../../../../../../Users/elmopr77/.cursor/projects/Volumes-REDDRIVE-App-Portfolio-Development-Builds-Personal-website-portfolio-KryoGames/agent-tools/4ee79a12-031c-4e18-ab44-7e37d310af5a.txt`
+- `2026-08-20 14:45` — `../../../../../../Users/elmopr77/.cursor/projects/Volumes-REDDRIVE-App-Portfolio-Development-Builds-Personal-website-portfolio-KryoGames/agent-tools/105900c9-e236-4232-9443-c8cce55e1af0.txt`
+- `2026-08-20 14:45` — `../../../../../../Users/elmopr77/.cursor/projects/Volumes-REDDRIVE-App-Portfolio-Development-Builds-Personal-website-portfolio-KryoGames/agent-tools/01110b17-4f03-480c-900a-fc6354e1160f.txt`
+- `2026-08-20 14:45` — `../../../../../../Users/elmopr77/.cursor/projects/Volumes-REDDRIVE-App-Portfolio-Development-Builds-Personal-website-portfolio-KryoGames/agent-tools/dfafa39b-dd77-4141-8a5d-d18f7ebbfe8b.txt`
 - `2026-08-19 16:09` — `src/components/library/FriendToasts.tsx`
 - `2026-08-19 16:09` — `src/lib/notificationSound.ts`
 - `2026-08-19 16:02` — `src/components/library/LibraryView.css`
@@ -284,25 +308,5 @@ When making changes to this project:
 - `2026-08-19 16:00` — `src/components/library/LibraryView.css`
 - `2026-08-19 15:59` — `src/components/library/LibraryView.css`
 - `2026-08-19 15:59` — `src/components/library/ProfileView.tsx`
-- `2026-08-19 15:59` — `src/components/library/FriendsView.tsx`
-- `2026-08-19 15:59` — `src/components/library/LibraryView.tsx`
-- `2026-08-19 15:59` — `src/components/library/FriendToasts.tsx`
-- `2026-08-19 15:59` — `src/lib/friends.ts`
-- `2026-08-19 15:58` — `src/lib/friends.ts`
-- `2026-08-17 21:05` — `src/data/games.ts`
-- `2026-08-17 17:57` — `src/components/IntroView.css`
-- `2026-08-17 17:57` — `src/components/IntroView.tsx`
-- `2026-08-17 17:55` — `src/components/ThinkingDots.tsx`
-- `2026-08-17 17:55` — `src/components/IntroView.css`
-- `2026-08-17 17:55` — `src/components/IntroView.tsx`
-- `2026-08-17 17:55` — `src/components/ThinkingDots.css`
-- `2026-08-17 17:51` — `tsconfig.app.json`
-- `2026-08-17 17:51` — `vite.config.ts`
-- `2026-08-17 17:51` — `.env.example`
-- `2026-08-17 17:51` — `src/components/ThinkingDots.tsx`
-- `2026-08-17 17:51` — `src/components/IntroView.css`
-- `2026-08-17 17:47` — `tsconfig.app.json`
-- `2026-08-17 17:47` — `vite.config.ts`
-- `2026-08-17 17:47` — `.env.example`
 <!-- /AUTO:RECENT_EDITS -->
 -->

@@ -1,16 +1,74 @@
-import { useState } from 'react'
+import { Component, lazy, Suspense, useEffect, useState, type ReactNode } from 'react'
 import { AuthModal, type AuthMode } from './AuthModal'
 import { useTheme } from '../contexts/ThemeContext'
 import './IntroView.css'
 
+const ThinkingDots = lazy(() => import('./ThinkingDots'))
+
+const DOTS_THEME = {
+  dark: {
+    color: '#ff44af',
+    accentColor: '#ff44af',
+    backgroundColor: '#121212',
+    ambient: 0.42,
+  },
+  light: {
+    color: '#ff44af',
+    accentColor: '#ff44af',
+    backgroundColor: '#eef0f3',
+    ambient: 0.38,
+  },
+} as const
+
+class BackdropErrorBoundary extends Component<
+  { children: ReactNode },
+  { failed: boolean }
+> {
+  state = { failed: false }
+
+  static getDerivedStateFromError() {
+    return { failed: true }
+  }
+
+  render() {
+    if (this.state.failed) return null
+    return this.props.children
+  }
+}
+
 export function IntroView() {
   const [authMode, setAuthMode] = useState<AuthMode | null>(null)
+  const [reduceMotion, setReduceMotion] = useState(false)
   const { theme, setTheme } = useTheme()
   const year = new Date().getFullYear()
+  const dots = DOTS_THEME[theme]
   const nextTheme = theme === 'dark' ? 'light' : 'dark'
+
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const update = () => setReduceMotion(mq.matches)
+    update()
+    mq.addEventListener('change', update)
+    return () => mq.removeEventListener('change', update)
+  }, [])
 
   return (
     <div className="intro">
+      <div className="intro-dots" aria-hidden="true">
+        <BackdropErrorBoundary>
+          <Suspense fallback={null}>
+            <ThinkingDots
+              color={dots.color}
+              accentColor={dots.accentColor}
+              backgroundColor={dots.backgroundColor}
+              ambient={dots.ambient}
+              paused={reduceMotion}
+              cursorInteraction={!reduceMotion}
+            />
+          </Suspense>
+        </BackdropErrorBoundary>
+      </div>
+
       <header className="intro-header">
         <span className="intro-brand">Kryo Games</span>
         <div className="intro-header-actions">

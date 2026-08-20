@@ -1,8 +1,40 @@
 .intro {
+  position: relative;
+  isolation: isolate;
   min-height: 100svh;
   display: flex;
   flex-direction: column;
   background: var(--bg-deep);
+  overflow: hidden;
+}
+
+.intro-dots {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* Very light center lift only — heavy veil was making the hero feel dark */
+.intro-dots::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      ellipse 50% 42% at 50% 46%,
+      color-mix(in srgb, var(--bg-deep) 10%, transparent) 0%,
+      transparent 70%
+    );
+  pointer-events: none;
+}
+
+.intro-header,
+.intro-main,
+.intro-footer {
+  position: relative;
+  z-index: 1;
 }
 
 .intro-header {
@@ -19,12 +51,22 @@
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--text-bright);
+  text-shadow:
+    0 1px 2px color-mix(in srgb, var(--bg-deep) 70%, transparent),
+    0 0 28px color-mix(in srgb, var(--bg-deep) 55%, transparent);
 }
 
 .intro-header-actions {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  padding: 0.35rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--bg-deep) 48%, transparent);
+  border: 1px solid color-mix(in srgb, var(--text-bright) 12%, transparent);
+  backdrop-filter: blur(14px) saturate(1.15);
+  -webkit-backdrop-filter: blur(14px) saturate(1.15);
+  box-shadow: 0 10px 28px color-mix(in srgb, #000 22%, transparent);
 }
 
 .intro-theme-toggle {
@@ -33,9 +75,9 @@
   width: 2.25rem;
   height: 2.25rem;
   padding: 0;
-  border: 1px solid color-mix(in srgb, var(--text-bright) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--text-bright) 14%, transparent);
   border-radius: 999px;
-  background: var(--bg-surface);
+  background: color-mix(in srgb, var(--bg-surface) 70%, transparent);
   color: var(--text-bright);
   transition:
     background 0.2s ease,
@@ -45,14 +87,37 @@
 }
 
 .intro-theme-toggle:hover {
-  background: var(--bg-elevated, var(--bg-surface));
-  border-color: color-mix(in srgb, var(--text-bright) 22%, transparent);
+  background: color-mix(in srgb, var(--bg-elevated, var(--bg-surface)) 85%, transparent);
+  border-color: color-mix(in srgb, var(--text-bright) 26%, transparent);
   transform: translateY(-1px);
 }
 
 .intro-theme-toggle:focus-visible {
   outline: 2px solid color-mix(in srgb, var(--text-bright) 55%, transparent);
   outline-offset: 2px;
+}
+
+.intro .btn-ghost {
+  color: color-mix(in srgb, var(--text-bright) 88%, transparent);
+}
+
+.intro .btn-ghost:hover:not(:disabled) {
+  color: var(--text-bright);
+  background: color-mix(in srgb, var(--text-bright) 8%, transparent);
+}
+
+.intro .btn-secondary {
+  background: color-mix(in srgb, var(--bg-surface) 72%, transparent);
+  border-color: color-mix(in srgb, var(--text-bright) 16%, transparent);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 8px 22px color-mix(in srgb, #000 18%, transparent);
+}
+
+.intro .btn-primary {
+  box-shadow:
+    0 8px 24px color-mix(in srgb, #000 28%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--text-bright) 8%, transparent);
 }
 
 .intro-main {
@@ -68,6 +133,15 @@
 
 .intro-hero {
   max-width: 36rem;
+  padding: clamp(1.35rem, 3.5vw, 2rem) clamp(1.35rem, 4vw, 2.5rem);
+  border-radius: calc(var(--radius) + 8px);
+  background: color-mix(in srgb, var(--bg-deep) 3%, transparent);
+  border: 1px solid color-mix(in srgb, var(--text-bright) 10%, transparent);
+  backdrop-filter: blur(10px) saturate(1.2);
+  -webkit-backdrop-filter: blur(10px) saturate(1.2);
+  box-shadow:
+    0 16px 40px color-mix(in srgb, #000 14%, transparent),
+    inset 0 1px 0 color-mix(in srgb, #fff 8%, transparent);
 }
 
 .intro-hero h1 {
@@ -75,15 +149,22 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  color: var(--text-bright);
+  text-shadow:
+    0 1px 2px color-mix(in srgb, var(--bg-deep) 75%, transparent),
+    0 8px 32px color-mix(in srgb, var(--bg-deep) 55%, transparent);
 }
 
 .intro-lead {
   margin-top: 1rem;
   font-size: 1.0625rem;
-  color: var(--text-muted);
+  font-weight: 500;
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--text-bright) 86%, transparent);
   max-width: 32ch;
   margin-left: auto;
   margin-right: auto;
+  text-shadow: 0 1px 12px color-mix(in srgb, var(--bg-deep) 50%, transparent);
 }
 
 .intro-actions {
@@ -105,8 +186,12 @@
 
 .intro-tile {
   aspect-ratio: 1;
-  background: var(--bg-surface);
+  background: color-mix(in srgb, var(--bg-surface) 52%, transparent);
+  border: 1px solid color-mix(in srgb, var(--text-bright) 10%, transparent);
   border-radius: var(--radius);
+  backdrop-filter: blur(12px) saturate(1.1);
+  -webkit-backdrop-filter: blur(12px) saturate(1.1);
+  box-shadow: 0 12px 28px color-mix(in srgb, #000 18%, transparent);
 }
 
 .intro-tile--label {
@@ -123,11 +208,34 @@
   padding: 1.5rem;
   text-align: center;
   font-size: 0.8125rem;
-  color: var(--text-muted);
+  color: color-mix(in srgb, var(--text-bright) 72%, transparent);
+  text-shadow: 0 1px 10px color-mix(in srgb, var(--bg-deep) 55%, transparent);
 }
 
 @media (max-width: 640px) {
   .intro-teaser {
     grid-template-columns: repeat(2, minmax(0, 140px));
+  }
+
+  .intro-header-actions {
+    gap: 0.35rem;
+    padding: 0.28rem;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .intro-dots::after {
+    background: color-mix(in srgb, var(--bg-deep) 22%, transparent);
+  }
+
+  .intro-header-actions,
+  .intro-tile,
+  .intro .btn-secondary {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .intro-hero {
+    background: transparent;
   }
 }
