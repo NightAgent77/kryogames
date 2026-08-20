@@ -205,6 +205,28 @@ dialog.auth-modal:modal {
   box-shadow: 0 0 0 3px var(--accent-dim);
 }
 
+/* Cover the browser's harsh green/yellow saved-login paint with UI surfaces */
+.auth-field input:autofill,
+.auth-field input:-webkit-autofill,
+.auth-field input:-webkit-autofill:hover,
+.auth-field input:-webkit-autofill:focus,
+.auth-field input:-webkit-autofill:active {
+  color: var(--text-bright);
+  -webkit-text-fill-color: var(--text-bright);
+  caret-color: var(--text-bright);
+  border-color: color-mix(in srgb, var(--text-bright) 12%, transparent);
+  box-shadow: 0 0 0 1000px color-mix(in srgb, var(--bg-deep) 86%, var(--bg-surface)) inset;
+  transition: background-color 99999s ease-out 0s, border-color 0.2s, box-shadow 0.2s;
+}
+
+.auth-field input:autofill:focus,
+.auth-field input:-webkit-autofill:focus {
+  border-color: var(--focus-ring);
+  box-shadow:
+    0 0 0 1000px color-mix(in srgb, var(--bg-deep) 86%, var(--bg-surface)) inset,
+    0 0 0 3px var(--accent-dim);
+}
+
 .auth-form-extras {
   display: flex;
   align-items: center;

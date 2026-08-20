@@ -3,7 +3,7 @@
 > Living document for AI agent continuity. Updated automatically on file edits and substantively by agents after meaningful changes.
 
 <!-- AUTO:LAST_UPDATED -->
-**Last updated:** 2026-08-20 17:28 (auto)
+**Last updated:** 2026-08-20 17:33 (auto)
 <!-- /AUTO:LAST_UPDATED -->
 
 ---
@@ -131,7 +131,7 @@ src/
 - Light: cool gray `#eef0f3` page, white surfaces, dark text `#12141a`
 - Theme tokens live in `index.css`; preference persisted in `localStorage` (`kryogames-theme`)
 - Rounded panels (~12px); Inter only (no Orbitron / neon cyber look)
-- Auth modal restyled to the same surfaces
+- Auth modal restyled to the same surfaces; browser saved-login autofill uses the same slate fill/text as the fields (no default harsh green)
 - Sign up / Log in / forgot `<dialog>` panels use frosted glass (`backdrop-filter` on `.auth-modal-shell` plus dim `::backdrop`) in light and dark, matching the intro title widget
 
 ### Library (signed-in)
@@ -279,6 +279,7 @@ When making changes to this project:
 ## Recent edits (auto)
 
 <!-- AUTO:RECENT_EDITS -->
+- `2026-08-20 17:33` — `src/App.css`
 - `2026-08-20 17:28` — `src/components/IntroView.css`
 - `2026-08-20 17:28` — `vite.config.ts`
 - `2026-08-20 17:27` — `vite.config.ts`
@@ -308,6 +309,5 @@ When making changes to this project:
 - `2026-08-20 16:40` — `src/App.css`
 - `2026-08-20 15:23` — `src/App.css`
 - `2026-08-20 15:16` — `src/components/ThinkingDots.tsx`
-- `2026-08-20 15:15` — `src/components/ThinkingDots.tsx`
 <!-- /AUTO:RECENT_EDITS -->
 -->
