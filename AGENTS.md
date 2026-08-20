@@ -3,7 +3,7 @@
 > Living document for AI agent continuity. Updated automatically on file edits and substantively by agents after meaningful changes.
 
 <!-- AUTO:LAST_UPDATED -->
-**Last updated:** 2026-08-20 17:19 (auto)
+**Last updated:** 2026-08-20 17:28 (auto)
 <!-- /AUTO:LAST_UPDATED -->
 
 ---
@@ -24,7 +24,7 @@
 ## Tech stack
 
 - **Framework:** React 19 + TypeScript
-- **Build tool:** Vite 8
+- **Build tool:** Vite 8 (custom `preserveBackdropFilter` plugin — LightningCSS would otherwise drop unprefixed `backdrop-filter` and kill intro/auth frost on the live site)
 - **Auth / backend:** Supabase (`@supabase/supabase-js`)
 - **Motion:** `motion` (React Bits–style Dock springs in the library sidebar / profile menu)
 - **Intro backdrop:** custom WebGL `ThinkingDots` (React Bits Pro–style density cloud; no Pro license dep)
@@ -191,6 +191,7 @@ src/
 ### Deployment config
 - `vercel.json` — SPA rewrite so client routes work when added later
 - `VITE_SITE_URL=https://kryogames.com` for production auth redirects
+- `vite.config.ts` `preserveBackdropFilter` plugin re-emits unprefixed `backdrop-filter` after LightningCSS minify so Chromium/Firefox frost works on Vercel; intro frost also copies Thinking Dots onto a 2D canvas because raw WebGL is not sampled
 
 ### Agent handoff
 - `AGENTS.md` — living handoff doc (architecture, features, env, deployment, pending work)
@@ -278,6 +279,11 @@ When making changes to this project:
 ## Recent edits (auto)
 
 <!-- AUTO:RECENT_EDITS -->
+- `2026-08-20 17:28` — `src/components/IntroView.css`
+- `2026-08-20 17:28` — `vite.config.ts`
+- `2026-08-20 17:27` — `vite.config.ts`
+- `2026-08-20 17:25` — `vite.config.ts`
+- `2026-08-20 17:25` — `../../../../../../Users/elmopr77/.cursor/projects/Volumes-REDDRIVE-App-Portfolio-Development-Builds-Personal-website-portfolio-KryoGames/agent-tools/edfa2d24-a274-4cc3-b708-637117ce45e5.txt`
 - `2026-08-20 17:19` — `src/components/IntroView.tsx`
 - `2026-08-20 17:19` — `src/App.css`
 - `2026-08-20 17:19` — `src/components/IntroView.css`
@@ -303,10 +309,5 @@ When making changes to this project:
 - `2026-08-20 15:23` — `src/App.css`
 - `2026-08-20 15:16` — `src/components/ThinkingDots.tsx`
 - `2026-08-20 15:15` — `src/components/ThinkingDots.tsx`
-- `2026-08-20 15:08` — `src/components/IntroView.css`
-- `2026-08-20 15:07` — `src/components/IntroView.css`
-- `2026-08-20 15:04` — `src/components/IntroView.css`
-- `2026-08-20 15:03` — `src/components/IntroView.css`
-- `2026-08-20 15:02` — `src/components/IntroView.css`
 <!-- /AUTO:RECENT_EDITS -->
 -->

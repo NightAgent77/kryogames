@@ -4,6 +4,8 @@
   display: flex;
   flex-direction: column;
   background: var(--bg-deep);
+  /* Cache-bust: keep this token so production CSS hash changes with frost fixes */
+  --intro-frost: 1;
 }
 
 .intro-dots {
