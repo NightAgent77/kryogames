@@ -135,13 +135,18 @@
   max-width: 36rem;
   padding: clamp(1.35rem, 3.5vw, 2rem) clamp(1.35rem, 4vw, 2.5rem);
   border-radius: calc(var(--radius) + 8px);
-  background: color-mix(in srgb, var(--bg-deep) 3%, transparent);
-  border: 1px solid color-mix(in srgb, var(--text-bright) 10%, transparent);
-  backdrop-filter: blur(10px) saturate(1.2);
-  -webkit-backdrop-filter: blur(10px) saturate(1.2);
+  /* Fill high enough to read as glass even when backdrop-filter can't sample WebGL */
+  background: color-mix(in srgb, var(--bg-deep) 22%, transparent);
+  border: 1px solid color-mix(in srgb, var(--text-bright) 12%, transparent);
+  backdrop-filter: blur(14px) saturate(1.25);
+  -webkit-backdrop-filter: blur(14px) saturate(1.25);
   box-shadow:
-    0 16px 40px color-mix(in srgb, #000 14%, transparent),
-    inset 0 1px 0 color-mix(in srgb, #fff 8%, transparent);
+    0 16px 40px color-mix(in srgb, #000 16%, transparent),
+    inset 0 1px 0 color-mix(in srgb, #fff 10%, transparent);
+}
+
+[data-theme='light'] .intro-hero {
+  background: color-mix(in srgb, #ffffff 36%, transparent);
 }
 
 .intro-hero h1 {
@@ -236,7 +241,12 @@
     -webkit-backdrop-filter: none;
   }
 
+  /* Keep a readable glass plate — transparent was wiping the title widget */
   .intro-hero {
-    background: color-mix(in srgb, var(--bg-deep) 45%, transparent);
+    background: color-mix(in srgb, var(--bg-deep) 55%, transparent);
+  }
+
+  [data-theme='light'] .intro-hero {
+    background: color-mix(in srgb, #ffffff 70%, transparent);
   }
 }

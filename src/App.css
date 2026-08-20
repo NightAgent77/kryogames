@@ -50,62 +50,83 @@
 
 /* Auth modal */
 
-.auth-modal {
+dialog.auth-modal,
+dialog.auth-modal[open],
+dialog.auth-modal:modal {
+  margin: auto;
   padding: 0;
-  border: none;
-  background: transparent;
-  max-width: none;
-  max-height: none;
+  border: none !important;
+  outline: none;
+  box-shadow: none;
+  /* UA stylesheet uses Canvas — that square peeks through rounded children */
+  background: none !important;
+  background-color: transparent !important;
+  color: inherit;
+  max-width: 100vw;
+  max-height: 100vh;
+  overflow: visible;
 }
 
 .auth-modal::backdrop {
-  background: color-mix(in srgb, var(--bg-deep) 35%, transparent);
+  background: color-mix(in srgb, var(--bg-deep) 40%, transparent);
   backdrop-filter: blur(12px) saturate(1.15);
   -webkit-backdrop-filter: blur(12px) saturate(1.15);
 }
 
+/* Frost + radius live on the shell so corners can't reveal a square parent */
+.auth-modal-shell {
+  width: min(420px, calc(100vw - 2rem));
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: color-mix(in srgb, var(--bg-surface) 72%, transparent);
+  border: 1px solid color-mix(in srgb, var(--text-bright) 14%, transparent);
+  box-shadow: var(--shadow-modal);
+}
+
+[data-theme='light'] .auth-modal-shell {
+  background: color-mix(in srgb, #ffffff 78%, transparent);
+  border-color: color-mix(in srgb, var(--text-bright) 12%, transparent);
+}
+
+[data-theme='dark'] .auth-modal-shell {
+  background: color-mix(in srgb, var(--bg-surface) 70%, transparent);
+}
+
 .auth-modal-panel {
   position: relative;
-  width: min(420px, calc(100vw - 2rem));
+  width: 100%;
   padding: 2rem;
-  /* Fallback fill first — still looks glassy if blur is blocked (dialog top-layer / OS setting) */
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, #fff 10%, transparent),
-      transparent 42%
-    ),
-    color-mix(in srgb, var(--bg-surface) 55%, transparent);
-  border: 1px solid color-mix(in srgb, var(--text-bright) 14%, transparent);
-  border-radius: var(--radius-lg);
-  backdrop-filter: blur(18px) saturate(1.25);
-  -webkit-backdrop-filter: blur(18px) saturate(1.25);
-  box-shadow:
-    var(--shadow-modal),
-    inset 0 1px 0 color-mix(in srgb, #fff 14%, transparent);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
 }
 
-[data-theme='light'] .auth-modal-panel {
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, #fff 55%, transparent),
-      color-mix(in srgb, #fff 28%, transparent)
-    );
-  border-color: color-mix(in srgb, var(--text-bright) 12%, transparent);
-  box-shadow:
-    var(--shadow-modal),
-    inset 0 1px 0 color-mix(in srgb, #fff 70%, transparent);
+.auth-modal-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, #fff 14%, transparent),
+    transparent 45%
+  );
+  box-shadow: inset 0 1px 0 color-mix(in srgb, #fff 14%, transparent);
 }
 
-[data-theme='dark'] .auth-modal-panel {
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, #fff 8%, transparent),
-      transparent 40%
-    ),
-    color-mix(in srgb, var(--bg-surface) 48%, transparent);
+.auth-modal-panel > * {
+  position: relative;
+  z-index: 1;
+}
+
+[data-theme='light'] .auth-modal-panel::before {
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, #fff 60%, transparent),
+    transparent 50%
+  );
+  box-shadow: inset 0 1px 0 color-mix(in srgb, #fff 80%, transparent);
 }
 
 .auth-modal-close {
@@ -166,12 +187,10 @@
   padding: 0.625rem 0.875rem;
   font-size: 0.9375rem;
   color: var(--text-bright);
-  background: color-mix(in srgb, var(--bg-deep) 48%, transparent);
+  background: color-mix(in srgb, var(--bg-deep) 55%, transparent);
   border: 1px solid color-mix(in srgb, var(--text-bright) 12%, transparent);
   border-radius: var(--radius);
   outline: none;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
 }
 
@@ -234,45 +253,31 @@
   color: #fca5a5;
   background: color-mix(in srgb, #ef4444 14%, transparent);
   border: 1px solid color-mix(in srgb, #ef4444 28%, transparent);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
 }
 
 .auth-alert--success {
   color: #6ee7b7;
   background: color-mix(in srgb, #10b981 14%, transparent);
   border: 1px solid color-mix(in srgb, #10b981 28%, transparent);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
 }
 
 @media (prefers-reduced-transparency: reduce) {
-  /* Keep a translucent glass look — don't snap back to solid slabs */
   .auth-modal::backdrop {
     background: color-mix(in srgb, var(--bg-deep) 55%, transparent);
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
   }
 
-  .auth-modal-panel,
-  [data-theme='light'] .auth-modal-panel,
-  [data-theme='dark'] .auth-modal-panel {
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
+  [data-theme='dark'] .auth-modal-shell {
+    background: color-mix(in srgb, var(--bg-surface) 92%, transparent);
   }
 
-  [data-theme='dark'] .auth-modal-panel {
-    background: color-mix(in srgb, var(--bg-surface) 82%, transparent);
-  }
-
-  [data-theme='light'] .auth-modal-panel {
-    background: color-mix(in srgb, #ffffff 88%, transparent);
+  [data-theme='light'] .auth-modal-shell {
+    background: color-mix(in srgb, #ffffff 94%, transparent);
   }
 
   .auth-field input {
-    background: color-mix(in srgb, var(--bg-deep) 78%, transparent);
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
+    background: color-mix(in srgb, var(--bg-deep) 72%, transparent);
   }
 }
 

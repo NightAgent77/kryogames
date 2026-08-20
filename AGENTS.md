@@ -3,7 +3,7 @@
 > Living document for AI agent continuity. Updated automatically on file edits and substantively by agents after meaningful changes.
 
 <!-- AUTO:LAST_UPDATED -->
-**Last updated:** 2026-08-20 16:40 (auto)
+**Last updated:** 2026-08-20 17:05 (auto)
 <!-- /AUTO:LAST_UPDATED -->
 
 ---
@@ -132,7 +132,7 @@ src/
 - Theme tokens live in `index.css`; preference persisted in `localStorage` (`kryogames-theme`)
 - Rounded panels (~12px); Inter only (no Orbitron / neon cyber look)
 - Auth modal restyled to the same surfaces
-- Sign up / Log in / forgot modals use frosted glass panels (translucent fill + blur) in both light and dark; inputs match
+- Sign up / Log in / forgot `<dialog>` panels use frosted glass (translucent fill + blur) in light and dark, matching the intro title widget
 
 ### Library (signed-in)
 - Sidebar: **Home** (web catalog) + **Game library** (nested **My Games**, **Favorites**) + **Friends**
@@ -278,6 +278,20 @@ When making changes to this project:
 ## Recent edits (auto)
 
 <!-- AUTO:RECENT_EDITS -->
+- `2026-08-20 17:05` — `src/App.css`
+- `2026-08-20 17:04` — `src/App.css`
+- `2026-08-20 17:03` — `../../../../../../Users/elmopr77/.cursor/projects/Volumes-REDDRIVE-App-Portfolio-Development-Builds-Personal-website-portfolio-KryoGames/assets/Screenshot_2026-08-20_at_1.02.57_PM__2_-d8402fa0-f733-41c0-84bb-d28617928daa.png`
+- `2026-08-20 17:02` — `src/App.css`
+- `2026-08-20 17:02` — `src/components/AuthModal.tsx`
+- `2026-08-20 17:01` — `src/App.css`
+- `2026-08-20 16:59` — `src/App.css`
+- `2026-08-20 16:57` — `src/components/IntroView.css`
+- `2026-08-20 16:54` — `src/App.css`
+- `2026-08-20 16:54` — `src/components/IntroView.css`
+- `2026-08-20 16:54` — `src/components/IntroView.tsx`
+- `2026-08-20 16:54` — `src/components/AuthModal.tsx`
+- `2026-08-20 16:52` — `src/App.css`
+- `2026-08-20 16:52` — `src/components/IntroView.css`
 - `2026-08-20 16:40` — `src/components/IntroView.css`
 - `2026-08-20 16:40` — `src/App.css`
 - `2026-08-20 15:23` — `src/App.css`
@@ -294,19 +308,5 @@ When making changes to this project:
 - `2026-08-20 14:58` — `src/components/IntroView.css`
 - `2026-08-20 14:56` — `src/components/IntroView.css`
 - `2026-08-20 14:53` — `src/components/ThinkingDots.tsx`
-- `2026-08-20 14:51` — `src/components/ThinkingDots.tsx`
-- `2026-08-20 14:48` — `src/components/IntroView.tsx`
-- `2026-08-20 14:45` — `../../../../../../Users/elmopr77/.cursor/projects/Volumes-REDDRIVE-App-Portfolio-Development-Builds-Personal-website-portfolio-KryoGames/agent-tools/4ee79a12-031c-4e18-ab44-7e37d310af5a.txt`
-- `2026-08-20 14:45` — `../../../../../../Users/elmopr77/.cursor/projects/Volumes-REDDRIVE-App-Portfolio-Development-Builds-Personal-website-portfolio-KryoGames/agent-tools/105900c9-e236-4232-9443-c8cce55e1af0.txt`
-- `2026-08-20 14:45` — `../../../../../../Users/elmopr77/.cursor/projects/Volumes-REDDRIVE-App-Portfolio-Development-Builds-Personal-website-portfolio-KryoGames/agent-tools/01110b17-4f03-480c-900a-fc6354e1160f.txt`
-- `2026-08-20 14:45` — `../../../../../../Users/elmopr77/.cursor/projects/Volumes-REDDRIVE-App-Portfolio-Development-Builds-Personal-website-portfolio-KryoGames/agent-tools/dfafa39b-dd77-4141-8a5d-d18f7ebbfe8b.txt`
-- `2026-08-19 16:09` — `src/components/library/FriendToasts.tsx`
-- `2026-08-19 16:09` — `src/lib/notificationSound.ts`
-- `2026-08-19 16:02` — `src/components/library/LibraryView.css`
-- `2026-08-19 16:02` — `src/components/library/LibraryView.tsx`
-- `2026-08-19 16:01` — `src/components/library/FriendToasts.tsx`
-- `2026-08-19 16:00` — `supabase/friends.sql`
-- `2026-08-19 16:00` — `supabase/friends-realtime.sql`
-- `2026-08-19 16:00` — `src/components/library/LibraryView.css`
 <!-- /AUTO:RECENT_EDITS -->
 -->

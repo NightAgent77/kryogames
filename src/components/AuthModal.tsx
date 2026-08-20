@@ -102,7 +102,8 @@ export function AuthModal({ mode, onClose, onSwitchMode }: AuthModalProps) {
 
   return (
     <dialog ref={dialogRef} className="auth-modal" aria-labelledby={titleId}>
-      <div className="auth-modal-panel">
+      <div className="auth-modal-shell">
+        <div className="auth-modal-panel">
         <button
           type="button"
           className="auth-modal-close"
@@ -257,6 +258,7 @@ export function AuthModal({ mode, onClose, onSwitchMode }: AuthModalProps) {
             </>
           )}
         </p>
+        </div>
       </div>
     </dialog>
   )
