@@ -60,4 +60,18 @@ export const games: Game[] = [
     coverImage: '/games/tut-1.png',
     coverAspectRatio: 874 / 575,
   },
+  {
+    id: 'tut-2',
+    title: 'Tutorial Game 2',
+    description:
+      'A short q5play maze. Steer the blue block through red corridors across three rooms to escape — Enter or the button to start, arrows to move.',
+    genre: 'Maze',
+    status: 'playable',
+    platform: 'web',
+    tags: ['Web', 'Maze', 'Single-player'],
+    playUrl:
+      'https://pub-e379ba287a9f4d8ba4cdbd6b6095cb6c.r2.dev/tut-2/index.html',
+    coverImage: '/games/tut-2.png',
+    coverAspectRatio: 874 / 575,
+  },
 ]

@@ -3,7 +3,7 @@
 > Living document for AI agent continuity. Updated automatically on file edits and substantively by agents after meaningful changes.
 
 <!-- AUTO:LAST_UPDATED -->
-**Last updated:** 2026-08-20 17:33 (auto)
+**Last updated:** 2026-08-22 04:33 (auto)
 <!-- /AUTO:LAST_UPDATED -->
 
 ---
@@ -67,7 +67,8 @@ public/
 └── games/
     ├── snake-run.png        # Snake Run cover art
     ├── fruit-rally.jpg      # Fruit Rally cover art
-    └── tut-1.png            # Tutorial Game 1 cover art
+    ├── tut-1.png            # Tutorial Game 1 cover art
+    └── tut-2.png            # Tutorial Game 2 cover art
 src/
 ├── main.tsx                 # App entry, wraps ThemeProvider + AuthProvider
 ├── App.tsx                  # Auth gate: loading → IntroView | LibraryView
@@ -157,7 +158,9 @@ src/
 - **Snake Run** (`snake-run`) — Web, `status: playable`, Cloudflare R2: `https://pub-e379ba287a9f4d8ba4cdbd6b6095cb6c.r2.dev/snake-run/index.html`
 - **Fruit Rally** (`fruit-rally`) — comic-book arcade racer; Web, `status: playable`, Cloudflare R2: `https://pub-e379ba287a9f4d8ba4cdbd6b6095cb6c.r2.dev/fruit-rally/index.html`
 - **Tutorial Game 1** (`tut-1`) — q5play platformer; Web, `status: playable`, Cloudflare R2: `https://pub-e379ba287a9f4d8ba4cdbd6b6095cb6c.r2.dev/tut-1/index.html`
+- **Tutorial Game 2** (`tut-2`) — q5play maze (“Escape the MAZE”); Web, `status: playable`, Cloudflare R2: `https://pub-e379ba287a9f4d8ba4cdbd6b6095cb6c.r2.dev/tut-2/index.html`
 - Cover art: `public/games/tut-1.png` — 874×575 geometric title card (red player, grey steps, gold finish) matching Fruit Rally’s ratio
+- Cover art: `public/games/tut-2.png` — 874×575 maze title card (blue player, red wall tiles) matching Fruit Rally’s ratio
 - Cover art: `public/games/fruit-rally.jpg` — comic hero cropped to 874×575 (`874 / 575` ≈ Snake Run's 1.52) so the card matches Snake Run's shape; source screenshot's white side bars are cropped off, art bleeds edge to edge. Full parity with Snake Run (grid cover, GameDetail media slot, blurred wash, light + dark chrome)
 - Grid cards use `align-items: start` so each card keeps its cover's native height — mixed cover ratios must never be stretched (bands black space above the meta bar) or cropped
 - Cover art: `public/games/snake-run.png` (magenta title hero) via optional `coverImage` + `coverAspectRatio` — grid cards size to the image’s native ratio; GameDetail media slot matches so art scales bigger/smaller with no crop and no letterbox bars
@@ -233,7 +236,7 @@ src/
 ## Not yet implemented
 
 - In-page game embed (Play currently opens hosted URL in a new tab)
-- Additional games beyond Snake Run, Fruit Rally, and Tutorial Game 1
+- Additional games beyond Snake Run, Fruit Rally, Tutorial Game 1, and Tutorial Game 2
 - Game routes/pages (e.g. `/games/:id`) / React Router
 - Favorites sync across devices (currently localStorage only)
 - Played-games list UI (count + tracker exist in Supabase)
@@ -279,6 +282,8 @@ When making changes to this project:
 ## Recent edits (auto)
 
 <!-- AUTO:RECENT_EDITS -->
+- `2026-08-22 04:33` — `src/data/games.ts`
+- `2026-08-22 04:32` — `../../../../../../Users/elmopr77/.cursor/projects/Volumes-REDDRIVE-App-Portfolio-Development-Builds-Personal-website-portfolio-KryoGames/assets/tut-2.png`
 - `2026-08-20 17:33` — `src/App.css`
 - `2026-08-20 17:28` — `src/components/IntroView.css`
 - `2026-08-20 17:28` — `vite.config.ts`
@@ -307,7 +312,5 @@ When making changes to this project:
 - `2026-08-20 16:52` — `src/components/IntroView.css`
 - `2026-08-20 16:40` — `src/components/IntroView.css`
 - `2026-08-20 16:40` — `src/App.css`
-- `2026-08-20 15:23` — `src/App.css`
-- `2026-08-20 15:16` — `src/components/ThinkingDots.tsx`
 <!-- /AUTO:RECENT_EDITS -->
 -->
