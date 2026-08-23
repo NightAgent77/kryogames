@@ -1,5 +1,6 @@
 import { motion, useMotionValue, useSpring } from 'motion/react'
 import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import './KryoCursor.css'
 
 const REST_TILT = 18
@@ -52,11 +53,34 @@ export function KryoCursor() {
   const visibleRef = useRef(false)
   const overTextRef = useRef(false)
   const interactiveRef = useRef(false)
+  const [modalHost, setModalHost] = useState<HTMLElement | null>(null)
 
   const x = useMotionValue(-80)
   const y = useMotionValue(-80)
   const rawTilt = useMotionValue(REST_TILT)
   const tilt = useSpring(rawTilt, TILT_SPRING)
+
+  useEffect(() => {
+    const syncHost = () => {
+      const modal = document.querySelector('dialog:modal')
+      const next = modal instanceof HTMLElement ? modal : null
+      setModalHost((prev) => (prev === next ? prev : next))
+    }
+
+    syncHost()
+    document.addEventListener('toggle', syncHost, true)
+    const mo = new MutationObserver(syncHost)
+    mo.observe(document.documentElement, {
+      subtree: true,
+      childList: true,
+      attributes: true,
+      attributeFilter: ['open'],
+    })
+    return () => {
+      document.removeEventListener('toggle', syncHost, true)
+      mo.disconnect()
+    }
+  }, [])
 
   useEffect(() => {
     const pointerMq = window.matchMedia('(pointer: coarse)')
@@ -183,7 +207,7 @@ export function KryoCursor() {
 
   if (!enabled) return null
 
-  return (
+  const layer = (
     <div
       className={`kryo-cursor${visible && !overText ? ' kryo-cursor--on' : ''}${
         interactive ? ' kryo-cursor--hot' : ''
@@ -203,4 +227,6 @@ export function KryoCursor() {
       </motion.div>
     </div>
   )
+
+  return modalHost ? createPortal(layer, modalHost) : layer
 }

@@ -3,7 +3,7 @@
 > Living document for AI agent continuity. Updated automatically on file edits and substantively by agents after meaningful changes.
 
 <!-- AUTO:LAST_UPDATED -->
-**Last updated:** 2026-08-23 19:40 (auto)
+**Last updated:** 2026-08-23 20:04 (auto)
 <!-- /AUTO:LAST_UPDATED -->
 
 ---
@@ -155,7 +155,7 @@ src/
 - Rounded panels (~12px); Inter only (no Orbitron / neon cyber look)
 - Auth modal restyled to the same surfaces; browser saved-login autofill uses the same slate fill/text as the fields (no default harsh green)
 - Sign up / Log in / forgot `<dialog>` panels use frosted glass (`backdrop-filter` on `.auth-modal-shell` plus dim `::backdrop`) in light and dark, matching the intro title widget
-- **KryoCursor** (site-wide, `App.tsx`): custom ice-shard pointer that tracks the mouse 1:1 (no name tag). Aims fully in the move direction (down looks down, etc.), then eases back to an upward-diagonal rest. Yellow facet in dark (`#ffd23a`); black in light. Native cursor hidden on fine pointers; restored over text fields; skipped on touch. Not the React Bits Pro User Cursor package.
+- **KryoCursor** (site-wide, `App.tsx`): custom ice-shard pointer that tracks the mouse 1:1 (no name tag). Aims fully in the move direction (down looks down, etc.), then eases back to an upward-diagonal rest. Yellow facet in dark (`#ffd23a`); black in light. Native cursor hidden on fine pointers; restored over text fields; skipped on touch. Portals into an open `dialog:modal` (Log in / Sign up) so it paints above the top-layer popup. Not the React Bits Pro User Cursor package.
 
 ### Library (signed-in)
 - Sidebar: **Home** (web catalog) + **Game library** (nested **My Games**, **Favorites**) + **Friends**
@@ -309,6 +309,12 @@ When making changes to this project:
 ## Recent edits (auto)
 
 <!-- AUTO:RECENT_EDITS -->
+- `2026-08-23 20:04` — `src/components/KryoCursor.tsx`
+- `2026-08-23 20:04` — `src/components/AuthModal.tsx`
+- `2026-08-23 19:56` — `src/components/AuthModal.tsx`
+- `2026-08-23 19:55` — `src/components/KryoCursor.tsx`
+- `2026-08-23 19:54` — `src/components/KryoCursor.tsx`
+- `2026-08-23 19:54` — `src/components/AuthModal.tsx`
 - `2026-08-23 19:40` — `src/components/KryoCursor.css`
 - `2026-08-23 19:39` — `src/components/KryoCursor.css`
 - `2026-08-23 19:38` — `src/components/KryoCursor.css`
@@ -333,12 +339,6 @@ When making changes to this project:
 - `2026-08-23 05:04` — `src/components/library/FriendToasts.tsx`
 - `2026-08-23 05:04` — `src/components/library/NotificationBell.tsx`
 - `2026-08-23 05:04` — `src/components/library/LibraryTopBar.tsx`
-- `2026-08-23 05:04` — `.cursor/rules/game-detail-wash.mdc`
-- `2026-08-23 05:04` — `src/components/library/LibraryView.css`
-- `2026-08-23 05:04` — `src/contexts/AuthContext.tsx`
-- `2026-08-23 05:03` — `src/components/library/FriendToasts.tsx`
-- `2026-08-23 05:03` — `src/lib/notices.ts`
-- `2026-08-23 05:02` — `src/lib/notices.ts`
 <!-- /AUTO:RECENT_EDITS -->
 -->
 -->
