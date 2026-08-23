@@ -3,14 +3,14 @@
 > Living document for AI agent continuity. Updated automatically on file edits and substantively by agents after meaningful changes.
 
 <!-- AUTO:LAST_UPDATED -->
-**Last updated:** 2026-08-23 02:00 (auto)
+**Last updated:** 2026-08-23 05:24 (auto)
 <!-- /AUTO:LAST_UPDATED -->
 
 ---
 
 ## Project summary
 
-**KryoGames** is a personal indie game studio website that hosts browser-based web games (with optional downloadable builds planned). The UI splits by auth: a minimalist signed-out intro and a signed-in library dashboard (sidebar + game grid), with full Supabase authentication.
+**KryoGames** is a personal indie game studio website that hosts browser-based web games (with optional downloadable builds planned). The site is split into three routes: a public home (`/`), dedicated sign-up / log-in pages, and the signed-in app at `/play` (library dashboard), with full Supabase authentication.
 
 | Item | Value |
 |------|-------|
@@ -26,8 +26,11 @@
 - **Framework:** React 19 + TypeScript
 - **Build tool:** Vite 8 (custom `preserveBackdropFilter` plugin — LightningCSS would otherwise drop unprefixed `backdrop-filter` and kill intro/auth frost on the live site)
 - **Auth / backend:** Supabase (`@supabase/supabase-js`)
+- **Routing:** `react-router-dom` (`/` home, `/login` `/signup` `/forgot`, `/play`)
 - **Motion:** `motion` (React Bits–style Dock springs in the library sidebar / profile menu)
-- **Intro backdrop:** custom WebGL `ThinkingDots` (React Bits Pro–style density cloud; no Pro license dep)
+- **Public backdrop:** custom WebGL `ThinkingDots` on `/` and `/login` (same magenta dot grid; frames copy onto a 2D canvas so frost can sample them)
+- **Home scroll:** custom `ScrollStack` (React Bits Pro–style pinned cards that stack / turn / dissolve; no Pro license dep)
+- **Legacy helix backdrop:** custom WebGL `WarpTwister` still in repo, not mounted
 - **Linting:** oxlint
 - **Fonts:** Inter via Google Fonts
 - **Deployment:** Vercel (`vercel.json` SPA rewrites)
@@ -70,17 +73,28 @@ public/
     ├── tut-1.png            # Tutorial Game 1 cover art
     └── tut-2.png            # Tutorial Game 2 cover art
 src/
-├── main.tsx                 # App entry, wraps ThemeProvider + AuthProvider
-├── App.tsx                  # Auth gate: loading → IntroView | LibraryView
-├── App.css                  # Shared buttons + auth modal styles
+├── main.tsx                 # App entry: BrowserRouter + ThemeProvider + AuthProvider
+├── App.tsx                  # Routes: / HomeView, /login|/signup|/forgot IntroView, /play LibraryView
+├── App.css                  # Shared buttons + auth panel styles
 ├── index.css                # Global CSS variables & resets (dark + light themes)
 ├── vite-env.d.ts            # Vite env type definitions
 ├── components/
-│   ├── IntroView.tsx        # Signed-out signup landing (Thinking Dots backdrop)
+│   ├── HomeView.tsx         # Public home — Thinking Dots + hero + Scroll Stack
+│   ├── HomeView.css
+│   ├── ScrollStack.tsx      # Pinned description cards that stack on scroll
+│   ├── ScrollStack.css
+│   ├── WarpTwister.tsx      # Unused helix / warp tube WebGL backdrop
+│   ├── WarpTwister.css
+│   ├── PublicHeader.tsx     # Home header (Home link; Enter library when signed in)
+│   ├── PublicHeader.css
+│   ├── AuthPage.tsx         # Unused helix auth page (IntroView is the live auth landing)
+│   ├── AuthPage.css
+│   ├── AuthForm.tsx         # Shared auth form used by AuthModal
+│   ├── AuthModal.tsx        # Login / signup / forgot dialog on IntroView
+│   ├── IntroView.tsx        # Auth landing — Thinking Dots + frost hero + AuthModal
 │   ├── IntroView.css
 │   ├── ThinkingDots.tsx     # Intro dot-matrix density cloud (WebGL)
 │   ├── ThinkingDots.css
-│   ├── AuthModal.tsx        # Login / signup / forgot-password modals
 │   └── library/
 │       ├── LibraryView.tsx  # Signed-in shell (sidebar + main)
 │       ├── LibraryView.css
@@ -94,6 +108,7 @@ src/
 │       ├── FavoriteGemButton.tsx # Facet-diamond favorite toggle (animates red)
 │       ├── FriendsView.tsx  # Friends search, requests, Online / Offline lists
 │       ├── FriendToasts.tsx # Friend request / accept / came-online popups (under profile)
+│       ├── NotificationBell.tsx # Inbox bell beside the profile pill
 │       ├── ActivityHeatmap.tsx # Monthly play-hours calendar heatmap
 │       └── ProfileView.tsx  # Profile template (avatar + username)
 ├── contexts/
@@ -109,6 +124,7 @@ src/
 │   ├── playActivity.ts      # Daily play minutes (Supabase + session flush)
 │   ├── friends.ts           # Profiles search + friendships helpers
 │   ├── presence.ts          # Supabase Realtime presence (who is signed in)
+│   ├── notices.ts           # Session inbox + grouped online-friend greet
 │   ├── notificationSound.ts # Web Audio chime for friend toasts
 │   └── userDisplay.ts       # Display name / initials / avatar helpers
 └── supabase/
@@ -122,10 +138,12 @@ src/
 
 ## Features implemented
 
-### Dual auth views
-- **Signed out (`IntroView`):** minimalist brand landing — KRYO GAMES, short lead, Sign up / Log in, placeholder tile teaser; full-bleed **Thinking Dots** WebGL backdrop copied each frame onto a 2D canvas so intro frost (`backdrop-filter` on the title widget / header / tiles) can sample it the same way library wash samples cover art (raw WebGL is skipped by browsers); small-radius cursor highlight; pauses on `prefers-reduced-motion`; frosted hero / header chrome so type stays readable over the dots; header **theme toggle** (sun/moon) beside Log in / Sign up
-- **Signed in (`LibraryView`):** library shell matching design mockup — sidebar, search, profile pill, game grid; shell is viewport-locked so only `.library-main` scrolls — desktop sidebar pill stays fully visible (narrow screens still use the existing collapse/hover drawer)
-- **`App.tsx` gate:** `loading` → placeholder; `user` → library; else → intro (no React Router yet)
+### Three-route site
+- **`/` Home (`HomeView`):** GLAIST-style hero over the same **Thinking Dots** grid as `/login` (fixed full-bleed). Title + Get started sit high on first paint (not bottom-locked). No side lead / star marks, theme toggle, or game widgets. **Get started** → `/login`. Below the hero, a **Scroll Stack** of frost modal cards (Studio / Play / Library / Friends / Kryo Play): each card slides up from below over its own scroll window, then peeks/scales/blurs behind as the next takes over. Signed-in header CTA is **Enter library** → `/play`. Dots pause on `prefers-reduced-motion`; stack falls back to a static list
+- **`/login` `/signup` `/forgot` (`IntroView`):** Thinking Dots WebGL, frost hero with center Sign up / Log in (`AuthModal`), teaser tiles. Header is **Home** only — links back to `/`. No theme toggle or header Log in / Sign up. Signed-in visitors redirect to `/play`
+- **`/play` (`LibraryView`):** signed-in Kryo Play app — library shell matching design mockup — sidebar, search, profile pill, game grid; shell is viewport-locked so only `.library-main` scrolls — desktop sidebar pill stays fully visible (narrow screens still use the existing collapse/hover drawer). Unauthenticated `/play` redirects to `/login`. Log out returns to `/`
+- **`App.tsx`:** React Router routes above; `RequireAuth` wraps `/play`; loading placeholder while the session resolves
+- **`AuthPage`:** leftover helix-styled auth page; not mounted (IntroView is the live auth landing)
 
 ### Design system
 - Slate template with **dark** (default) and **light** themes via `data-theme` on `<html>`
@@ -143,13 +161,13 @@ src/
 - Search filters current tab by title (client-side) on Home / Favorites; Friends uses the same top search for usernames. The library search input is marked non-auth (`data-1p-ignore` / `autocomplete=off`) so password managers don’t treat tab switches as login prompts
 - Home tab lists `platform: 'web'` titles from `games.ts`
 - My Games: empty placeholder for now
-- **Friends:** top-bar search switches to “Search usernames” (games search hidden); send friend requests, accept/decline incoming (section only when pending); **Online** section only when someone is present (neon green status dots + live presence via Supabase Realtime `lib/presence.ts`), then **Offline** for everyone else; each friend row uses a ⋮ menu with **Invite to** (placeholder) and **Remove**; data in Supabase `profiles` + `friendships` (see `supabase/friends.sql`). **Presence** starts when the library mounts for a signed-in user and clears on logout / leave. **Toasts** (`FriendToasts`) appear upper-right under the profile pill on every library view: incoming request (Accept / Decline), “accepted your friend request”, and “is online now” when a friend signs back in; auto-dismiss after 6s with a short Web Audio chime; Supabase Realtime plus an 8s poll fallback for friendship rows
+- **Friends:** top-bar search switches to “Search usernames” (games search hidden); send friend requests, accept/decline incoming (section only when pending); **Online** section only when someone is present (neon green status dots + live presence via Supabase Realtime `lib/presence.ts`), then **Offline** for everyone else; each friend row uses a ⋮ menu with **Invite to** (placeholder) and **Remove**; data in Supabase `profiles` + `friendships` (see `supabase/friends.sql`). **Presence** starts when the library mounts for a signed-in user and clears on logout / leave. **Toasts** (`FriendToasts`) appear upper-right under the profile pill: incoming request (Accept / Decline), “accepted your friend request”, and online-now. Fresh sign-in waits ~1.6s, then one **grouped** “A, B and N others are online” toast (not one per friend); later joins debounce ~480ms into the same grouped toast. Pending requests land in the inbox after that greet (no burst of request toasts). Auto-dismiss after 6s with a short Web Audio chime; Supabase Realtime plus an 8s poll fallback. **Notification bell** (`NotificationBell`) sits beside the profile pill — unread badge + dropdown of friend requests and other notices (`lib/notices.ts`, `sessionStorage` `kryogames-notices:<userId>`); Accept / Decline from the inbox. Opening the panel marks items read. Logout clears the session greet so the next sign-in greets again.
 - Each game card has a bottom meta bar: title + platform icon (`PlatformIcon`)
 - Clicking a game card expands to **GameDetail** (cover, description, tags, Play / Coming soon, favorite gem)
 - GameDetail **art wash (locked, both themes):** full-library `.library-wash` blurred cover behind the sidebar pill **and** search / profile / nav; sharp cover in the media slot; light-on-dark type (white title/description/tags/Back; white Play with dark label). Frost widgets: light = white glass; dark = deeper bluish glass (`--wash-frost*`). Light theme uses almost no veil so cover color still reads — never dark ink or a milky white overlay on the wash. Leaving GameDetail **fades the wash and widget colors** (~420ms) instead of a hard cut.
 - **Favorites:** facet-diamond gem beside Play on GameDetail; toggle persists per signed-in user in `localStorage` (`kryogames-favorites:<userId>`); Favorites sidebar tab lists favorited games (search works); empty state when none. On wash: white glass outline → red + pop/burst when favorited, soft spin-out when removed.
 - Mobile / narrow: small hamburger stays visible; hovering it reveals the floating nav pill (hides on leave); tap still pins it open on touch
-- Profile pill: initials or uploaded avatar + username; dropdown with View profile, Appearance → Dark/Light, Settings (placeholder), Log out
+- Profile pill: initials or uploaded avatar + username; dropdown with View profile, Appearance → Dark/Light, Settings (placeholder), Log out. Notification bell sits immediately to the left of the pill (frost + white type on GameDetail / profile wash).
 - Profile page (`ProfileView`): gamer-style banner header aligned with the sidebar pill top — cover art fills the whole card; avatar, username, and About me overlay the bottom of the art (light-on-dark); frosted profile pill overlays the banner top-right (no Back, search hidden). Stats bar under banner: long horizontal surface holding compact sub-chips (**Friends**, **Games played**) with cyan numbers. Below that: **Activity heatmap** (`ActivityHeatmap`) — month calendar of daily play hours with blue intensity (0h / >2h / >4h / >8h), month picker. **Edit profile** switches into edit mode (live banner/avatar preview + form); **Apply changes** saves via `updateUser` (`avatar`, `banner`, `bio`, `username`) and returns to view mode; Cancel discards the draft
 - **Games played tracker:** Supabase `played_games` (distinct `game_id` per user); recorded when Play is clicked; one-time migrate from legacy `localStorage` (`kryogames-played:<userId>`)
 - **Play activity tracker:** Supabase `play_activity` (minutes per day) via `add_play_minutes` RPC; Play starts a `sessionStorage` timer, minutes flush when returning to the tab (capped); one-time migrate from legacy `localStorage` (`kryogames-play-activity:<userId>`)
@@ -173,7 +191,7 @@ src/
 - **Profile edits:** username + avatar via `updateUser` (`user_metadata`; avatar is a compressed data URL for now) and synced to `profiles`
 - **Log in:** email + password via `signInWithPassword`
 - **Log out:** clears session → returns to intro
-- **Forgot password:** sends reset email, redirects to `VITE_SITE_URL`
+- **Forgot password:** sends reset email, redirects to `VITE_SITE_URL/login`
 - **Session persistence:** `onAuthStateChange` listener in `AuthContext`
 - **Error handling:** friendly messages for common auth errors
 - **Email confirmation:** if enabled in Supabase, signup shows "check your email" message
@@ -238,13 +256,13 @@ src/
 
 - In-page game embed (Play currently opens hosted URL in a new tab)
 - Additional games beyond Snake Run, Fruit Rally, Tutorial Game 1, and Tutorial Game 2
-- Game routes/pages (e.g. `/games/:id`) / React Router
+- Per-game routes (e.g. `/play/games/:id`)
 - Favorites sync across devices (currently localStorage only)
 - Played-games list UI (count + tracker exist in Supabase)
 - Settings panel (profile menu item is a placeholder)
 - Supabase Storage for avatars (currently compressed data URL in `user_metadata` + `profiles.avatar`)
 - Friend activity / chat / game invites
-- Password reset landing page (reset links go to `/` on live domain)
+- Password reset landing page (reset links go to `/login` on live domain)
 - Downloadable game builds
 - Production deploy verification on `kryogames.com`
 
@@ -254,7 +272,9 @@ src/
 
 - Minimize scope — focused diffs, match existing patterns
 - Username display: `user_metadata.username` → fallback to email prefix; searchable copy lives in `profiles`
-- Auth modals use native `<dialog>` element
+- Auth landing is `IntroView` at `/login` (same page for `/signup` `/forgot`): Thinking Dots + center Sign up / Log in + `AuthModal`; header **Home** returns to `/`
+- Home header has no Log in / Sign up — only **Get started** → `/login`
+- Public chrome (`PublicHeader`) is **Home** on `/` and `/login` (Enter library when signed in); no theme toggle on those pages
 - Game statuses: `'playable' | 'coming-soon' | 'downloadable'`
 - Game platforms: `'web' | 'android' | 'windows' | 'mac' | 'ios'` (library UI is web-only for now; Android tab hidden)
 - Game cards show a bottom meta bar: title + platform icon
@@ -262,8 +282,9 @@ src/
 - Favorites: per-user `localStorage` via `lib/favorites.ts`; UI toggle is `FavoriteGemButton`
 - Games played: Supabase `played_games` via `lib/playedGames.ts`; recorded on Play click
 - Play activity: Supabase `play_activity` via `lib/playActivity.ts`; heatmap on profile; requires `supabase/play-stats.sql`
-- Friends: `lib/friends.ts` + `FriendsView` + `FriendToasts`; requires `supabase/friends.sql` applied (and `friends-realtime.sql` if that schema was already live)
-- Presence / online status: `lib/presence.ts` (Supabase Realtime Presence channel `kryogames-online`); no extra SQL — friends Online/Offline + “is online now” toasts use it
+- Friends: `lib/friends.ts` + `FriendsView` + `FriendToasts` + `NotificationBell`; requires `supabase/friends.sql` applied (and `friends-realtime.sql` if that schema was already live)
+- Presence / online status: `lib/presence.ts` (Supabase Realtime Presence channel `kryogames-online`); no extra SQL — friends Online/Offline + grouped “are online now” toasts use it
+- Notices: `lib/notices.ts` session inbox (`kryogames-notices:<userId>`) + once-per-tab greet flag (`kryogames-online-greet:<userId>`)
 - Do **not** commit `.env.local` or service role keys
 
 ---
@@ -284,35 +305,36 @@ When making changes to this project:
 ## Recent edits (auto)
 
 <!-- AUTO:RECENT_EDITS -->
-- `2026-08-23 02:00` — `src/components/library/LibraryTopBar.tsx`
-- `2026-08-23 00:55` — `src/components/library/FriendsView.tsx`
-- `2026-08-23 00:54` — `src/components/library/LibraryView.css`
-- `2026-08-23 00:53` — `src/components/library/FriendsView.tsx`
-- `2026-08-23 00:51` — `src/components/library/FriendsView.tsx`
-- `2026-08-23 00:50` — `src/components/library/LibraryView.css`
-- `2026-08-23 00:41` — `src/components/library/LibraryView.css`
-- `2026-08-23 00:40` — `src/components/library/LibraryView.css`
-- `2026-08-23 00:38` — `src/components/library/LibraryView.css`
-- `2026-08-23 00:38` — `src/components/library/FriendToasts.tsx`
-- `2026-08-23 00:38` — `src/components/library/FriendsView.tsx`
-- `2026-08-23 00:35` — `src/components/library/FriendsView.tsx`
-- `2026-08-23 00:35` — `src/components/library/LibraryView.tsx`
-- `2026-08-23 00:32` — `src/components/library/LibraryView.tsx`
-- `2026-08-23 00:32` — `src/lib/presence.ts`
-- `2026-08-22 04:33` — `src/data/games.ts`
-- `2026-08-22 04:32` — `../../../../../../Users/elmopr77/.cursor/projects/Volumes-REDDRIVE-App-Portfolio-Development-Builds-Personal-website-portfolio-KryoGames/assets/tut-2.png`
-- `2026-08-20 17:33` — `src/App.css`
-- `2026-08-20 17:28` — `src/components/IntroView.css`
-- `2026-08-20 17:28` — `vite.config.ts`
-- `2026-08-20 17:27` — `vite.config.ts`
-- `2026-08-20 17:25` — `vite.config.ts`
-- `2026-08-20 17:25` — `../../../../../../Users/elmopr77/.cursor/projects/Volumes-REDDRIVE-App-Portfolio-Development-Builds-Personal-website-portfolio-KryoGames/agent-tools/edfa2d24-a274-4cc3-b708-637117ce45e5.txt`
-- `2026-08-20 17:19` — `src/components/IntroView.tsx`
-- `2026-08-20 17:19` — `src/App.css`
-- `2026-08-20 17:19` — `src/components/IntroView.css`
-- `2026-08-20 17:19` — `src/components/ThinkingDots.css`
-- `2026-08-20 17:19` — `src/components/ThinkingDots.tsx`
-- `2026-08-20 17:12` — `src/components/AuthModal.tsx`
-- `2026-08-20 17:05` — `src/App.css`
+- `2026-08-23 05:24` — `src/components/HomeView.css`
+- `2026-08-23 05:24` — `src/components/HomeView.tsx`
+- `2026-08-23 05:05` — `src/components/library/LibraryView.css`
+- `2026-08-23 05:05` — `src/components/library/FriendToasts.tsx`
+- `2026-08-23 05:04` — `src/components/library/FriendToasts.tsx`
+- `2026-08-23 05:04` — `src/components/library/NotificationBell.tsx`
+- `2026-08-23 05:04` — `src/components/library/LibraryTopBar.tsx`
+- `2026-08-23 05:04` — `.cursor/rules/game-detail-wash.mdc`
+- `2026-08-23 05:04` — `src/components/library/LibraryView.css`
+- `2026-08-23 05:04` — `src/contexts/AuthContext.tsx`
+- `2026-08-23 05:03` — `src/components/library/FriendToasts.tsx`
+- `2026-08-23 05:03` — `src/lib/notices.ts`
+- `2026-08-23 05:02` — `src/lib/notices.ts`
+- `2026-08-23 04:53` — `src/components/IntroView.tsx`
+- `2026-08-23 04:53` — `src/components/PublicHeader.tsx`
+- `2026-08-23 04:52` — `src/components/HomeView.css`
+- `2026-08-23 04:51` — `src/components/HomeView.css`
+- `2026-08-23 04:49` — `src/components/HomeView.css`
+- `2026-08-23 04:48` — `src/components/ScrollStack.css`
+- `2026-08-23 04:48` — `src/components/HomeView.css`
+- `2026-08-23 04:48` — `src/components/ScrollStack.tsx`
+- `2026-08-23 03:53` — `src/components/AuthPage.tsx`
+- `2026-08-23 03:53` — `src/components/ScrollStack.css`
+- `2026-08-23 03:53` — `src/components/HomeView.css`
+- `2026-08-23 03:53` — `src/components/HomeView.tsx`
+- `2026-08-23 03:53` — `src/components/PublicHeader.tsx`
+- `2026-08-23 03:53` — `src/components/ScrollStack.tsx`
+- `2026-08-23 03:42` — `src/components/IntroView.css`
+- `2026-08-23 03:42` — `src/components/IntroView.tsx`
+- `2026-08-23 03:39` — `src/components/PublicHeader.tsx`
 <!-- /AUTO:RECENT_EDITS -->
+-->
 -->

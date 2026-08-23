@@ -21,7 +21,7 @@ Cover art is dark. Type stays **light-on-dark** (white / near-white). Frost glas
 
 - **Light:** white frost (`rgba(255,255,255,~0.16)`).
 - **Dark:** deeper bluish frost (`rgba(24,34,52,~0.58)` + cool blue border) — not the same white glass as light.
-- Tags, Back, favorite gem (off), search, profile, menu, profile dropdown, **sidebar pill** (desktop + narrow): use those frost tokens + white type. Not solid opaque slabs.
+- Tags, Back, favorite gem (off), search, profile, notification bell + inbox, menu, profile dropdown, **sidebar pill** (desktop + narrow): use those frost tokens + white type. Not solid opaque slabs.
 - Favorite gem on: red gem / red glass glow — never dark ink.
 - Play: **white button, dark label** (`#ffffff` / `#12141a`).
 

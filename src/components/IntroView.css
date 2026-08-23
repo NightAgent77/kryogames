@@ -56,6 +56,10 @@
     0 0 28px color-mix(in srgb, var(--bg-deep) 55%, transparent);
 }
 
+.intro-brand:hover {
+  opacity: 0.82;
+}
+
 .intro-header-actions {
   display: flex;
   align-items: center;

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type AriaRole, type ReactNode } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { useTheme, type Theme } from '../../contexts/ThemeContext'
 import {
@@ -7,6 +8,7 @@ import {
   getInitials,
 } from '../../lib/userDisplay'
 import Dock, { DockIcon, DockItem, useDockMotion } from './Dock'
+import { NotificationBell } from './NotificationBell'
 
 type MenuPanel = 'main' | 'appearance'
 
@@ -72,6 +74,7 @@ export function LibraryTopBar({
   onViewProfile,
 }: LibraryTopBarProps) {
   const { user, signOut } = useAuth()
+  const navigate = useNavigate()
   const { theme, setTheme } = useTheme()
   const [menuOpen, setMenuOpen] = useState(false)
   const [panel, setPanel] = useState<MenuPanel>('main')
@@ -155,7 +158,9 @@ export function LibraryTopBar({
         <div className="library-topbar-spacer" aria-hidden="true" />
       )}
 
-      <div className="library-profile-menu" ref={menuRef}>
+      <div className="library-topbar-end">
+        <NotificationBell />
+        <div className="library-profile-menu" ref={menuRef}>
         <button
           type="button"
           className="library-profile"
@@ -214,6 +219,7 @@ export function LibraryTopBar({
                       void (async () => {
                         setMenuOpen(false)
                         await signOut()
+                        navigate('/', { replace: true })
                       })()
                     }}
                   >
@@ -271,6 +277,7 @@ export function LibraryTopBar({
             </Dock>
           </div>
         )}
+        </div>
       </div>
     </div>
   )

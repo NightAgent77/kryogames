@@ -9,6 +9,7 @@ import {
 } from 'react'
 import type { Session, User } from '@supabase/supabase-js'
 import { upsertProfileFromUser } from '../lib/friends'
+import { clearSessionGreet } from '../lib/notices'
 import { isSupabaseConfigured, supabase, supabaseConfigError } from '../lib/supabase'
 import { getSiteUrl } from '../lib/siteUrl'
 
@@ -121,8 +122,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const signOut = useCallback(async () => {
+    if (user?.id) clearSessionGreet(user.id)
     await supabase.auth.signOut()
-  }, [])
+  }, [user?.id])
 
   const resetPassword = useCallback(async (email: string) => {
     if (!isSupabaseConfigured) {
@@ -130,7 +132,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${getSiteUrl()}/`,
+      redirectTo: `${getSiteUrl()}/login`,
     })
 
     if (error) {

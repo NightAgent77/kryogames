@@ -1,0 +1,37 @@
+.auth-page {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-deep);
+}
+
+.auth-page-warp {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.auth-page-warp::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      ellipse 46% 42% at 50% 48%,
+      color-mix(in srgb, var(--bg-deep) 18%, transparent) 0%,
+      transparent 74%
+    );
+  pointer-events: none;
+}
+
+.auth-page-main {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem 1.25rem 3rem;
+}
