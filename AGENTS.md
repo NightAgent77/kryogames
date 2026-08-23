@@ -3,7 +3,7 @@
 > Living document for AI agent continuity. Updated automatically on file edits and substantively by agents after meaningful changes.
 
 <!-- AUTO:LAST_UPDATED -->
-**Last updated:** 2026-08-23 00:55 (auto)
+**Last updated:** 2026-08-23 02:00 (auto)
 <!-- /AUTO:LAST_UPDATED -->
 
 ---
@@ -140,7 +140,7 @@ src/
 - Sidebar: **Home** (web catalog) + **Game library** (nested **My Games**, **Favorites**) + **Friends**
 - Sidebar nav uses a **vertical Dock** adaptation (`Dock.tsx` + `motion`): mouse-Y proximity springs grow row height; hover tooltips sit to the right of the pill; sliding active indicator and Game library submenu unchanged; theme tokens + game-wash frost (no dark `#120F17` dock chrome); `prefers-reduced-motion` disables springs
 - Profile dropdown (View profile / Appearance / Settings / Log out + theme radios) uses the same Dock springs inside the existing panel (`dock-panel--menu`); no side tooltips (labels already visible); wash frost styles target dock rows
-- Search filters current tab by title (client-side) on Home / Favorites
+- Search filters current tab by title (client-side) on Home / Favorites; Friends uses the same top search for usernames. The library search input is marked non-auth (`data-1p-ignore` / `autocomplete=off`) so password managers don’t treat tab switches as login prompts
 - Home tab lists `platform: 'web'` titles from `games.ts`
 - My Games: empty placeholder for now
 - **Friends:** top-bar search switches to “Search usernames” (games search hidden); send friend requests, accept/decline incoming (section only when pending); **Online** section only when someone is present (neon green status dots + live presence via Supabase Realtime `lib/presence.ts`), then **Offline** for everyone else; each friend row uses a ⋮ menu with **Invite to** (placeholder) and **Remove**; data in Supabase `profiles` + `friendships` (see `supabase/friends.sql`). **Presence** starts when the library mounts for a signed-in user and clears on logout / leave. **Toasts** (`FriendToasts`) appear upper-right under the profile pill on every library view: incoming request (Accept / Decline), “accepted your friend request”, and “is online now” when a friend signs back in; auto-dismiss after 6s with a short Web Audio chime; Supabase Realtime plus an 8s poll fallback for friendship rows
@@ -284,6 +284,7 @@ When making changes to this project:
 ## Recent edits (auto)
 
 <!-- AUTO:RECENT_EDITS -->
+- `2026-08-23 02:00` — `src/components/library/LibraryTopBar.tsx`
 - `2026-08-23 00:55` — `src/components/library/FriendsView.tsx`
 - `2026-08-23 00:54` — `src/components/library/LibraryView.css`
 - `2026-08-23 00:53` — `src/components/library/FriendsView.tsx`
@@ -313,6 +314,5 @@ When making changes to this project:
 - `2026-08-20 17:19` — `src/components/ThinkingDots.tsx`
 - `2026-08-20 17:12` — `src/components/AuthModal.tsx`
 - `2026-08-20 17:05` — `src/App.css`
-- `2026-08-20 17:04` — `src/App.css`
 <!-- /AUTO:RECENT_EDITS -->
 -->

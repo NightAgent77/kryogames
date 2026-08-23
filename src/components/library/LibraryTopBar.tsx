@@ -135,10 +135,20 @@ export function LibraryTopBar({
           <span className="visually-hidden">{searchPlaceholder}</span>
           <input
             type="search"
+            name="kryo-library-filter"
             placeholder={searchPlaceholder}
             value={search}
             onChange={(event) => onSearchChange(event.target.value)}
             autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="off"
+            spellCheck={false}
+            inputMode="search"
+            enterKeyHint="search"
+            data-1p-ignore="true"
+            data-lpignore="true"
+            data-form-type="other"
+            data-bwignore="true"
           />
         </label>
       ) : (
