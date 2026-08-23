@@ -3,7 +3,7 @@
 > Living document for AI agent continuity. Updated automatically on file edits and substantively by agents after meaningful changes.
 
 <!-- AUTO:LAST_UPDATED -->
-**Last updated:** 2026-08-23 19:13 (auto)
+**Last updated:** 2026-08-23 19:40 (auto)
 <!-- /AUTO:LAST_UPDATED -->
 
 ---
@@ -74,11 +74,13 @@ public/
     └── tut-2.png            # Tutorial Game 2 cover art
 src/
 ├── main.tsx                 # App entry: BrowserRouter + ThemeProvider + AuthProvider
-├── App.tsx                  # Routes: / HomeView, /login|/signup|/forgot IntroView, /play LibraryView
+├── App.tsx                  # Routes + site-wide KryoCursor
 ├── App.css                  # Shared buttons + auth panel styles
 ├── index.css                # Global CSS variables & resets (dark + light themes)
 ├── vite-env.d.ts            # Vite env type definitions
 ├── components/
+│   ├── KryoCursor.tsx       # Site-wide ice-shard pointer
+│   ├── KryoCursor.css
 │   ├── HomeView.tsx         # Public home — Thinking Dots + hero + Scroll Stack
 │   ├── HomeView.css
 │   ├── ScrollStack.tsx      # Pinned description cards that stack on scroll
@@ -153,6 +155,7 @@ src/
 - Rounded panels (~12px); Inter only (no Orbitron / neon cyber look)
 - Auth modal restyled to the same surfaces; browser saved-login autofill uses the same slate fill/text as the fields (no default harsh green)
 - Sign up / Log in / forgot `<dialog>` panels use frosted glass (`backdrop-filter` on `.auth-modal-shell` plus dim `::backdrop`) in light and dark, matching the intro title widget
+- **KryoCursor** (site-wide, `App.tsx`): custom ice-shard pointer that tracks the mouse 1:1 (no name tag). Aims fully in the move direction (down looks down, etc.), then eases back to an upward-diagonal rest. Yellow facet in dark (`#ffd23a`); black in light. Native cursor hidden on fine pointers; restored over text fields; skipped on touch. Not the React Bits Pro User Cursor package.
 
 ### Library (signed-in)
 - Sidebar: **Home** (web catalog) + **Game library** (nested **My Games**, **Favorites**) + **Friends**
@@ -285,6 +288,7 @@ src/
 - Friends: `lib/friends.ts` + `FriendsView` + `FriendToasts` + `NotificationBell`; requires `supabase/friends.sql` applied (and `friends-realtime.sql` if that schema was already live)
 - Presence / online status: `lib/presence.ts` (Supabase Realtime Presence channel `kryogames-online`); no extra SQL — friends Online/Offline + grouped “are online now” toasts use it
 - Notices: `lib/notices.ts` session inbox (`kryogames-notices:<userId>`) + once-per-tab greet flag (`kryogames-online-greet:<userId>`)
+- Custom pointer: `KryoCursor` mounted in `App.tsx` (home, login, play). Do not add the React Bits Pro User Cursor / shadcn package — this repo has no Tailwind or Pro license
 - Do **not** commit `.env.local` or service role keys
 
 ---
@@ -305,6 +309,20 @@ When making changes to this project:
 ## Recent edits (auto)
 
 <!-- AUTO:RECENT_EDITS -->
+- `2026-08-23 19:40` — `src/components/KryoCursor.css`
+- `2026-08-23 19:39` — `src/components/KryoCursor.css`
+- `2026-08-23 19:38` — `src/components/KryoCursor.css`
+- `2026-08-23 19:37` — `src/components/KryoCursor.css`
+- `2026-08-23 19:35` — `src/components/KryoCursor.css`
+- `2026-08-23 19:33` — `src/components/KryoCursor.css`
+- `2026-08-23 19:32` — `src/components/KryoCursor.tsx`
+- `2026-08-23 19:29` — `src/components/KryoCursor.tsx`
+- `2026-08-23 19:27` — `src/components/KryoCursor.tsx`
+- `2026-08-23 19:23` — `src/components/KryoCursor.css`
+- `2026-08-23 19:23` — `src/components/KryoCursor.tsx`
+- `2026-08-23 19:20` — `src/components/KryoCursor.css`
+- `2026-08-23 19:20` — `src/App.tsx`
+- `2026-08-23 19:20` — `src/components/KryoCursor.tsx`
 - `2026-08-23 19:13` — `src/components/library/LibraryView.css`
 - `2026-08-23 19:13` — `src/components/library/FriendsView.tsx`
 - `2026-08-23 19:12` — `src/components/library/FriendsView.tsx`
@@ -321,20 +339,6 @@ When making changes to this project:
 - `2026-08-23 05:03` — `src/components/library/FriendToasts.tsx`
 - `2026-08-23 05:03` — `src/lib/notices.ts`
 - `2026-08-23 05:02` — `src/lib/notices.ts`
-- `2026-08-23 04:53` — `src/components/IntroView.tsx`
-- `2026-08-23 04:53` — `src/components/PublicHeader.tsx`
-- `2026-08-23 04:52` — `src/components/HomeView.css`
-- `2026-08-23 04:51` — `src/components/HomeView.css`
-- `2026-08-23 04:49` — `src/components/HomeView.css`
-- `2026-08-23 04:48` — `src/components/ScrollStack.css`
-- `2026-08-23 04:48` — `src/components/HomeView.css`
-- `2026-08-23 04:48` — `src/components/ScrollStack.tsx`
-- `2026-08-23 03:53` — `src/components/AuthPage.tsx`
-- `2026-08-23 03:53` — `src/components/ScrollStack.css`
-- `2026-08-23 03:53` — `src/components/HomeView.css`
-- `2026-08-23 03:53` — `src/components/HomeView.tsx`
-- `2026-08-23 03:53` — `src/components/PublicHeader.tsx`
-- `2026-08-23 03:53` — `src/components/ScrollStack.tsx`
 <!-- /AUTO:RECENT_EDITS -->
 -->
 -->

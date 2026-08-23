@@ -1,0 +1,90 @@
+html.kryo-cursor-on,
+html.kryo-cursor-on * {
+  cursor: none !important;
+}
+
+html.kryo-cursor-on input,
+html.kryo-cursor-on textarea,
+html.kryo-cursor-on select,
+html.kryo-cursor-on [contenteditable='true'] {
+  cursor: text !important;
+}
+
+.kryo-cursor {
+  position: fixed;
+  inset: 0;
+  z-index: 12000;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.kryo-cursor--on {
+  opacity: 1;
+}
+
+.kryo-cursor-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 21px;
+  height: 21px;
+  margin: -2px 0 0 -2px;
+  transform-origin: 3px 2.25px;
+  will-change: transform;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
+}
+
+.kryo-cursor--hot .kryo-cursor-tip {
+  filter:
+    drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35))
+    drop-shadow(0 0 10px color-mix(in srgb, #ffd23a 55%, transparent));
+}
+
+.kryo-cursor-shard {
+  display: block;
+  width: 21px;
+  height: 21px;
+  overflow: visible;
+}
+
+.kryo-cursor-shard-body,
+.kryo-cursor-shard-facet,
+.kryo-cursor-shard-core {
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.kryo-cursor-shard-body {
+  fill: #f4f6f8;
+  stroke: #f4f6f8;
+  stroke-width: 3.2;
+}
+
+.kryo-cursor-shard-facet {
+  fill: color-mix(in srgb, #ffd23a 42%, #ffffff);
+  stroke: color-mix(in srgb, #ffd23a 42%, #ffffff);
+  stroke-width: 2.1;
+}
+
+.kryo-cursor-shard-core {
+  fill: #ffd23a;
+  stroke: #ffd23a;
+  stroke-width: 1.6;
+}
+
+[data-theme='light'] .kryo-cursor-tip {
+  filter: drop-shadow(0 1px 3px color-mix(in srgb, #12141a 18%, transparent));
+}
+
+[data-theme='light'] .kryo-cursor--hot .kryo-cursor-tip {
+  filter:
+    drop-shadow(0 1px 3px color-mix(in srgb, #12141a 18%, transparent))
+    drop-shadow(0 0 8px color-mix(in srgb, #12141a 22%, transparent));
+}
+
+[data-theme='light'] .kryo-cursor-shard-body,
+[data-theme='light'] .kryo-cursor-shard-facet,
+[data-theme='light'] .kryo-cursor-shard-core {
+  fill: #12141a;
+  stroke: #12141a;
+}

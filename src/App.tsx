@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { HomeView } from './components/HomeView'
 import { IntroView } from './components/IntroView'
+import { KryoCursor } from './components/KryoCursor'
 import { LibraryView } from './components/library/LibraryView'
 import { useAuth } from './contexts/AuthContext'
 import './App.css'
@@ -29,28 +30,34 @@ function App() {
 
   if (loading) {
     return (
-      <div className="app-loading" role="status">
-        Loading…
-      </div>
+      <>
+        <KryoCursor />
+        <div className="app-loading" role="status">
+          Loading…
+        </div>
+      </>
     )
   }
 
   return (
-    <Routes>
-      <Route path="/" element={<HomeView />} />
-      <Route path="/login" element={<IntroView />} />
-      <Route path="/signup" element={<IntroView />} />
-      <Route path="/forgot" element={<IntroView />} />
-      <Route
-        path="/play"
-        element={
-          <RequireAuth>
-            <LibraryView />
-          </RequireAuth>
-        }
-      />
-      <Route path="*" element={<Navigate to="/" replace />} />
-    </Routes>
+    <>
+      <KryoCursor />
+      <Routes>
+        <Route path="/" element={<HomeView />} />
+        <Route path="/login" element={<IntroView />} />
+        <Route path="/signup" element={<IntroView />} />
+        <Route path="/forgot" element={<IntroView />} />
+        <Route
+          path="/play"
+          element={
+            <RequireAuth>
+              <LibraryView />
+            </RequireAuth>
+          }
+        />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </>
   )
 }
 
