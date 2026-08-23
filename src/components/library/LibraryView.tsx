@@ -3,6 +3,7 @@ import { useAuth } from '../../contexts/AuthContext'
 import { games, type Game } from '../../data/games'
 import { loadFavorites, saveFavorites, toggleFavoriteId } from '../../lib/favorites'
 import { upsertProfileFromUser } from '../../lib/friends'
+import { startPresence, stopPresence } from '../../lib/presence'
 import { flushPlaySession, startPlaySession } from '../../lib/playActivity'
 import { recordPlayedGame } from '../../lib/playedGames'
 import { FriendToasts } from './FriendToasts'
@@ -47,6 +48,17 @@ export function LibraryView() {
     if (!user) return
     void upsertProfileFromUser(user)
   }, [user])
+
+  useEffect(() => {
+    if (!user?.id) {
+      void stopPresence()
+      return
+    }
+    void startPresence(user.id)
+    return () => {
+      void stopPresence()
+    }
+  }, [user?.id])
 
   useEffect(() => {
     if (!user?.id) return

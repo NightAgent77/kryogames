@@ -52,44 +52,6 @@ export function IntroView() {
     return () => mq.removeEventListener('change', update)
   }, [])
 
-  useEffect(() => {
-    const logFrost = (phase: string) => {
-      const intro = document.querySelector('.intro')
-      const hero = document.querySelector('.intro-hero')
-      const header = document.querySelector('.intro-header-actions')
-      const canvas = document.querySelector('canvas.thinking-dots')
-      const introCs = intro instanceof HTMLElement ? getComputedStyle(intro) : null
-      const heroCs = hero instanceof HTMLElement ? getComputedStyle(hero) : null
-      const headerCs = header instanceof HTMLElement ? getComputedStyle(header) : null
-      const canvasCs = canvas instanceof HTMLElement ? getComputedStyle(canvas) : null
-      // #region agent log
-      fetch('http://127.0.0.1:7925/ingest/7c8bdc85-ec08-485c-be11-237455f14496',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b1b1e4'},body:JSON.stringify({sessionId:'b1b1e4',runId:'pre-fix',hypothesisId:'A-B-C-E',location:'IntroView.tsx:frost-probe',message:'intro frost computed styles',data:{phase,href:location.href,reducedTransparency:window.matchMedia('(prefers-reduced-transparency: reduce)').matches,reducedMotion:window.matchMedia('(prefers-reduced-motion: reduce)').matches,heroBackdrop:heroCs?.backdropFilter ?? null,heroWebkitBackdrop:(heroCs as CSSStyleDeclaration & { webkitBackdropFilter?: string } | null)?.webkitBackdropFilter ?? null,heroBg:heroCs?.backgroundColor ?? null,headerBackdrop:headerCs?.backdropFilter ?? null,introIsolation:introCs?.isolation ?? null,introOverflow:introCs?.overflow ?? null,introFilter:introCs?.filter ?? null,introTransform:introCs?.transform ?? null,canvasPresent:!!canvas,canvasFilter:canvasCs?.filter ?? null,canvasTransform:canvasCs?.transform ?? null},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
-    }
-    logFrost('mount')
-    const id = requestAnimationFrame(() => {
-      requestAnimationFrame(() => logFrost('raf2'))
-    })
-    let cancelled = false
-    const waitCanvas = () => {
-      if (cancelled) return
-      const canvas = document.querySelector('canvas.thinking-dots')
-      if (canvas instanceof HTMLCanvasElement) {
-        const twoD = canvas.getContext('2d')
-        // #region agent log
-        fetch('http://127.0.0.1:7925/ingest/7c8bdc85-ec08-485c-be11-237455f14496',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b1b1e4'},body:JSON.stringify({sessionId:'b1b1e4',runId:'post-fix',hypothesisId:'B',location:'IntroView.tsx:canvas-ready',message:'intro canvas compositing target',data:{canvasPresent:true,canvasW:canvas.width,canvasH:canvas.height,is2d:!!twoD,introIsolation:getComputedStyle(document.querySelector('.intro')!).isolation,introOverflow:getComputedStyle(document.querySelector('.intro')!).overflow,heroBackdrop:getComputedStyle(document.querySelector('.intro-hero')!).backdropFilter},timestamp:Date.now()})}).catch(()=>{});
-        // #endregion
-        return
-      }
-      requestAnimationFrame(waitCanvas)
-    }
-    requestAnimationFrame(waitCanvas)
-    return () => {
-      cancelled = true
-      cancelAnimationFrame(id)
-    }
-  }, [])
-
   return (
     <div className="intro">
       <div className="intro-dots" aria-hidden="true">

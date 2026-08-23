@@ -32,18 +32,6 @@ export function AuthModal({ mode, onClose, onSwitchMode }: AuthModalProps) {
 
     dialog.showModal()
 
-    const shell = dialog.querySelector('.auth-modal-shell')
-    const shellCs = shell instanceof HTMLElement ? getComputedStyle(shell) : null
-    let backdropFilter = 'unavailable'
-    try {
-      backdropFilter = getComputedStyle(dialog, '::backdrop').backdropFilter
-    } catch {
-      backdropFilter = 'error'
-    }
-    // #region agent log
-    fetch('http://127.0.0.1:7925/ingest/7c8bdc85-ec08-485c-be11-237455f14496',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'b1b1e4'},body:JSON.stringify({sessionId:'b1b1e4',runId:'pre-fix',hypothesisId:'A-D',location:'AuthModal.tsx:showModal',message:'auth modal frost computed styles',data:{dialogOpen:dialog.open,reducedTransparency:window.matchMedia('(prefers-reduced-transparency: reduce)').matches,shellBackdrop:shellCs?.backdropFilter ?? null,shellWebkitBackdrop:(shellCs as CSSStyleDeclaration & { webkitBackdropFilter?: string } | null)?.webkitBackdropFilter ?? null,shellBg:shellCs?.backgroundColor ?? null,shellOverflow:shellCs?.overflow ?? null,pseudoBackdrop:backdropFilter,href:location.href},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
-
     const handleCancel = (event: Event) => {
       event.preventDefault()
       onClose()

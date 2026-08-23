@@ -3,7 +3,7 @@
 > Living document for AI agent continuity. Updated automatically on file edits and substantively by agents after meaningful changes.
 
 <!-- AUTO:LAST_UPDATED -->
-**Last updated:** 2026-08-22 04:33 (auto)
+**Last updated:** 2026-08-23 00:55 (auto)
 <!-- /AUTO:LAST_UPDATED -->
 
 ---
@@ -92,8 +92,8 @@ src/
 │       ├── PlatformIcon.tsx # Web / Android / Windows / Mac / iOS icons
 │       ├── GameDetail.tsx   # Expanded game view (blurred cover wash + desc + Play)
 │       ├── FavoriteGemButton.tsx # Facet-diamond favorite toggle (animates red)
-│       ├── FriendsView.tsx  # Friends search, requests, list
-│       ├── FriendToasts.tsx # Friend request / accept popups (under profile)
+│       ├── FriendsView.tsx  # Friends search, requests, Online / Offline lists
+│       ├── FriendToasts.tsx # Friend request / accept / came-online popups (under profile)
 │       ├── ActivityHeatmap.tsx # Monthly play-hours calendar heatmap
 │       └── ProfileView.tsx  # Profile template (avatar + username)
 ├── contexts/
@@ -108,6 +108,7 @@ src/
 │   ├── playedGames.ts       # Distinct games played (Supabase + local migrate)
 │   ├── playActivity.ts      # Daily play minutes (Supabase + session flush)
 │   ├── friends.ts           # Profiles search + friendships helpers
+│   ├── presence.ts          # Supabase Realtime presence (who is signed in)
 │   ├── notificationSound.ts # Web Audio chime for friend toasts
 │   └── userDisplay.ts       # Display name / initials / avatar helpers
 └── supabase/
@@ -142,7 +143,7 @@ src/
 - Search filters current tab by title (client-side) on Home / Favorites
 - Home tab lists `platform: 'web'` titles from `games.ts`
 - My Games: empty placeholder for now
-- **Friends:** top-bar search switches to “Search usernames” (games search hidden); send friend requests, accept/decline incoming (section only when pending); **Online** / **All** filter tabs (presence not wired — Online empty for now); remove from All; data in Supabase `profiles` + `friendships` (see `supabase/friends.sql`). **Toasts** (`FriendToasts`) appear upper-right under the profile pill on every library view: incoming request (Accept / Decline) and “accepted your friend request”; auto-dismiss after 6s with a short Web Audio chime; Supabase Realtime plus an 8s poll fallback
+- **Friends:** top-bar search switches to “Search usernames” (games search hidden); send friend requests, accept/decline incoming (section only when pending); **Online** section only when someone is present (neon green status dots + live presence via Supabase Realtime `lib/presence.ts`), then **Offline** for everyone else; each friend row uses a ⋮ menu with **Invite to** (placeholder) and **Remove**; data in Supabase `profiles` + `friendships` (see `supabase/friends.sql`). **Presence** starts when the library mounts for a signed-in user and clears on logout / leave. **Toasts** (`FriendToasts`) appear upper-right under the profile pill on every library view: incoming request (Accept / Decline), “accepted your friend request”, and “is online now” when a friend signs back in; auto-dismiss after 6s with a short Web Audio chime; Supabase Realtime plus an 8s poll fallback for friendship rows
 - Each game card has a bottom meta bar: title + platform icon (`PlatformIcon`)
 - Clicking a game card expands to **GameDetail** (cover, description, tags, Play / Coming soon, favorite gem)
 - GameDetail **art wash (locked, both themes):** full-library `.library-wash` blurred cover behind the sidebar pill **and** search / profile / nav; sharp cover in the media slot; light-on-dark type (white title/description/tags/Back; white Play with dark label). Frost widgets: light = white glass; dark = deeper bluish glass (`--wash-frost*`). Light theme uses almost no veil so cover color still reads — never dark ink or a milky white overlay on the wash. Leaving GameDetail **fades the wash and widget colors** (~420ms) instead of a hard cut.
@@ -262,6 +263,7 @@ src/
 - Games played: Supabase `played_games` via `lib/playedGames.ts`; recorded on Play click
 - Play activity: Supabase `play_activity` via `lib/playActivity.ts`; heatmap on profile; requires `supabase/play-stats.sql`
 - Friends: `lib/friends.ts` + `FriendsView` + `FriendToasts`; requires `supabase/friends.sql` applied (and `friends-realtime.sql` if that schema was already live)
+- Presence / online status: `lib/presence.ts` (Supabase Realtime Presence channel `kryogames-online`); no extra SQL — friends Online/Offline + “is online now” toasts use it
 - Do **not** commit `.env.local` or service role keys
 
 ---
@@ -282,6 +284,20 @@ When making changes to this project:
 ## Recent edits (auto)
 
 <!-- AUTO:RECENT_EDITS -->
+- `2026-08-23 00:55` — `src/components/library/FriendsView.tsx`
+- `2026-08-23 00:54` — `src/components/library/LibraryView.css`
+- `2026-08-23 00:53` — `src/components/library/FriendsView.tsx`
+- `2026-08-23 00:51` — `src/components/library/FriendsView.tsx`
+- `2026-08-23 00:50` — `src/components/library/LibraryView.css`
+- `2026-08-23 00:41` — `src/components/library/LibraryView.css`
+- `2026-08-23 00:40` — `src/components/library/LibraryView.css`
+- `2026-08-23 00:38` — `src/components/library/LibraryView.css`
+- `2026-08-23 00:38` — `src/components/library/FriendToasts.tsx`
+- `2026-08-23 00:38` — `src/components/library/FriendsView.tsx`
+- `2026-08-23 00:35` — `src/components/library/FriendsView.tsx`
+- `2026-08-23 00:35` — `src/components/library/LibraryView.tsx`
+- `2026-08-23 00:32` — `src/components/library/LibraryView.tsx`
+- `2026-08-23 00:32` — `src/lib/presence.ts`
 - `2026-08-22 04:33` — `src/data/games.ts`
 - `2026-08-22 04:32` — `../../../../../../Users/elmopr77/.cursor/projects/Volumes-REDDRIVE-App-Portfolio-Development-Builds-Personal-website-portfolio-KryoGames/assets/tut-2.png`
 - `2026-08-20 17:33` — `src/App.css`
@@ -298,19 +314,5 @@ When making changes to this project:
 - `2026-08-20 17:12` — `src/components/AuthModal.tsx`
 - `2026-08-20 17:05` — `src/App.css`
 - `2026-08-20 17:04` — `src/App.css`
-- `2026-08-20 17:03` — `../../../../../../Users/elmopr77/.cursor/projects/Volumes-REDDRIVE-App-Portfolio-Development-Builds-Personal-website-portfolio-KryoGames/assets/Screenshot_2026-08-20_at_1.02.57_PM__2_-d8402fa0-f733-41c0-84bb-d28617928daa.png`
-- `2026-08-20 17:02` — `src/App.css`
-- `2026-08-20 17:02` — `src/components/AuthModal.tsx`
-- `2026-08-20 17:01` — `src/App.css`
-- `2026-08-20 16:59` — `src/App.css`
-- `2026-08-20 16:57` — `src/components/IntroView.css`
-- `2026-08-20 16:54` — `src/App.css`
-- `2026-08-20 16:54` — `src/components/IntroView.css`
-- `2026-08-20 16:54` — `src/components/IntroView.tsx`
-- `2026-08-20 16:54` — `src/components/AuthModal.tsx`
-- `2026-08-20 16:52` — `src/App.css`
-- `2026-08-20 16:52` — `src/components/IntroView.css`
-- `2026-08-20 16:40` — `src/components/IntroView.css`
-- `2026-08-20 16:40` — `src/App.css`
 <!-- /AUTO:RECENT_EDITS -->
 -->

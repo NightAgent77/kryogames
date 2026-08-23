@@ -704,6 +704,35 @@
   overflow: hidden;
 }
 
+.friend-toast-avatar-wrap {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+}
+
+.friend-toast-online-dot {
+  position: absolute;
+  right: -1px;
+  bottom: -1px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #39ff88;
+  box-shadow:
+    0 0 0 2px var(--bg-surface),
+    0 0 10px rgba(57, 255, 136, 0.85),
+    0 0 18px rgba(57, 255, 136, 0.45);
+}
+
+.friend-toast--online {
+  border-color: color-mix(in srgb, #39ff88 28%, var(--border));
+  box-shadow:
+    var(--shadow-dropdown),
+    0 0 0 1px color-mix(in srgb, #39ff88 18%, transparent),
+    0 0 24px color-mix(in srgb, #39ff88 12%, transparent);
+}
+
 .friend-toast-avatar-img {
   width: 100%;
   height: 100%;
@@ -795,6 +824,14 @@
   background: var(--wash-frost-chip);
   border-color: var(--wash-frost-border);
   color: #ffffff;
+}
+
+.library--game .friend-toast-online-dot,
+.library--profile .friend-toast-online-dot {
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--wash-frost) 100%, transparent),
+    0 0 10px rgba(57, 255, 136, 0.85),
+    0 0 18px rgba(57, 255, 136, 0.45);
 }
 
 @keyframes friend-toast-in {
@@ -1284,68 +1321,23 @@
 .friends-view {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.65rem;
   width: 100%;
   max-width: none;
 }
 
-.friends-filter {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
+.friends-header {
+  display: flex;
+  flex-direction: column;
   gap: 0.35rem;
-  align-self: flex-start;
 }
 
-.friends-filter-indicator {
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  z-index: 0;
-  border-radius: 8px;
-  background: var(--bg-active);
-  pointer-events: none;
-  will-change: transform, width;
-}
-
-.friends-filter-indicator--ready {
-  transition:
-    transform 320ms cubic-bezier(0.22, 1, 0.36, 1),
-    width 320ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.friends-filter-btn {
-  position: relative;
-  z-index: 1;
-  padding: 0.5rem 0.875rem;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+.friends-lead {
+  margin: 0;
+  max-width: 36rem;
+  font-size: 0.9375rem;
+  line-height: 1.5;
   color: var(--text-muted);
-  background: transparent;
-  border: none;
-  border-radius: 8px;
-  transition: color 0.15s ease;
-}
-
-.friends-filter-btn:hover:not(.friends-filter-btn--active) {
-  color: var(--text-bright);
-}
-
-.friends-filter-btn--active {
-  color: var(--text-bright);
-}
-
-.friends-panel {
-  width: 100%;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .friends-filter-indicator--ready {
-    transition: none;
-  }
 }
 
 .friends-banner {
@@ -1373,12 +1365,47 @@
   gap: 0.75rem;
 }
 
+.friends-section-head {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
 .friends-block-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
   font-size: 0.8125rem;
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--text-muted);
+}
+
+.friends-count-pill {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.4rem;
+  height: 1.25rem;
+  padding: 0 0.4rem;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--text-muted);
+  background: color-mix(in srgb, var(--bg-elevated) 88%, transparent);
+  border: 1px solid var(--border);
+}
+
+.friends-count-pill--online {
+  color: #1a3d2a;
+  background: color-mix(in srgb, #39ff88 22%, transparent);
+  border-color: color-mix(in srgb, #39ff88 38%, transparent);
+}
+
+[data-theme='dark'] .friends-count-pill--online {
+  color: #b8ffd4;
 }
 
 .friends-list {
@@ -1387,7 +1414,7 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.55rem;
   width: 100%;
 }
 
@@ -1397,17 +1424,87 @@
   gap: 0.75rem;
   width: 100%;
   box-sizing: border-box;
-  padding: 0.75rem 1rem;
+  padding: 0.8rem 1rem;
   background: var(--bg-surface);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: calc(var(--radius) + 2px);
+  transition:
+    border-color 0.18s ease,
+    background 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+/* Keep ⋮ popover above the next friend row (sibling paint order) */
+.friends-row--menu-open {
+  position: relative;
+  z-index: 6;
+}
+
+.friends-row--online {
+  border-color: color-mix(in srgb, #39ff88 26%, var(--border));
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, #39ff88 8%, transparent),
+      transparent 42%
+    ),
+    var(--bg-surface);
+  box-shadow: 0 0 0 1px color-mix(in srgb, #39ff88 8%, transparent);
+}
+
+.friends-row--offline {
+  opacity: 0.92;
+}
+
+.friends-row--request {
+  border-color: color-mix(in srgb, var(--text-bright) 14%, var(--border));
+}
+
+.friends-online-dot {
+  width: 9px;
+  height: 9px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #39ff88;
+  box-shadow:
+    0 0 8px rgba(57, 255, 136, 0.95),
+    0 0 16px rgba(57, 255, 136, 0.45);
+  animation: friends-online-pulse 1.8s ease-in-out infinite;
+}
+
+.friends-online-dot--inline {
+  width: 8px;
+  height: 8px;
+}
+
+.friends-online-dot--spacer {
+  visibility: hidden;
+  box-shadow: none;
+  animation: none;
+  background: transparent;
+}
+
+@keyframes friends-online-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 8px rgba(57, 255, 136, 0.95),
+      0 0 16px rgba(57, 255, 136, 0.4);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow:
+      0 0 12px rgba(57, 255, 136, 1),
+      0 0 24px rgba(57, 255, 136, 0.55);
+    transform: scale(1.08);
+  }
 }
 
 .friends-avatar {
   display: grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   flex-shrink: 0;
   border-radius: 50%;
   background: var(--bg-elevated);
@@ -1423,15 +1520,33 @@
   object-fit: cover;
 }
 
-.friends-name {
+.friends-row-meta {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+}
+
+.friends-name {
+  min-width: 0;
   font-size: 0.9375rem;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text-bright);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.friends-status-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.friends-status-label--online {
+  color: color-mix(in srgb, #39ff88 72%, var(--text-bright));
+  text-shadow: 0 0 12px color-mix(in srgb, #39ff88 35%, transparent);
 }
 
 .friends-row-actions {
@@ -1447,6 +1562,99 @@
   min-width: 0;
 }
 
+.friends-menu {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.friends-menu-trigger {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-muted);
+  transition:
+    color 0.15s ease,
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.friends-menu-trigger:hover:not(:disabled),
+.friends-menu-trigger--open {
+  color: var(--text-bright);
+  background: var(--hover-wash);
+  border-color: var(--border);
+}
+
+.friends-menu-trigger:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.friends-menu-popover {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  right: 0;
+  z-index: 8;
+  min-width: 9.5rem;
+  padding: 0.3rem;
+  border-radius: 10px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-dropdown);
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  animation: friends-menu-in 160ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.friends-menu-item {
+  display: block;
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--text-bright);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  text-align: left;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+
+.friends-menu-item:hover:not(:disabled) {
+  background: var(--hover-wash);
+}
+
+.friends-menu-item--danger {
+  color: #f0a0a0;
+}
+
+.friends-menu-item--danger:hover:not(:disabled) {
+  background: rgba(255, 80, 80, 0.12);
+  color: #ffb4b4;
+}
+
+.friends-menu-item:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+@keyframes friends-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 .friends-badge {
   flex-shrink: 0;
   padding: 0.25rem 0.625rem;
@@ -1455,6 +1663,24 @@
   color: var(--text-muted);
   background: var(--bg-elevated);
   border-radius: 6px;
+}
+
+.friends-empty-card {
+  margin: 0;
+  padding: 1rem 1.1rem;
+  border-radius: calc(var(--radius) + 2px);
+  border: 1px dashed color-mix(in srgb, var(--border) 80%, transparent);
+  background: color-mix(in srgb, var(--bg-surface) 55%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .friends-online-dot {
+    animation: none;
+  }
+
+  .friends-menu-popover {
+    animation: none;
+  }
 }
 
 /* Profile — gamer banner header */

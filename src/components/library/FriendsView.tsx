@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import {
   FRIENDS_CHANGED_EVENT,
@@ -14,6 +14,10 @@ import {
   type FriendRequestEntry,
   type Profile,
 } from '../../lib/friends'
+import {
+  PRESENCE_CHANGED_EVENT,
+  getOnlineUserIds,
+} from '../../lib/presence'
 import { getInitials } from '../../lib/userDisplay'
 
 interface FriendsViewProps {
@@ -21,12 +25,6 @@ interface FriendsViewProps {
 }
 
 type ResultAction = 'add' | 'pending' | 'friends'
-type FriendsFilter = 'online' | 'all'
-
-interface FilterIndicator {
-  left: number
-  width: number
-}
 
 function relationFor(
   profileId: string,
@@ -51,48 +49,132 @@ function PersonAvatar({ profile }: { profile: Profile }) {
   )
 }
 
+function OnlineDot() {
+  return <span className="friends-online-dot" aria-hidden="true" />
+}
+
+function MoreIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+      <circle cx="8" cy="3.25" r="1.35" fill="currentColor" />
+      <circle cx="8" cy="8" r="1.35" fill="currentColor" />
+      <circle cx="8" cy="12.75" r="1.35" fill="currentColor" />
+    </svg>
+  )
+}
+
+function FriendRow({
+  entry,
+  online,
+  busy,
+  menuOpen,
+  onToggleMenu,
+  onInvite,
+  onRemove,
+}: {
+  entry: FriendEntry
+  online: boolean
+  busy: boolean
+  menuOpen: boolean
+  onToggleMenu: () => void
+  onInvite: () => void
+  onRemove: () => void
+}) {
+  const name = profileLabel(entry.profile.username)
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!menuOpen) return
+
+    const onPointerDown = (event: PointerEvent) => {
+      if (!menuRef.current?.contains(event.target as Node)) {
+        onToggleMenu()
+      }
+    }
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onToggleMenu()
+    }
+
+    document.addEventListener('pointerdown', onPointerDown)
+    document.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown)
+      document.removeEventListener('keydown', onKeyDown)
+    }
+  }, [menuOpen, onToggleMenu])
+
+  return (
+    <li
+      className={`friends-row${online ? ' friends-row--online' : ' friends-row--offline'}${menuOpen ? ' friends-row--menu-open' : ''}`}
+    >
+      {online ? <OnlineDot /> : <span className="friends-online-dot friends-online-dot--spacer" aria-hidden="true" />}
+      <PersonAvatar profile={entry.profile} />
+      <div className="friends-row-meta">
+        <span className="friends-name">{name}</span>
+        <span className={`friends-status-label${online ? ' friends-status-label--online' : ''}`}>
+          {online ? 'Online' : 'Offline'}
+        </span>
+      </div>
+      <div className="friends-menu" ref={menuRef}>
+        <button
+          type="button"
+          className={`friends-menu-trigger${menuOpen ? ' friends-menu-trigger--open' : ''}`}
+          aria-label={`More options for ${name}`}
+          aria-haspopup="menu"
+          aria-expanded={menuOpen}
+          disabled={busy}
+          onClick={onToggleMenu}
+        >
+          <MoreIcon />
+        </button>
+        {menuOpen ? (
+          <div className="friends-menu-popover" role="menu">
+            <button
+              type="button"
+              role="menuitem"
+              className="friends-menu-item"
+              disabled={busy}
+              onClick={onInvite}
+            >
+              Invite to
+            </button>
+            <button
+              type="button"
+              role="menuitem"
+              className="friends-menu-item friends-menu-item--danger"
+              disabled={busy}
+              onClick={onRemove}
+            >
+              Remove
+            </button>
+          </div>
+        ) : null}
+      </div>
+    </li>
+  )
+}
+
 export function FriendsView({ query }: FriendsViewProps) {
   const { user } = useAuth()
   const [results, setResults] = useState<Profile[]>([])
   const [friends, setFriends] = useState<FriendEntry[]>([])
   const [requests, setRequests] = useState<FriendRequestEntry[]>([])
   const [pendingOutIds, setPendingOutIds] = useState<Set<string>>(new Set())
+  const [onlineIds, setOnlineIds] = useState<Set<string>>(() => getOnlineUserIds())
   const [searching, setSearching] = useState(false)
   const [busyId, setBusyId] = useState<string | null>(null)
+  const [menuId, setMenuId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [status, setStatus] = useState<string | null>(null)
-  const [filter, setFilter] = useState<FriendsFilter>('online')
-  const [indicator, setIndicator] = useState<FilterIndicator | null>(null)
-  const [indicatorReady, setIndicatorReady] = useState(false)
-  const filterRef = useRef<HTMLDivElement>(null)
-  const onlineRef = useRef<HTMLButtonElement>(null)
-  const allRef = useRef<HTMLButtonElement>(null)
-  const searchGen = useRef(0)
 
   const userId = user?.id
 
-  useLayoutEffect(() => {
-    const track = filterRef.current
-    const target = filter === 'online' ? onlineRef.current : allRef.current
-    if (!track || !target) return
-
-    const update = () => {
-      setIndicator({
-        left: target.offsetLeft,
-        width: target.offsetWidth,
-      })
-    }
-
-    update()
-    const readyId = window.requestAnimationFrame(() => setIndicatorReady(true))
-    const observer = new ResizeObserver(update)
-    observer.observe(track)
-
-    return () => {
-      window.cancelAnimationFrame(readyId)
-      observer.disconnect()
-    }
-  }, [filter])
+  useEffect(() => {
+    const onPresence = () => setOnlineIds(getOnlineUserIds())
+    onPresence()
+    window.addEventListener(PRESENCE_CHANGED_EVENT, onPresence)
+    return () => window.removeEventListener(PRESENCE_CHANGED_EVENT, onPresence)
+  }, [])
 
   const refreshLists = async () => {
     if (!userId) return
@@ -165,11 +247,11 @@ export function FriendsView({ query }: FriendsViewProps) {
       return
     }
 
-    const gen = ++searchGen.current
+    let alive = true
     setSearching(true)
     const timer = window.setTimeout(async () => {
       const { profiles, error: searchError } = await searchProfiles(trimmed, userId)
-      if (gen !== searchGen.current) return
+      if (!alive) return
       setSearching(false)
       if (searchError) {
         setError(searchError)
@@ -179,11 +261,21 @@ export function FriendsView({ query }: FriendsViewProps) {
       setResults(profiles)
     }, 250)
 
-    return () => window.clearTimeout(timer)
+    return () => {
+      alive = false
+      window.clearTimeout(timer)
+    }
   }, [query, userId])
 
   const friendIds = new Set(friends.map((f) => f.profile.id))
   const pendingInIds = new Set(requests.map((r) => r.profile.id))
+
+  const onlineFriends = friends
+    .filter((f) => onlineIds.has(f.profile.id))
+    .sort((a, b) => a.profile.username.localeCompare(b.profile.username))
+  const offlineFriends = friends
+    .filter((f) => !onlineIds.has(f.profile.id))
+    .sort((a, b) => a.profile.username.localeCompare(b.profile.username))
 
   const handleAdd = async (profile: Profile) => {
     if (!userId) return
@@ -217,7 +309,14 @@ export function FriendsView({ query }: FriendsViewProps) {
     await refreshLists()
   }
 
+  const handleInvite = (username: string) => {
+    setMenuId(null)
+    setError(null)
+    setStatus(`Invite to ${username} — game invites coming soon.`)
+  }
+
   const handleRemove = async (friendshipId: string, username: string) => {
+    setMenuId(null)
     setBusyId(friendshipId)
     setError(null)
     setStatus(null)
@@ -233,9 +332,14 @@ export function FriendsView({ query }: FriendsViewProps) {
 
   return (
     <section className="library-content library-content--enter friends-view" aria-labelledby="friends-heading">
-      <h2 id="friends-heading" className="library-section-title">
-        Friends
-      </h2>
+      <header className="friends-header">
+        <h2 id="friends-heading" className="library-section-title">
+          Friends
+        </h2>
+        <p className="friends-lead">
+          See who’s around, manage requests, and keep your list tidy.
+        </p>
+      </header>
 
       {error ? <p className="friends-banner friends-banner--error">{error}</p> : null}
       {status ? <p className="friends-banner friends-banner--ok">{status}</p> : null}
@@ -258,8 +362,11 @@ export function FriendsView({ query }: FriendsViewProps) {
                 )
                 return (
                   <li key={profile.id} className="friends-row">
+                    <span className="friends-online-dot friends-online-dot--spacer" aria-hidden="true" />
                     <PersonAvatar profile={profile} />
-                    <span className="friends-name">{profileLabel(profile.username)}</span>
+                    <div className="friends-row-meta">
+                      <span className="friends-name">{profileLabel(profile.username)}</span>
+                    </div>
                     {action === 'add' ? (
                       <button
                         type="button"
@@ -284,12 +391,19 @@ export function FriendsView({ query }: FriendsViewProps) {
 
       {requests.length > 0 ? (
         <div className="friends-block">
-          <h3 className="friends-block-title">Incoming requests</h3>
+          <div className="friends-section-head">
+            <h3 className="friends-block-title">Incoming requests</h3>
+            <span className="friends-count-pill">{requests.length}</span>
+          </div>
           <ul className="friends-list">
             {requests.map((req) => (
-              <li key={req.friendshipId} className="friends-row">
+              <li key={req.friendshipId} className="friends-row friends-row--request">
+                <span className="friends-online-dot friends-online-dot--spacer" aria-hidden="true" />
                 <PersonAvatar profile={req.profile} />
-                <span className="friends-name">{profileLabel(req.profile.username)}</span>
+                <div className="friends-row-meta">
+                  <span className="friends-name">{profileLabel(req.profile.username)}</span>
+                  <span className="friends-status-label">Wants to be friends</span>
+                </div>
                 <div className="friends-row-actions">
                   <button
                     type="button"
@@ -314,74 +428,77 @@ export function FriendsView({ query }: FriendsViewProps) {
         </div>
       ) : null}
 
-      <div className="friends-block">
-        <div
-          ref={filterRef}
-          className="friends-filter"
-          role="tablist"
-          aria-label="Friends filter"
-        >
-          {indicator ? (
-            <div
-              className={`friends-filter-indicator${indicatorReady ? ' friends-filter-indicator--ready' : ''}`}
-              style={{
-                transform: `translateX(${indicator.left}px)`,
-                width: indicator.width,
-              }}
-              aria-hidden="true"
-            />
-          ) : null}
-          <button
-            ref={onlineRef}
-            type="button"
-            role="tab"
-            aria-selected={filter === 'online'}
-            className={`friends-filter-btn${filter === 'online' ? ' friends-filter-btn--active' : ''}`}
-            onClick={() => setFilter('online')}
-          >
-            Online
-          </button>
-          <button
-            ref={allRef}
-            type="button"
-            role="tab"
-            aria-selected={filter === 'all'}
-            className={`friends-filter-btn${filter === 'all' ? ' friends-filter-btn--active' : ''}`}
-            onClick={() => setFilter('all')}
-          >
-            All
-          </button>
+      {onlineFriends.length > 0 ? (
+        <div className="friends-block friends-block--online library-content--enter">
+          <div className="friends-section-head">
+            <h3 className="friends-block-title">
+              <span className="friends-online-dot friends-online-dot--inline" aria-hidden="true" />
+              Online
+            </h3>
+            <span className="friends-count-pill friends-count-pill--online">{onlineFriends.length}</span>
+          </div>
+          <ul className="friends-list">
+            {onlineFriends.map((entry) => (
+              <FriendRow
+                key={entry.friendshipId}
+                entry={entry}
+                online
+                busy={busyId === entry.friendshipId}
+                menuOpen={menuId === entry.friendshipId}
+                onToggleMenu={() =>
+                  setMenuId((prev) =>
+                    prev === entry.friendshipId ? null : entry.friendshipId,
+                  )
+                }
+                onInvite={() => handleInvite(profileLabel(entry.profile.username))}
+                onRemove={() =>
+                  void handleRemove(
+                    entry.friendshipId,
+                    profileLabel(entry.profile.username),
+                  )
+                }
+              />
+            ))}
+          </ul>
         </div>
+      ) : null}
 
-        <div key={filter} className="friends-panel library-content--enter">
-          {filter === 'online' ? (
-            <p className="library-empty">No one online</p>
-          ) : friends.length === 0 ? (
-            <p className="library-empty">No friends yet — search a username to add someone</p>
-          ) : (
-            <ul className="friends-list">
-              {friends.map((entry) => (
-                <li key={entry.friendshipId} className="friends-row">
-                  <PersonAvatar profile={entry.profile} />
-                  <span className="friends-name">{profileLabel(entry.profile.username)}</span>
-                  <button
-                    type="button"
-                    className="btn btn-secondary friends-action"
-                    disabled={busyId === entry.friendshipId}
-                    onClick={() =>
-                      void handleRemove(
-                        entry.friendshipId,
-                        profileLabel(entry.profile.username),
-                      )
-                    }
-                  >
-                    Remove
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
+      <div className="friends-block">
+        <div className="friends-section-head">
+          <h3 className="friends-block-title">Offline</h3>
+          <span className="friends-count-pill">{offlineFriends.length}</span>
         </div>
+        {friends.length === 0 ? (
+          <p className="library-empty friends-empty-card">
+            No friends yet — search a username to add someone
+          </p>
+        ) : offlineFriends.length === 0 ? (
+          <p className="library-empty friends-empty-card">Everyone on your list is online</p>
+        ) : (
+          <ul className="friends-list">
+            {offlineFriends.map((entry) => (
+              <FriendRow
+                key={entry.friendshipId}
+                entry={entry}
+                online={false}
+                busy={busyId === entry.friendshipId}
+                menuOpen={menuId === entry.friendshipId}
+                onToggleMenu={() =>
+                  setMenuId((prev) =>
+                    prev === entry.friendshipId ? null : entry.friendshipId,
+                  )
+                }
+                onInvite={() => handleInvite(profileLabel(entry.profile.username))}
+                onRemove={() =>
+                  void handleRemove(
+                    entry.friendshipId,
+                    profileLabel(entry.profile.username),
+                  )
+                }
+              />
+            ))}
+          </ul>
+        )}
       </div>
     </section>
   )

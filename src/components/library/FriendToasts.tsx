@@ -11,11 +11,15 @@ import {
   respondToRequest,
   type Profile,
 } from '../../lib/friends'
+import {
+  PRESENCE_CHANGED_EVENT,
+  getOnlineUserIds,
+} from '../../lib/presence'
 import { isSupabaseConfigured, supabase } from '../../lib/supabase'
 import { playNotificationSound, unlockNotificationSound } from '../../lib/notificationSound'
 import { getInitials } from '../../lib/userDisplay'
 
-type ToastKind = 'incoming' | 'accepted'
+type ToastKind = 'incoming' | 'accepted' | 'online'
 
 interface FriendToast {
   id: string
@@ -65,6 +69,12 @@ function PersonAvatar({ profile }: { profile: Profile }) {
   )
 }
 
+function toastCopy(kind: ToastKind): string {
+  if (kind === 'incoming') return 'sent you a friend request'
+  if (kind === 'accepted') return 'accepted your friend request'
+  return 'is online now'
+}
+
 export function FriendToasts() {
   const { user } = useAuth()
   const userId = user?.id
@@ -72,6 +82,10 @@ export function FriendToasts() {
   const [busyId, setBusyId] = useState<string | null>(null)
   const seenRef = useRef(new Set<string>())
   const pendingOutRef = useRef(new Set<string>())
+  const friendIdsRef = useRef(new Set<string>())
+  const friendByIdRef = useRef(new Map<string, { friendshipId: string; profile: Profile }>())
+  const prevOnlineFriendsRef = useRef(new Set<string>())
+  const presenceReadyRef = useRef(false)
   const readyRef = useRef(false)
   const timersRef = useRef(new Map<string, number>())
 
@@ -97,12 +111,13 @@ export function FriendToasts() {
 
   const pushToast = useCallback(
     (kind: ToastKind, friendshipId: string, profile: Profile) => {
-      const seenKey = `${kind}:${friendshipId}`
+      const seenKey =
+        kind === 'online' ? `online:${profile.id}` : `${kind}:${friendshipId}`
       if (seenRef.current.has(seenKey)) return
       seenRef.current.add(seenKey)
 
       const toast: FriendToast = {
-        id: `${kind}-${friendshipId}`,
+        id: kind === 'online' ? `online-${profile.id}-${Date.now()}` : `${kind}-${friendshipId}`,
         kind,
         friendshipId,
         profile,
@@ -116,6 +131,48 @@ export function FriendToasts() {
     },
     [dismiss],
   )
+
+  const syncPresenceToasts = useCallback(() => {
+    if (!userId || !readyRef.current) return
+
+    const online = getOnlineUserIds()
+    const friendIds = friendIdsRef.current
+    const onlineFriends = new Set(
+      [...online].filter((id) => friendIds.has(id) && id !== userId),
+    )
+
+    if (!presenceReadyRef.current) {
+      prevOnlineFriendsRef.current = onlineFriends
+      for (const id of onlineFriends) {
+        seenRef.current.add(`online:${id}`)
+      }
+      presenceReadyRef.current = true
+      return
+    }
+
+    const prev = prevOnlineFriendsRef.current
+    for (const id of onlineFriends) {
+      if (prev.has(id)) continue
+      const entry = friendByIdRef.current.get(id)
+      if (entry) {
+        pushToast('online', entry.friendshipId, entry.profile)
+      } else {
+        void (async () => {
+          const profile = await loadProfile(id)
+          if (!profile) return
+          pushToast('online', id, profile)
+        })()
+      }
+    }
+
+    for (const id of prev) {
+      if (!onlineFriends.has(id)) {
+        seenRef.current.delete(`online:${id}`)
+      }
+    }
+
+    prevOnlineFriendsRef.current = onlineFriends
+  }, [pushToast, userId])
 
   const syncLists = useCallback(
     async (opts?: { silent?: boolean }) => {
@@ -134,6 +191,11 @@ export function FriendToasts() {
       const friends = friendsRes.friends
       const silent = opts?.silent || !readyRef.current
 
+      friendIdsRef.current = new Set(friends.map((f) => f.profile.id))
+      friendByIdRef.current = new Map(
+        friends.map((f) => [f.profile.id, { friendshipId: f.friendshipId, profile: f.profile }]),
+      )
+
       if (!readyRef.current) {
         for (const request of incoming) {
           seenRef.current.add(`incoming:${request.friendshipId}`)
@@ -143,6 +205,7 @@ export function FriendToasts() {
         }
         pendingOutRef.current = outgoing
         readyRef.current = true
+        syncPresenceToasts()
         return
       }
 
@@ -164,14 +227,19 @@ export function FriendToasts() {
       }
 
       pendingOutRef.current = outgoing
+      syncPresenceToasts()
     },
-    [pushToast, userId],
+    [pushToast, syncPresenceToasts, userId],
   )
 
   useEffect(() => {
     setToasts([])
     seenRef.current = new Set()
     pendingOutRef.current = new Set()
+    friendIdsRef.current = new Set()
+    friendByIdRef.current = new Map()
+    prevOnlineFriendsRef.current = new Set()
+    presenceReadyRef.current = false
     readyRef.current = false
 
     if (!userId || !isSupabaseConfigured) return
@@ -182,6 +250,10 @@ export function FriendToasts() {
 
     const onFriendsChanged = () => {
       void syncLists({ silent: false })
+    }
+
+    const onPresenceChanged = () => {
+      syncPresenceToasts()
     }
 
     const onVisible = () => {
@@ -260,6 +332,7 @@ export function FriendToasts() {
         void syncLists({ silent: false })
       }, POLL_MS)
       window.addEventListener(FRIENDS_CHANGED_EVENT, onFriendsChanged)
+      window.addEventListener(PRESENCE_CHANGED_EVENT, onPresenceChanged)
       document.addEventListener('visibilitychange', onVisible)
     })()
 
@@ -268,6 +341,7 @@ export function FriendToasts() {
     return () => {
       cancelled = true
       window.removeEventListener(FRIENDS_CHANGED_EVENT, onFriendsChanged)
+      window.removeEventListener(PRESENCE_CHANGED_EVENT, onPresenceChanged)
       document.removeEventListener('visibilitychange', onVisible)
       if (poll) window.clearInterval(poll)
       if (channel) void supabase.removeChannel(channel)
@@ -276,7 +350,7 @@ export function FriendToasts() {
       }
       timers.clear()
     }
-  }, [pushToast, syncLists, userId])
+  }, [pushToast, syncLists, syncPresenceToasts, userId])
 
   const handleRespond = async (
     toast: FriendToast,
@@ -296,18 +370,20 @@ export function FriendToasts() {
       {toasts.map((toast) => {
         const name = profileLabel(toast.profile.username)
         const incoming = toast.kind === 'incoming'
+        const online = toast.kind === 'online'
         return (
           <article
             key={toast.id}
             className={`friend-toast friend-toast--${toast.kind}`}
             role="status"
           >
-            <PersonAvatar profile={toast.profile} />
+            <div className="friend-toast-avatar-wrap">
+              <PersonAvatar profile={toast.profile} />
+              {online ? <span className="friend-toast-online-dot" aria-hidden="true" /> : null}
+            </div>
             <div className="friend-toast-body">
               <p className="friend-toast-title">{name}</p>
-              <p className="friend-toast-copy">
-                {incoming ? 'sent you a friend request' : 'accepted your friend request'}
-              </p>
+              <p className="friend-toast-copy">{toastCopy(toast.kind)}</p>
               {incoming ? (
                 <div className="friend-toast-actions">
                   <button
