@@ -3,7 +3,7 @@
 > Living document for AI agent continuity. Updated automatically on file edits and substantively by agents after meaningful changes.
 
 <!-- AUTO:LAST_UPDATED -->
-**Last updated:** 2026-08-23 05:24 (auto)
+**Last updated:** 2026-08-23 19:13 (auto)
 <!-- /AUTO:LAST_UPDATED -->
 
 ---
@@ -161,7 +161,7 @@ src/
 - Search filters current tab by title (client-side) on Home / Favorites; Friends uses the same top search for usernames. The library search input is marked non-auth (`data-1p-ignore` / `autocomplete=off`) so password managers don’t treat tab switches as login prompts
 - Home tab lists `platform: 'web'` titles from `games.ts`
 - My Games: empty placeholder for now
-- **Friends:** top-bar search switches to “Search usernames” (games search hidden); send friend requests, accept/decline incoming (section only when pending); **Online** section only when someone is present (neon green status dots + live presence via Supabase Realtime `lib/presence.ts`), then **Offline** for everyone else; each friend row uses a ⋮ menu with **Invite to** (placeholder) and **Remove**; data in Supabase `profiles` + `friendships` (see `supabase/friends.sql`). **Presence** starts when the library mounts for a signed-in user and clears on logout / leave. **Toasts** (`FriendToasts`) appear upper-right under the profile pill: incoming request (Accept / Decline), “accepted your friend request”, and online-now. Fresh sign-in waits ~1.6s, then one **grouped** “A, B and N others are online” toast (not one per friend); later joins debounce ~480ms into the same grouped toast. Pending requests land in the inbox after that greet (no burst of request toasts). Auto-dismiss after 6s with a short Web Audio chime; Supabase Realtime plus an 8s poll fallback. **Notification bell** (`NotificationBell`) sits beside the profile pill — unread badge + dropdown of friend requests and other notices (`lib/notices.ts`, `sessionStorage` `kryogames-notices:<userId>`); Accept / Decline from the inbox. Opening the panel marks items read. Logout clears the session greet so the next sign-in greets again.
+- **Friends:** top-bar search switches to “Search usernames” (games search hidden); send friend requests, accept/decline incoming (section only when pending); **Online** section only when someone is present (neon green status dot on the Online header + live presence via Supabase Realtime `lib/presence.ts`), then **Offline** for everyone else; each friend row uses a ⋮ menu with **Invite to** (placeholder) and **Remove**; data in Supabase `profiles` + `friendships` (see `supabase/friends.sql`). **Presence** starts when the library mounts for a signed-in user and clears on logout / leave. **Toasts** (`FriendToasts`) appear upper-right under the profile pill: incoming request (Accept / Decline), “accepted your friend request”, and online-now. Fresh sign-in waits ~1.6s, then one **grouped** “A, B and N others are online” toast (not one per friend); later joins debounce ~480ms into the same grouped toast. Pending requests land in the inbox after that greet (no burst of request toasts). Auto-dismiss after 6s with a short Web Audio chime; Supabase Realtime plus an 8s poll fallback. **Notification bell** (`NotificationBell`) sits beside the profile pill — unread badge + dropdown of friend requests and other notices (`lib/notices.ts`, `sessionStorage` `kryogames-notices:<userId>`); Accept / Decline from the inbox. Opening the panel marks items read. Logout clears the session greet so the next sign-in greets again.
 - Each game card has a bottom meta bar: title + platform icon (`PlatformIcon`)
 - Clicking a game card expands to **GameDetail** (cover, description, tags, Play / Coming soon, favorite gem)
 - GameDetail **art wash (locked, both themes):** full-library `.library-wash` blurred cover behind the sidebar pill **and** search / profile / nav; sharp cover in the media slot; light-on-dark type (white title/description/tags/Back; white Play with dark label). Frost widgets: light = white glass; dark = deeper bluish glass (`--wash-frost*`). Light theme uses almost no veil so cover color still reads — never dark ink or a milky white overlay on the wash. Leaving GameDetail **fades the wash and widget colors** (~420ms) instead of a hard cut.
@@ -305,6 +305,9 @@ When making changes to this project:
 ## Recent edits (auto)
 
 <!-- AUTO:RECENT_EDITS -->
+- `2026-08-23 19:13` — `src/components/library/LibraryView.css`
+- `2026-08-23 19:13` — `src/components/library/FriendsView.tsx`
+- `2026-08-23 19:12` — `src/components/library/FriendsView.tsx`
 - `2026-08-23 05:24` — `src/components/HomeView.css`
 - `2026-08-23 05:24` — `src/components/HomeView.tsx`
 - `2026-08-23 05:05` — `src/components/library/LibraryView.css`
@@ -332,9 +335,6 @@ When making changes to this project:
 - `2026-08-23 03:53` — `src/components/HomeView.tsx`
 - `2026-08-23 03:53` — `src/components/PublicHeader.tsx`
 - `2026-08-23 03:53` — `src/components/ScrollStack.tsx`
-- `2026-08-23 03:42` — `src/components/IntroView.css`
-- `2026-08-23 03:42` — `src/components/IntroView.tsx`
-- `2026-08-23 03:39` — `src/components/PublicHeader.tsx`
 <!-- /AUTO:RECENT_EDITS -->
 -->
 -->

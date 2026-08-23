@@ -1691,13 +1691,6 @@
   height: 8px;
 }
 
-.friends-online-dot--spacer {
-  visibility: hidden;
-  box-shadow: none;
-  animation: none;
-  background: transparent;
-}
-
 @keyframes friends-online-pulse {
   0%,
   100% {

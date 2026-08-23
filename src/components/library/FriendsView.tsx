@@ -49,10 +49,6 @@ function PersonAvatar({ profile }: { profile: Profile }) {
   )
 }
 
-function OnlineDot() {
-  return <span className="friends-online-dot" aria-hidden="true" />
-}
-
 function MoreIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -107,7 +103,6 @@ function FriendRow({
     <li
       className={`friends-row${online ? ' friends-row--online' : ' friends-row--offline'}${menuOpen ? ' friends-row--menu-open' : ''}`}
     >
-      {online ? <OnlineDot /> : <span className="friends-online-dot friends-online-dot--spacer" aria-hidden="true" />}
       <PersonAvatar profile={entry.profile} />
       <div className="friends-row-meta">
         <span className="friends-name">{name}</span>
@@ -362,7 +357,6 @@ export function FriendsView({ query }: FriendsViewProps) {
                 )
                 return (
                   <li key={profile.id} className="friends-row">
-                    <span className="friends-online-dot friends-online-dot--spacer" aria-hidden="true" />
                     <PersonAvatar profile={profile} />
                     <div className="friends-row-meta">
                       <span className="friends-name">{profileLabel(profile.username)}</span>
@@ -398,7 +392,6 @@ export function FriendsView({ query }: FriendsViewProps) {
           <ul className="friends-list">
             {requests.map((req) => (
               <li key={req.friendshipId} className="friends-row friends-row--request">
-                <span className="friends-online-dot friends-online-dot--spacer" aria-hidden="true" />
                 <PersonAvatar profile={req.profile} />
                 <div className="friends-row-meta">
                   <span className="friends-name">{profileLabel(req.profile.username)}</span>
