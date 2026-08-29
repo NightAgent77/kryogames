@@ -3,7 +3,7 @@
 > Living document for AI agent continuity. Updated automatically on file edits and substantively by agents after meaningful changes.
 
 <!-- AUTO:LAST_UPDATED -->
-**Last updated:** 2026-08-29 03:13 (auto)
+**Last updated:** 2026-08-29 03:32 (auto)
 <!-- /AUTO:LAST_UPDATED -->
 
 ---
@@ -129,7 +129,7 @@ src/
 │   ├── AuthContext.tsx      # Supabase auth state & methods
 │   └── ThemeContext.tsx     # Dark / light theme (localStorage `kryogames-theme`)
 ├── data/
-│   └── games.ts             # Catalog + `devGames` (platform, playUrl, coverImage)
+│   └── games.ts             # Catalog + `devGames` + shared COVER_ASPECT_RATIO (Maze-Ops 4:3)
 ├── lib/
 │   ├── supabase.ts          # Supabase client init
 │   ├── siteUrl.ts           # Site URL helper (VITE_SITE_URL fallback)
@@ -182,7 +182,7 @@ src/
 - My Games: empty placeholder for now
 - **Dev Games:** incomplete / idea builds from `devGames` in `games.ts` (`DevGamesView`); nested under Game library below Favorites. **Maze-Ops** is listed here, not on Home. Search filters by title; favorites from this tab also appear under Favorites
 - **Friends:** top-bar search switches to “Search usernames” (games search hidden); send friend requests, accept/decline incoming (section only when pending); **Online** section only when someone is present (neon green status dot on the Online header + live presence via Supabase Realtime `lib/presence.ts`), then **Offline** for everyone else; each friend row uses a ⋮ menu with **Invite to** (placeholder) and **Remove**; data in Supabase `profiles` + `friendships` (see `supabase/friends.sql`). **Presence** starts when the library mounts for a signed-in user and clears on logout / leave. **Toasts** (`FriendToasts`) appear upper-right under the profile pill: incoming request (Accept / Decline), “accepted your friend request”, and online-now. Fresh sign-in waits ~1.6s, then one **grouped** “A, B and N others are online” toast (not one per friend); later joins debounce ~480ms into the same grouped toast. Pending requests land in the inbox after that greet (no burst of request toasts). Auto-dismiss after 6s with a short Web Audio chime; Supabase Realtime plus an 8s poll fallback. **Notification bell** (`NotificationBell`) sits beside the profile pill — unread badge + dropdown of friend requests and other notices (`lib/notices.ts`, `sessionStorage` `kryogames-notices:<userId>`); Accept / Decline from the inbox. Opening the panel marks items read. Logout clears the session greet so the next sign-in greets again.
-- Each game card has a bottom meta bar: title + platform icon (`PlatformIcon`)
+- Each game card has a bottom meta bar: title + platform icon (`PlatformIcon`). Hero media is locked to Maze-Ops **4:3** (`735 / 575`); cover art fills the slot (`object-fit: cover`) so Home, Favorites, and Dev Games cards share the same shape.
 - Clicking a game card expands to **GameDetail** (cover, description, tags, Play / Coming soon, favorite gem)
 - GameDetail **art wash (locked, both themes):** full-library `.library-wash` blurred cover behind the sidebar pill **and** search / profile / nav; sharp cover in the media slot; light-on-dark type (white title/description/tags/Back; white Play with dark label). Frost widgets: light = white glass; dark = deeper bluish glass (`--wash-frost*`). Light theme uses almost no veil so cover color still reads — never dark ink or a milky white overlay on the wash. Leaving GameDetail **fades the wash and widget colors** (~420ms) instead of a hard cut.
 - **Favorites:** facet-diamond gem beside Play on GameDetail; toggle syncs to the account (`user_metadata.favorite_ids`) plus a `localStorage` cache so desktop and iPhone / PWA see the same list. Favorites sidebar tab lists favorited games (search works); empty state when none. On wash: white glass outline → red + pop/burst when favorited, soft spin-out when removed.
@@ -199,12 +199,12 @@ src/
 - **Tutorial Game 1** (`tut-1`) — q5play platformer; Web, `status: playable`, Cloudflare R2: `https://pub-e379ba287a9f4d8ba4cdbd6b6095cb6c.r2.dev/tut-1/index.html`
 - **Tutorial Game 2** (`tut-2`) — q5play maze (“Escape the MAZE”); Web, `status: playable`, Cloudflare R2: `https://pub-e379ba287a9f4d8ba4cdbd6b6095cb6c.r2.dev/tut-2/index.html`
 - **Maze-Ops** (`maze-ops`) — Dev Games only (not Home); Web, `status: playable`, Cloudflare R2: `https://pub-e379ba287a9f4d8ba4cdbd6b6095cb6c.r2.dev/Maze-Ops/index.html`
-- Cover art: `public/games/maze-ops.jpg` — 735×575 military title card; white side bars cropped (including a 1px cream fringe on the right) so art bleeds edge to edge (native ratio `735 / 575`)
-- Cover art: `public/games/tut-1.png` — 874×575 geometric title card (red player, grey steps, gold finish) matching Fruit Rally’s ratio
-- Cover art: `public/games/tut-2.png` — 874×575 maze title card (blue player, red wall tiles) matching Fruit Rally’s ratio
-- Cover art: `public/games/fruit-rally.jpg` — comic hero cropped to 874×575 (`874 / 575` ≈ Snake Run's 1.52) so the card matches Snake Run's shape; source screenshot's white side bars are cropped off, art bleeds edge to edge. Full parity with Snake Run (grid cover, GameDetail media slot, blurred wash, light + dark chrome)
-- Grid cards use `align-items: start` so each card keeps its cover's native height — mixed cover ratios must never be stretched (bands black space above the meta bar) or cropped
-- Cover art: `public/games/snake-run.png` (magenta title hero) via optional `coverImage` + `coverAspectRatio` — grid cards size to the image’s native ratio; GameDetail media slot matches so art scales bigger/smaller with no crop and no letterbox bars
+- **Hero widgets (locked 4:3):** all library covers use Maze-Ops’s title-card ratio `735 / 575` via `COVER_ASPECT_RATIO` in `games.ts`. Grid `.library-card-media` and GameDetail `.game-detail-media` lock that slot; art `object-fit: cover`s (no letterbox bars, no stretch). Wider source files (Snake Run 1024×674, Fruit Rally / tuts 874×575) crop at the sides.
+- Cover art: `public/games/maze-ops.jpg` — 735×575 military title card; white side bars cropped (including a 1px cream fringe on the right) so art bleeds edge to edge (this is the 4:3 reference)
+- Cover art: `public/games/tut-1.png` — 874×575 geometric title card (red player, grey steps, gold finish)
+- Cover art: `public/games/tut-2.png` — 874×575 maze title card (blue player, red wall tiles)
+- Cover art: `public/games/fruit-rally.jpg` — comic hero cropped to 874×575; source screenshot's white side bars are cropped off, art bleeds edge to edge
+- Cover art: `public/games/snake-run.png` (magenta title hero) via optional `coverImage` + `coverAspectRatio`
 - Optional `playUrl` on `Game` opens in a new tab from the Play button
 - No filler/empty placeholder cards in the library grid
 
@@ -301,6 +301,7 @@ src/
 - Game statuses: `'playable' | 'coming-soon' | 'downloadable'`
 - Game platforms: `'web' | 'android' | 'windows' | 'mac' | 'ios'` (library UI is web-only for now; Android tab hidden)
 - Game cards show a bottom meta bar: title + platform icon
+- **Library heroes are Maze-Ops 4:3** (`COVER_ASPECT_RATIO` = `735 / 575`): grid media + GameDetail slot share it; covers use `object-fit: cover`. Do not size cards to each image’s native ratio.
 - **GameDetail wash (locked):** full-library blurred cover; light-on-dark type in both themes. Frost: light = white glass; dark = bluish glass. White Play button. No dark text or milky overlay on the wash. Favorite gem on wash stays white when off and red when on.
 - Favorites: `lib/favorites.ts` — account list in `user_metadata.favorite_ids` plus `localStorage` cache; UI toggle is `FavoriteGemButton`
 - Dev Games: Game library tab (`dev-games`) for unfinished builds; catalog is `devGames` in `games.ts` (kept out of Home). `DevGamesView` reuses the library grid
@@ -331,6 +332,9 @@ When making changes to this project:
 ## Recent edits (auto)
 
 <!-- AUTO:RECENT_EDITS -->
+- `2026-08-29 03:32` — `src/components/library/LibraryView.css`
+- `2026-08-29 03:32` — `src/components/library/LibraryGameGrid.tsx`
+- `2026-08-29 03:32` — `src/data/games.ts`
 - `2026-08-29 03:13` — `src/data/games.ts`
 - `2026-08-29 03:01` — `vite.config.ts`
 - `2026-08-29 03:01` — `src/lib/pwa.ts`
@@ -358,9 +362,6 @@ When making changes to this project:
 - `2026-08-29 00:31` — `src/components/library/LibraryView.tsx`
 - `2026-08-29 00:31` — `src/components/library/LibraryGameGrid.tsx`
 - `2026-08-29 00:31` — `src/components/library/DevGamesView.tsx`
-- `2026-08-29 00:31` — `src/data/games.ts`
-- `2026-08-29 00:30` — `../../../../../../Users/elmopr77/.cursor/projects/Volumes-REDDRIVE-App-Portfolio-Development-Builds-Personal-website-portfolio-KryoGames/assets/Kryogames_3_-1a4c43ec-6aac-41b7-aa82-e33a81a577ed.jpg`
-- `2026-08-29 00:12` — `src/components/library/LibraryGameGrid.tsx`
 <!-- /AUTO:RECENT_EDITS -->
 -->
 -->

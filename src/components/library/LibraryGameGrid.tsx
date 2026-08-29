@@ -48,7 +48,14 @@ export function LibraryGameGrid({ tab, games, onSelectGame }: LibraryGameGridPro
               onClick={() => onSelectGame(game)}
               aria-label={`${game.title}, ${game.platform}`}
             >
-              <div className="library-card-media">
+              <div
+                className="library-card-media"
+                style={
+                  game.coverAspectRatio
+                    ? { aspectRatio: String(game.coverAspectRatio) }
+                    : undefined
+                }
+              >
                 {game.coverImage ? (
                   <img
                     src={game.coverImage}

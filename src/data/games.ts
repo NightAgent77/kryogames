@@ -13,9 +13,12 @@ export interface Game {
   playUrl?: string
   /** Cover art path under /public */
   coverImage?: string
-  /** Width÷height of cover art — keeps media slot matched so art scales without crop/bars */
+  /** Width÷height of the hero slot. All library covers use Maze-Ops 4:3 (`COVER_ASPECT_RATIO`). */
   coverAspectRatio?: number
 }
+
+/** Maze-Ops title-card ratio (~4:3). Grid cards and GameDetail media share this slot. */
+export const COVER_ASPECT_RATIO = 735 / 575
 
 export const games: Game[] = [
   {
@@ -30,7 +33,7 @@ export const games: Game[] = [
     playUrl:
       'https://pub-e379ba287a9f4d8ba4cdbd6b6095cb6c.r2.dev/snake-run/index.html',
     coverImage: '/games/snake-run.png',
-    coverAspectRatio: 1024 / 674,
+    coverAspectRatio: COVER_ASPECT_RATIO,
   },
   {
     id: 'fruit-rally',
@@ -44,7 +47,7 @@ export const games: Game[] = [
     playUrl:
       'https://pub-e379ba287a9f4d8ba4cdbd6b6095cb6c.r2.dev/fruit-rally/index.html',
     coverImage: '/games/fruit-rally.jpg',
-    coverAspectRatio: 874 / 575,
+    coverAspectRatio: COVER_ASPECT_RATIO,
   },
   {
     id: 'tut-1',
@@ -58,7 +61,7 @@ export const games: Game[] = [
     playUrl:
       'https://pub-e379ba287a9f4d8ba4cdbd6b6095cb6c.r2.dev/tut-1/index.html',
     coverImage: '/games/tut-1.png',
-    coverAspectRatio: 874 / 575,
+    coverAspectRatio: COVER_ASPECT_RATIO,
   },
   {
     id: 'tut-2',
@@ -72,7 +75,7 @@ export const games: Game[] = [
     playUrl:
       'https://pub-e379ba287a9f4d8ba4cdbd6b6095cb6c.r2.dev/tut-2/index.html',
     coverImage: '/games/tut-2.png',
-    coverAspectRatio: 874 / 575,
+    coverAspectRatio: COVER_ASPECT_RATIO,
   },
 ]
 
@@ -90,7 +93,7 @@ export const devGames: Game[] = [
     playUrl:
       'https://pub-e379ba287a9f4d8ba4cdbd6b6095cb6c.r2.dev/Maze-Ops/index.html',
     coverImage: '/games/maze-ops.jpg',
-    coverAspectRatio: 735 / 575,
+    coverAspectRatio: COVER_ASPECT_RATIO,
   },
 ]
 
