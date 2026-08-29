@@ -90,7 +90,7 @@ export const devGames: Game[] = [
     playUrl:
       'https://pub-e379ba287a9f4d8ba4cdbd6b6095cb6c.r2.dev/Maze-Ops/index.html',
     coverImage: '/games/maze-ops.jpg',
-    coverAspectRatio: 738 / 575,
+    coverAspectRatio: 735 / 575,
   },
 ]
 

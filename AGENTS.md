@@ -3,7 +3,7 @@
 > Living document for AI agent continuity. Updated automatically on file edits and substantively by agents after meaningful changes.
 
 <!-- AUTO:LAST_UPDATED -->
-**Last updated:** 2026-08-29 03:01 (auto)
+**Last updated:** 2026-08-29 03:13 (auto)
 <!-- /AUTO:LAST_UPDATED -->
 
 ---
@@ -199,7 +199,7 @@ src/
 - **Tutorial Game 1** (`tut-1`) — q5play platformer; Web, `status: playable`, Cloudflare R2: `https://pub-e379ba287a9f4d8ba4cdbd6b6095cb6c.r2.dev/tut-1/index.html`
 - **Tutorial Game 2** (`tut-2`) — q5play maze (“Escape the MAZE”); Web, `status: playable`, Cloudflare R2: `https://pub-e379ba287a9f4d8ba4cdbd6b6095cb6c.r2.dev/tut-2/index.html`
 - **Maze-Ops** (`maze-ops`) — Dev Games only (not Home); Web, `status: playable`, Cloudflare R2: `https://pub-e379ba287a9f4d8ba4cdbd6b6095cb6c.r2.dev/Maze-Ops/index.html`
-- Cover art: `public/games/maze-ops.jpg` — 738×575 military title card; white side bars cropped so art bleeds edge to edge (native ratio `738 / 575`)
+- Cover art: `public/games/maze-ops.jpg` — 735×575 military title card; white side bars cropped (including a 1px cream fringe on the right) so art bleeds edge to edge (native ratio `735 / 575`)
 - Cover art: `public/games/tut-1.png` — 874×575 geometric title card (red player, grey steps, gold finish) matching Fruit Rally’s ratio
 - Cover art: `public/games/tut-2.png` — 874×575 maze title card (blue player, red wall tiles) matching Fruit Rally’s ratio
 - Cover art: `public/games/fruit-rally.jpg` — comic hero cropped to 874×575 (`874 / 575` ≈ Snake Run's 1.52) so the card matches Snake Run's shape; source screenshot's white side bars are cropped off, art bleeds edge to edge. Full parity with Snake Run (grid cover, GameDetail media slot, blurred wash, light + dark chrome)
@@ -331,6 +331,7 @@ When making changes to this project:
 ## Recent edits (auto)
 
 <!-- AUTO:RECENT_EDITS -->
+- `2026-08-29 03:13` — `src/data/games.ts`
 - `2026-08-29 03:01` — `vite.config.ts`
 - `2026-08-29 03:01` — `src/lib/pwa.ts`
 - `2026-08-29 02:54` — `src/components/library/FriendsView.tsx`
@@ -360,7 +361,6 @@ When making changes to this project:
 - `2026-08-29 00:31` — `src/data/games.ts`
 - `2026-08-29 00:30` — `../../../../../../Users/elmopr77/.cursor/projects/Volumes-REDDRIVE-App-Portfolio-Development-Builds-Personal-website-portfolio-KryoGames/assets/Kryogames_3_-1a4c43ec-6aac-41b7-aa82-e33a81a577ed.jpg`
 - `2026-08-29 00:12` — `src/components/library/LibraryGameGrid.tsx`
-- `2026-08-29 00:12` — `src/components/library/LibraryView.tsx`
 <!-- /AUTO:RECENT_EDITS -->
 -->
 -->
