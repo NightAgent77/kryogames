@@ -3,7 +3,7 @@
 > Living document for AI agent continuity. Updated automatically on file edits and substantively by agents after meaningful changes.
 
 <!-- AUTO:LAST_UPDATED -->
-**Last updated:** 2026-08-29 02:26 (auto)
+**Last updated:** 2026-08-29 02:40 (auto)
 <!-- /AUTO:LAST_UPDATED -->
 
 ---
@@ -15,6 +15,7 @@
 | Item | Value |
 |------|-------|
 | **Live domain** | `https://kryogames.com` |
+| **GitHub** | `NightAgent77/kryogames` |
 | **Hosting** | Vercel |
 | **Auth** | Supabase (email + password) |
 | **Supabase project** | `mkiychmgquaulezbebps` |
@@ -72,6 +73,8 @@ public/
 ├── favicon.svg / favicon.ico
 ├── apple-touch-icon.png     # 180×180 home-screen icon
 ├── og.png                   # Open Graph / social share (512)
+├── robots.txt
+├── sitemap.xml
 ├── pwa-64x64.png / pwa-192x192.png / pwa-512x512.png
 ├── maskable-icon-512x512.png
 └── games/
@@ -156,7 +159,7 @@ src/
 - **`App.tsx`:** React Router routes above; `RequireAuth` wraps `/play`; loading placeholder while the session resolves
 - **`AuthPage`:** leftover helix-styled auth page; not mounted (IntroView is the live auth landing)
 - **PWA:** production build emits `manifest.webmanifest` + `sw.js` (`vite-plugin-pwa`). Name/short_name **KryoGames**. Chrome/Edge/Safari can Install / Add to Home Screen after deploy. App shell caches; hosted R2 games still open in a new tab (not wrapped in the PWA). Service worker is off in `npm run dev`. Regen icons: `npm run pwa-assets`
-- **SEO / site name:** `<title>`, `og:title`, `og:site_name`, `twitter:title`, `application-name`, and JSON-LD `WebSite.name` are **KryoGames** (not KyroGames). Canonical `https://kryogames.com/`
+- **SEO / site name:** page title is **KryoGames — Indie web games** (not KyroGames). Same brand in `og:title`, `og:site_name`, JSON-LD `WebSite` + `Organization`. Canonical + `public/sitemap.xml` + `public/robots.txt`. Google still showed the old **KyroGames** title after the Aug 2026 typo fix until recrawl.
 
 ### Design system
 - Slate template with **dark** (default) and **light** themes via `data-theme` on `<html>`
@@ -327,6 +330,9 @@ When making changes to this project:
 ## Recent edits (auto)
 
 <!-- AUTO:RECENT_EDITS -->
+- `2026-08-29 02:40` — `public/robots.txt`
+- `2026-08-29 02:40` — `public/sitemap.xml`
+- `2026-08-29 02:40` — `index.html`
 - `2026-08-29 02:26` — `package.json`
 - `2026-08-29 02:26` — `vercel.json`
 - `2026-08-29 02:26` — `src/vite-env.d.ts`
@@ -354,9 +360,6 @@ When making changes to this project:
 - `2026-08-23 19:38` — `src/components/KryoCursor.css`
 - `2026-08-23 19:37` — `src/components/KryoCursor.css`
 - `2026-08-23 19:35` — `src/components/KryoCursor.css`
-- `2026-08-23 19:33` — `src/components/KryoCursor.css`
-- `2026-08-23 19:32` — `src/components/KryoCursor.tsx`
-- `2026-08-23 19:29` — `src/components/KryoCursor.tsx`
 <!-- /AUTO:RECENT_EDITS -->
 -->
 -->

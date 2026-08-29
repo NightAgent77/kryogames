@@ -105,8 +105,9 @@ export function HomeView() {
       <section className="home-hero">
         <div className="home-hero-title">
           <h1>
-            <span>Kryo</span>
-            <span>Games</span>
+            <span className="visually-hidden">KryoGames</span>
+            <span aria-hidden="true">Kryo</span>
+            <span aria-hidden="true">Games</span>
           </h1>
           {user ? (
             <button
