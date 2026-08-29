@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import { games, devGames, allGames, type Game } from '../../data/games'
-import { loadFavorites, saveFavorites, toggleFavoriteId } from '../../lib/favorites'
+import { loadFavorites, hydrateFavorites, persistFavorites, toggleFavoriteId } from '../../lib/favorites'
 import { upsertProfileFromUser } from '../../lib/friends'
+import { useFineHover } from '../../lib/pointer'
 import { startPresence, stopPresence } from '../../lib/presence'
 import { flushPlaySession, startPlaySession } from '../../lib/playActivity'
 import { recordPlayedGame } from '../../lib/playedGames'
@@ -36,14 +37,32 @@ export function LibraryView() {
   const [favoriteIds, setFavoriteIds] = useState<string[]>([])
   const hideTimerRef = useRef<number | null>(null)
   const washTimerRef = useRef<number | null>(null)
+  const fineHover = useFineHover()
 
   useEffect(() => {
     if (!user?.id) {
       setFavoriteIds([])
       return
     }
+    let cancelled = false
     setFavoriteIds(loadFavorites(user.id))
-  }, [user?.id])
+    const sync = () => {
+      void hydrateFavorites(user.id, user.user_metadata).then((ids) => {
+        if (!cancelled) setFavoriteIds(ids)
+      })
+    }
+    sync()
+    const onVis = () => {
+      if (document.visibilityState === 'visible') sync()
+    }
+    window.addEventListener('focus', sync)
+    document.addEventListener('visibilitychange', onVis)
+    return () => {
+      cancelled = true
+      window.removeEventListener('focus', sync)
+      document.removeEventListener('visibilitychange', onVis)
+    }
+  }, [user?.id, user?.user_metadata])
 
   useEffect(() => {
     if (!user) return
@@ -82,7 +101,9 @@ export function LibraryView() {
     }
   }, [user?.id])
 
-  const sidebarOpen = sidebarPinned || sidebarHovered
+  const sidebarOpen = fineHover
+    ? sidebarPinned || sidebarHovered
+    : sidebarPinned
   const washActive = Boolean(washGame) && !washExiting
 
   const clearHideTimer = () => {
@@ -174,7 +195,7 @@ export function LibraryView() {
     if (!user?.id) return
     setFavoriteIds((prev) => {
       const next = toggleFavoriteId(prev, gameId)
-      saveFavorites(user.id, next)
+      void persistFavorites(user.id, next)
       return next
     })
   }
@@ -219,6 +240,7 @@ export function LibraryView() {
         activeTab={tab}
         onSelect={handleSelect}
         open={sidebarOpen}
+        hoverNav={fineHover}
         onHoverStart={revealSidebar}
         onHoverEnd={scheduleHideSidebar}
       />
@@ -249,8 +271,8 @@ export function LibraryView() {
             setShowProfile(false)
           }}
           onMenuToggle={() => setSidebarPinned((open) => !open)}
-          onMenuHoverStart={revealSidebar}
-          onMenuHoverEnd={scheduleHideSidebar}
+          onMenuHoverStart={fineHover ? revealSidebar : undefined}
+          onMenuHoverEnd={fineHover ? scheduleHideSidebar : undefined}
           menuExpanded={sidebarOpen}
           onViewProfile={() => {
             closeGameView()

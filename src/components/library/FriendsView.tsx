@@ -225,10 +225,17 @@ export function FriendsView({ query }: FriendsViewProps) {
     const onChange = () => {
       void load()
     }
+    const onVis = () => {
+      if (document.visibilityState === 'visible') onChange()
+    }
     window.addEventListener(FRIENDS_CHANGED_EVENT, onChange)
+    window.addEventListener('focus', onChange)
+    document.addEventListener('visibilitychange', onVis)
     return () => {
       cancelled = true
       window.removeEventListener(FRIENDS_CHANGED_EVENT, onChange)
+      window.removeEventListener('focus', onChange)
+      document.removeEventListener('visibilitychange', onVis)
     }
   }, [userId])
 

@@ -6,6 +6,8 @@
   overflow: hidden;
   background: var(--bg-deep);
   position: relative;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .library-sidebar {
@@ -193,6 +195,7 @@
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Full-library wash so desktop sidebar pill sits over the blurred cover too */
@@ -2652,5 +2655,15 @@
 
   .library-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .friends-row--request {
+    flex-wrap: wrap;
+  }
+
+  .friends-row-actions {
+    width: 100%;
+    justify-content: flex-end;
+    padding-top: 0.15rem;
   }
 }

@@ -3,7 +3,7 @@
 > Living document for AI agent continuity. Updated automatically on file edits and substantively by agents after meaningful changes.
 
 <!-- AUTO:LAST_UPDATED -->
-**Last updated:** 2026-08-29 02:40 (auto)
+**Last updated:** 2026-08-29 03:01 (auto)
 <!-- /AUTO:LAST_UPDATED -->
 
 ---
@@ -133,7 +133,9 @@ src/
 ├── lib/
 │   ├── supabase.ts          # Supabase client init
 │   ├── siteUrl.ts           # Site URL helper (VITE_SITE_URL fallback)
-│   ├── favorites.ts         # Per-user favorite game IDs (localStorage)
+│   ├── favorites.ts         # Favorite IDs (auth metadata + localStorage cache)
+│   ├── pointer.ts           # Fine-pointer hover vs tap (desktop vs phone/PWA)
+│   ├── pwa.ts               # Service worker: check for updates on every app open
 │   ├── playedGames.ts       # Distinct games played (Supabase + local migrate)
 │   ├── playActivity.ts      # Daily play minutes (Supabase + session flush)
 │   ├── friends.ts           # Profiles search + friendships helpers
@@ -158,7 +160,7 @@ src/
 - **`/play` (`LibraryView`):** signed-in Kryo Play app — library shell matching design mockup — sidebar, search, profile pill, game grid; shell is viewport-locked so only `.library-main` scrolls — desktop sidebar pill stays fully visible (narrow screens still use the existing collapse/hover drawer). Unauthenticated `/play` redirects to `/login`. Log out returns to `/`
 - **`App.tsx`:** React Router routes above; `RequireAuth` wraps `/play`; loading placeholder while the session resolves
 - **`AuthPage`:** leftover helix-styled auth page; not mounted (IntroView is the live auth landing)
-- **PWA:** production build emits `manifest.webmanifest` + `sw.js` (`vite-plugin-pwa`). Name/short_name **KryoGames**. Chrome/Edge/Safari can Install / Add to Home Screen after deploy. App shell caches; hosted R2 games still open in a new tab (not wrapped in the PWA). Service worker is off in `npm run dev`. Regen icons: `npm run pwa-assets`
+- **PWA:** production build emits `manifest.webmanifest` + `sw.js` (`vite-plugin-pwa`). Name/short_name **KryoGames**; `start_url` is `/play` so Add to Home Screen opens the library. On launch and whenever the app is foregrounded, `lib/pwa.ts` calls `registration.update()` and applies a waiting worker immediately (one reload). Chrome/Edge/Safari can Install / Add to Home Screen after deploy. App shell caches; hosted R2 games still open in a new tab (not wrapped in the PWA). Service worker is off in `npm run dev`. Regen icons: `npm run pwa-assets`. Phone nav uses tap (hamburger pins the menu; Game library expands before Favorites) — hover-to-open stays desktop-only.
 - **SEO / site name:** page title is **KryoGames — Indie web games** (not KyroGames). Same brand in `og:title`, `og:site_name`, JSON-LD `WebSite` + `Organization`. Canonical + `public/sitemap.xml` + `public/robots.txt`. Google still showed the old **KyroGames** title after the Aug 2026 typo fix until recrawl.
 
 ### Design system
@@ -183,7 +185,7 @@ src/
 - Each game card has a bottom meta bar: title + platform icon (`PlatformIcon`)
 - Clicking a game card expands to **GameDetail** (cover, description, tags, Play / Coming soon, favorite gem)
 - GameDetail **art wash (locked, both themes):** full-library `.library-wash` blurred cover behind the sidebar pill **and** search / profile / nav; sharp cover in the media slot; light-on-dark type (white title/description/tags/Back; white Play with dark label). Frost widgets: light = white glass; dark = deeper bluish glass (`--wash-frost*`). Light theme uses almost no veil so cover color still reads — never dark ink or a milky white overlay on the wash. Leaving GameDetail **fades the wash and widget colors** (~420ms) instead of a hard cut.
-- **Favorites:** facet-diamond gem beside Play on GameDetail; toggle persists per signed-in user in `localStorage` (`kryogames-favorites:<userId>`); Favorites sidebar tab lists favorited games (search works); empty state when none. On wash: white glass outline → red + pop/burst when favorited, soft spin-out when removed.
+- **Favorites:** facet-diamond gem beside Play on GameDetail; toggle syncs to the account (`user_metadata.favorite_ids`) plus a `localStorage` cache so desktop and iPhone / PWA see the same list. Favorites sidebar tab lists favorited games (search works); empty state when none. On wash: white glass outline → red + pop/burst when favorited, soft spin-out when removed.
 - Mobile / narrow: small hamburger stays visible; hovering it reveals the floating nav pill (hides on leave); tap still pins it open on touch
 - Profile pill: initials or uploaded avatar + username; dropdown with View profile, Appearance → Dark/Light, Settings (placeholder), Log out. Notification bell sits immediately to the left of the pill (frost + white type on GameDetail / profile wash).
 - Profile page (`ProfileView`): gamer-style banner header aligned with the sidebar pill top — cover art fills the whole card; avatar, username, and About me overlay the bottom of the art (light-on-dark); frosted profile pill overlays the banner top-right (no Back, search hidden). Stats bar under banner: long horizontal surface holding compact sub-chips (**Friends**, **Games played**) with cyan numbers. Below that: **Activity heatmap** (`ActivityHeatmap`) — month calendar of daily play hours with blue intensity (0h / >2h / >4h / >8h), month picker. **Edit profile** switches into edit mode (live banner/avatar preview + form); **Apply changes** saves via `updateUser` (`avatar`, `banner`, `bio`, `username`) and returns to view mode; Cancel discards the draft
@@ -279,7 +281,6 @@ src/
 - Additional games beyond Snake Run, Fruit Rally, Tutorial Game 1, and Tutorial Game 2
 - More Dev Games beyond Maze-Ops
 - Per-game routes (e.g. `/play/games/:id`)
-- Favorites sync across devices (currently localStorage only)
 - Played-games list UI (count + tracker exist in Supabase)
 - Settings panel (profile menu item is a placeholder)
 - Supabase Storage for avatars (currently compressed data URL in `user_metadata` + `profiles.avatar`)
@@ -301,7 +302,7 @@ src/
 - Game platforms: `'web' | 'android' | 'windows' | 'mac' | 'ios'` (library UI is web-only for now; Android tab hidden)
 - Game cards show a bottom meta bar: title + platform icon
 - **GameDetail wash (locked):** full-library blurred cover; light-on-dark type in both themes. Frost: light = white glass; dark = bluish glass. White Play button. No dark text or milky overlay on the wash. Favorite gem on wash stays white when off and red when on.
-- Favorites: per-user `localStorage` via `lib/favorites.ts`; UI toggle is `FavoriteGemButton`
+- Favorites: `lib/favorites.ts` — account list in `user_metadata.favorite_ids` plus `localStorage` cache; UI toggle is `FavoriteGemButton`
 - Dev Games: Game library tab (`dev-games`) for unfinished builds; catalog is `devGames` in `games.ts` (kept out of Home). `DevGamesView` reuses the library grid
 - Games played: Supabase `played_games` via `lib/playedGames.ts`; recorded on Play click
 - Play activity: Supabase `play_activity` via `lib/playActivity.ts`; heatmap on profile; requires `supabase/play-stats.sql`
@@ -330,6 +331,19 @@ When making changes to this project:
 ## Recent edits (auto)
 
 <!-- AUTO:RECENT_EDITS -->
+- `2026-08-29 03:01` — `vite.config.ts`
+- `2026-08-29 03:01` — `src/lib/pwa.ts`
+- `2026-08-29 02:54` — `src/components/library/FriendsView.tsx`
+- `2026-08-29 02:54` — `src/components/library/LibraryView.css`
+- `2026-08-29 02:53` — `src/components/library/LibraryView.css`
+- `2026-08-29 02:53` — `vite.config.ts`
+- `2026-08-29 02:53` — `index.html`
+- `2026-08-29 02:53` — `src/components/library/LibrarySidebar.tsx`
+- `2026-08-29 02:53` — `src/components/library/LibraryTopBar.tsx`
+- `2026-08-29 02:53` — `src/components/library/LibraryView.tsx`
+- `2026-08-29 02:52` — `src/lib/pointer.ts`
+- `2026-08-29 02:52` — `src/lib/supabase.ts`
+- `2026-08-29 02:52` — `src/lib/favorites.ts`
 - `2026-08-29 02:40` — `public/robots.txt`
 - `2026-08-29 02:40` — `public/sitemap.xml`
 - `2026-08-29 02:40` — `index.html`
@@ -347,19 +361,6 @@ When making changes to this project:
 - `2026-08-29 00:30` — `../../../../../../Users/elmopr77/.cursor/projects/Volumes-REDDRIVE-App-Portfolio-Development-Builds-Personal-website-portfolio-KryoGames/assets/Kryogames_3_-1a4c43ec-6aac-41b7-aa82-e33a81a577ed.jpg`
 - `2026-08-29 00:12` — `src/components/library/LibraryGameGrid.tsx`
 - `2026-08-29 00:12` — `src/components/library/LibraryView.tsx`
-- `2026-08-29 00:12` — `src/components/library/LibrarySidebar.tsx`
-- `2026-08-29 00:12` — `src/components/library/DevGamesView.tsx`
-- `2026-08-23 20:04` — `src/components/KryoCursor.tsx`
-- `2026-08-23 20:04` — `src/components/AuthModal.tsx`
-- `2026-08-23 19:56` — `src/components/AuthModal.tsx`
-- `2026-08-23 19:55` — `src/components/KryoCursor.tsx`
-- `2026-08-23 19:54` — `src/components/KryoCursor.tsx`
-- `2026-08-23 19:54` — `src/components/AuthModal.tsx`
-- `2026-08-23 19:40` — `src/components/KryoCursor.css`
-- `2026-08-23 19:39` — `src/components/KryoCursor.css`
-- `2026-08-23 19:38` — `src/components/KryoCursor.css`
-- `2026-08-23 19:37` — `src/components/KryoCursor.css`
-- `2026-08-23 19:35` — `src/components/KryoCursor.css`
 <!-- /AUTO:RECENT_EDITS -->
 -->
 -->

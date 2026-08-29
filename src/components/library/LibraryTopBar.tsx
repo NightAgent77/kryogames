@@ -18,8 +18,8 @@ interface LibraryTopBarProps {
   searchPlaceholder?: string
   showSearch?: boolean
   onMenuToggle: () => void
-  onMenuHoverStart: () => void
-  onMenuHoverEnd: () => void
+  onMenuHoverStart?: () => void
+  onMenuHoverEnd?: () => void
   menuExpanded: boolean
   onViewProfile: () => void
 }
@@ -91,14 +91,14 @@ export function LibraryTopBar({
   useEffect(() => {
     if (!menuOpen) return
 
-    const handlePointer = (event: MouseEvent) => {
+    const handlePointer = (event: PointerEvent) => {
       if (!menuRef.current?.contains(event.target as Node)) {
         setMenuOpen(false)
       }
     }
 
-    document.addEventListener('mousedown', handlePointer)
-    return () => document.removeEventListener('mousedown', handlePointer)
+    document.addEventListener('pointerdown', handlePointer)
+    return () => document.removeEventListener('pointerdown', handlePointer)
   }, [menuOpen])
 
   useEffect(() => {
@@ -117,8 +117,6 @@ export function LibraryTopBar({
         onClick={onMenuToggle}
         onMouseEnter={onMenuHoverStart}
         onMouseLeave={onMenuHoverEnd}
-        onFocus={onMenuHoverStart}
-        onBlur={onMenuHoverEnd}
         aria-label="Open menu"
         aria-expanded={menuExpanded}
       >

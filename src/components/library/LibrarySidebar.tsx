@@ -18,6 +18,7 @@ interface LibrarySidebarProps {
   activeTab: LibraryTab
   onSelect: (tab: LibraryTab) => void
   open: boolean
+  hoverNav: boolean
   onHoverStart: () => void
   onHoverEnd: () => void
 }
@@ -69,15 +70,17 @@ export function LibrarySidebar({
   activeTab,
   onSelect,
   open,
+  hoverNav,
   onHoverStart,
   onHoverEnd,
 }: LibrarySidebarProps) {
   const [libraryHovered, setLibraryHovered] = useState(false)
+  const [libraryPinned, setLibraryPinned] = useState(false)
   const inGameLibrary =
     activeTab === 'my-games' ||
     activeTab === 'favorites' ||
     activeTab === 'dev-games'
-  const libraryExpanded = inGameLibrary || libraryHovered
+  const libraryExpanded = inGameLibrary || libraryHovered || libraryPinned
   const navRef = useRef<HTMLDivElement>(null)
   const homeRef = useRef<HTMLDivElement>(null)
   const libraryRef = useRef<HTMLDivElement>(null)
@@ -142,8 +145,8 @@ export function LibrarySidebar({
       className={`library-sidebar${open ? ' library-sidebar--open' : ''}`}
       aria-label="Library"
       aria-hidden={!open}
-      onMouseEnter={onHoverStart}
-      onMouseLeave={onHoverEnd}
+      onMouseEnter={hoverNav ? onHoverStart : undefined}
+      onMouseLeave={hoverNav ? onHoverEnd : undefined}
     >
       <div className="library-brand">Kryo Games</div>
 
@@ -169,7 +172,10 @@ export function LibrarySidebar({
           <NavDockItem
             label="Home"
             active={activeTab === 'web'}
-            onClick={() => onSelect('web')}
+            onClick={() => {
+              setLibraryPinned(false)
+              onSelect('web')
+            }}
             itemRef={homeRef}
           >
             Home
@@ -177,13 +183,19 @@ export function LibrarySidebar({
 
           <div
             className="library-nav-group"
-            onMouseEnter={() => setLibraryHovered(true)}
-            onMouseLeave={() => setLibraryHovered(false)}
+            onMouseEnter={hoverNav ? () => setLibraryHovered(true) : undefined}
+            onMouseLeave={hoverNav ? () => setLibraryHovered(false) : undefined}
           >
             <NavDockItem
               label="Game library"
               active={inGameLibrary}
-              onClick={() => onSelect('my-games')}
+              onClick={() => {
+                if (!hoverNav && !libraryExpanded) {
+                  setLibraryPinned(true)
+                  return
+                }
+                onSelect('my-games')
+              }}
               itemRef={libraryRef}
               ariaExpanded={libraryExpanded}
             >
@@ -229,7 +241,10 @@ export function LibrarySidebar({
           <NavDockItem
             label="Friends"
             active={activeTab === 'friends'}
-            onClick={() => onSelect('friends')}
+            onClick={() => {
+              setLibraryPinned(false)
+              onSelect('friends')
+            }}
             itemRef={friendsRef}
           >
             Friends
