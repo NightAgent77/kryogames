@@ -3,7 +3,7 @@
 > Living document for AI agent continuity. Updated automatically on file edits and substantively by agents after meaningful changes.
 
 <!-- AUTO:LAST_UPDATED -->
-**Last updated:** 2026-08-29 00:34 (auto)
+**Last updated:** 2026-08-29 02:26 (auto)
 <!-- /AUTO:LAST_UPDATED -->
 
 ---
@@ -25,6 +25,7 @@
 
 - **Framework:** React 19 + TypeScript
 - **Build tool:** Vite 8 (custom `preserveBackdropFilter` plugin — LightningCSS would otherwise drop unprefixed `backdrop-filter` and kill intro/auth frost on the live site)
+- **PWA:** `vite-plugin-pwa` (web app manifest + Workbox service worker; installable as KryoGames)
 - **Auth / backend:** Supabase (`@supabase/supabase-js`)
 - **Routing:** `react-router-dom` (`/` home, `/login` `/signup` `/forgot`, `/play`)
 - **Motion:** `motion` (React Bits–style Dock springs in the library sidebar / profile menu)
@@ -45,6 +46,7 @@ npm run dev          # local dev server (NOT npx run dev)
 npm run build        # production build → dist/
 npm run preview      # preview production build
 npm run lint         # oxlint
+npm run pwa-assets   # regenerate PWA icons from public/favicon.svg
 ```
 
 ---
@@ -67,6 +69,11 @@ Copy `.env.example` → `.env.local` for local dev. Set the same vars in **Verce
 
 ```
 public/
+├── favicon.svg / favicon.ico
+├── apple-touch-icon.png     # 180×180 home-screen icon
+├── og.png                   # Open Graph / social share (512)
+├── pwa-64x64.png / pwa-192x192.png / pwa-512x512.png
+├── maskable-icon-512x512.png
 └── games/
     ├── snake-run.png        # Snake Run cover art
     ├── fruit-rally.jpg      # Fruit Rally cover art
@@ -148,6 +155,8 @@ src/
 - **`/play` (`LibraryView`):** signed-in Kryo Play app — library shell matching design mockup — sidebar, search, profile pill, game grid; shell is viewport-locked so only `.library-main` scrolls — desktop sidebar pill stays fully visible (narrow screens still use the existing collapse/hover drawer). Unauthenticated `/play` redirects to `/login`. Log out returns to `/`
 - **`App.tsx`:** React Router routes above; `RequireAuth` wraps `/play`; loading placeholder while the session resolves
 - **`AuthPage`:** leftover helix-styled auth page; not mounted (IntroView is the live auth landing)
+- **PWA:** production build emits `manifest.webmanifest` + `sw.js` (`vite-plugin-pwa`). Name/short_name **KryoGames**. Chrome/Edge/Safari can Install / Add to Home Screen after deploy. App shell caches; hosted R2 games still open in a new tab (not wrapped in the PWA). Service worker is off in `npm run dev`. Regen icons: `npm run pwa-assets`
+- **SEO / site name:** `<title>`, `og:title`, `og:site_name`, `twitter:title`, `application-name`, and JSON-LD `WebSite.name` are **KryoGames** (not KyroGames). Canonical `https://kryogames.com/`
 
 ### Design system
 - Slate template with **dark** (default) and **light** themes via `data-theme` on `<html>`
@@ -219,9 +228,10 @@ src/
 - RPC: `add_play_minutes(p_day, p_minutes)` atomically increments the signed-in user’s day
 
 ### Deployment config
-- `vercel.json` — SPA rewrite so client routes work when added later
+- `vercel.json` — SPA rewrite so client routes work when added later; `Cache-Control: no-cache` + `Service-Worker-Allowed: /` on `/sw.js`
 - `VITE_SITE_URL=https://kryogames.com` for production auth redirects
 - `vite.config.ts` `preserveBackdropFilter` plugin re-emits unprefixed `backdrop-filter` after LightningCSS minify so Chromium/Firefox frost works on Vercel; intro frost also copies Thinking Dots onto a 2D canvas because raw WebGL is not sampled
+- `vite.config.ts` `VitePWA` plugin — manifest + Workbox generateSW; `registerType: autoUpdate`
 
 ### Agent handoff
 - `AGENTS.md` — living handoff doc (architecture, features, env, deployment, pending work)
@@ -296,6 +306,7 @@ src/
 - Presence / online status: `lib/presence.ts` (Supabase Realtime Presence channel `kryogames-online`); no extra SQL — friends Online/Offline + grouped “are online now” toasts use it
 - Notices: `lib/notices.ts` session inbox (`kryogames-notices:<userId>`) + once-per-tab greet flag (`kryogames-online-greet:<userId>`)
 - Custom pointer: `KryoCursor` mounted in `App.tsx` (home, login, play). Do not add the React Bits Pro User Cursor / shadcn package — this repo has no Tailwind or Pro license
+- Site name is **KryoGames** (PWA, `<title>`, Open Graph). Do not title it KyroGames
 - Do **not** commit `.env.local` or service role keys
 
 ---
@@ -316,6 +327,12 @@ When making changes to this project:
 ## Recent edits (auto)
 
 <!-- AUTO:RECENT_EDITS -->
+- `2026-08-29 02:26` — `package.json`
+- `2026-08-29 02:26` — `vercel.json`
+- `2026-08-29 02:26` — `src/vite-env.d.ts`
+- `2026-08-29 02:26` — `index.html`
+- `2026-08-29 02:26` — `vite.config.ts`
+- `2026-08-29 02:14` — `index.html`
 - `2026-08-29 00:34` — `src/data/games.ts`
 - `2026-08-29 00:31` — `src/components/library/LibraryView.tsx`
 - `2026-08-29 00:31` — `src/components/library/LibraryGameGrid.tsx`
@@ -340,12 +357,6 @@ When making changes to this project:
 - `2026-08-23 19:33` — `src/components/KryoCursor.css`
 - `2026-08-23 19:32` — `src/components/KryoCursor.tsx`
 - `2026-08-23 19:29` — `src/components/KryoCursor.tsx`
-- `2026-08-23 19:27` — `src/components/KryoCursor.tsx`
-- `2026-08-23 19:23` — `src/components/KryoCursor.css`
-- `2026-08-23 19:23` — `src/components/KryoCursor.tsx`
-- `2026-08-23 19:20` — `src/components/KryoCursor.css`
-- `2026-08-23 19:20` — `src/App.tsx`
-- `2026-08-23 19:20` — `src/components/KryoCursor.tsx`
 <!-- /AUTO:RECENT_EDITS -->
 -->
 -->
