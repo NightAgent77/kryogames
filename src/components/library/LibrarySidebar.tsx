@@ -12,7 +12,7 @@ import Dock, {
   useDockMotion,
 } from './Dock'
 
-export type LibraryTab = 'web' | 'my-games' | 'favorites' | 'friends'
+export type LibraryTab = 'web' | 'my-games' | 'favorites' | 'dev-games' | 'friends'
 
 interface LibrarySidebarProps {
   activeTab: LibraryTab
@@ -73,13 +73,17 @@ export function LibrarySidebar({
   onHoverEnd,
 }: LibrarySidebarProps) {
   const [libraryHovered, setLibraryHovered] = useState(false)
-  const inGameLibrary = activeTab === 'my-games' || activeTab === 'favorites'
+  const inGameLibrary =
+    activeTab === 'my-games' ||
+    activeTab === 'favorites' ||
+    activeTab === 'dev-games'
   const libraryExpanded = inGameLibrary || libraryHovered
   const navRef = useRef<HTMLDivElement>(null)
   const homeRef = useRef<HTMLDivElement>(null)
   const libraryRef = useRef<HTMLDivElement>(null)
   const myGamesRef = useRef<HTMLButtonElement>(null)
   const favoritesRef = useRef<HTMLButtonElement>(null)
+  const devGamesRef = useRef<HTMLButtonElement>(null)
   const friendsRef = useRef<HTMLDivElement>(null)
   const [indicator, setIndicator] = useState<IndicatorBox | null>(null)
   const [indicatorReady, setIndicatorReady] = useState(false)
@@ -93,7 +97,9 @@ export function LibrarySidebar({
           ? myGamesRef.current
           : activeTab === 'favorites'
             ? favoritesRef.current
-            : friendsRef.current
+            : activeTab === 'dev-games'
+              ? devGamesRef.current
+              : friendsRef.current
     if (!nav || !target) return
 
     const update = () => {
@@ -113,7 +119,14 @@ export function LibrarySidebar({
     const timers = [90, 180, 300, 480].map((ms) => window.setTimeout(update, ms))
     const observer = new ResizeObserver(update)
     observer.observe(nav)
-    for (const el of [homeRef.current, libraryRef.current, friendsRef.current, myGamesRef.current, favoritesRef.current]) {
+    for (const el of [
+      homeRef.current,
+      libraryRef.current,
+      friendsRef.current,
+      myGamesRef.current,
+      favoritesRef.current,
+      devGamesRef.current,
+    ]) {
       if (el) observer.observe(el)
     }
 
@@ -199,6 +212,15 @@ export function LibrarySidebar({
                   tabIndex={libraryExpanded ? 0 : -1}
                 >
                   Favorites
+                </button>
+                <button
+                  ref={devGamesRef}
+                  type="button"
+                  className={`library-nav-item${activeTab === 'dev-games' ? ' library-nav-item--active' : ''}`}
+                  onClick={() => onSelect('dev-games')}
+                  tabIndex={libraryExpanded ? 0 : -1}
+                >
+                  Dev Games
                 </button>
               </div>
             </div>

@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
-import { games, type Game } from '../../data/games'
+import { games, devGames, allGames, type Game } from '../../data/games'
 import { loadFavorites, saveFavorites, toggleFavoriteId } from '../../lib/favorites'
 import { upsertProfileFromUser } from '../../lib/friends'
 import { startPresence, stopPresence } from '../../lib/presence'
 import { flushPlaySession, startPlaySession } from '../../lib/playActivity'
 import { recordPlayedGame } from '../../lib/playedGames'
+import { DevGamesView } from './DevGamesView'
 import { FriendToasts } from './FriendToasts'
 import { FriendsView } from './FriendsView'
 import { GameDetail } from './GameDetail'
@@ -155,10 +156,13 @@ export function LibraryView() {
 
     if (tab === 'friends' || tab === 'my-games') return []
 
-    return games.filter((game) => {
+    const catalog =
+      tab === 'dev-games' ? devGames : tab === 'favorites' ? allGames : games
+
+    return catalog.filter((game) => {
       if (tab === 'favorites') {
         if (!favoriteSet.has(game.id)) return false
-      } else if (game.platform !== tab) {
+      } else if (tab !== 'dev-games' && game.platform !== tab) {
         return false
       }
       if (!query) return true
@@ -272,6 +276,8 @@ export function LibraryView() {
           />
         ) : tab === 'friends' ? (
           <FriendsView query={friendsSearch} />
+        ) : tab === 'dev-games' ? (
+          <DevGamesView games={filteredGames} onSelectGame={openGame} />
         ) : (
           <LibraryGameGrid
             tab={tab}

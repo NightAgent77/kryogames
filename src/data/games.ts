@@ -75,3 +75,23 @@ export const games: Game[] = [
     coverAspectRatio: 874 / 575,
   },
 ]
+
+/** Incomplete / idea builds — shown only on the Dev Games tab, not Home. */
+export const devGames: Game[] = [
+  {
+    id: 'maze-ops',
+    title: 'Maze-Ops',
+    description:
+      'An in-progress maze ops build. Early look at the game — playable in the browser while it is still in development.',
+    genre: 'Maze',
+    status: 'playable',
+    platform: 'web',
+    tags: ['Web', 'Dev', 'Maze'],
+    playUrl:
+      'https://pub-e379ba287a9f4d8ba4cdbd6b6095cb6c.r2.dev/Maze-Ops/index.html',
+    coverImage: '/games/maze-ops.jpg',
+    coverAspectRatio: 738 / 575,
+  },
+]
+
+export const allGames: Game[] = [...games, ...devGames]

@@ -3,7 +3,7 @@
 > Living document for AI agent continuity. Updated automatically on file edits and substantively by agents after meaningful changes.
 
 <!-- AUTO:LAST_UPDATED -->
-**Last updated:** 2026-08-23 20:04 (auto)
+**Last updated:** 2026-08-29 00:34 (auto)
 <!-- /AUTO:LAST_UPDATED -->
 
 ---
@@ -71,7 +71,8 @@ public/
     ├── snake-run.png        # Snake Run cover art
     ├── fruit-rally.jpg      # Fruit Rally cover art
     ├── tut-1.png            # Tutorial Game 1 cover art
-    └── tut-2.png            # Tutorial Game 2 cover art
+    ├── tut-2.png            # Tutorial Game 2 cover art
+    └── maze-ops.jpg         # Maze-Ops Dev Games cover art
 src/
 ├── main.tsx                 # App entry: BrowserRouter + ThemeProvider + AuthProvider
 ├── App.tsx                  # Routes + site-wide KryoCursor
@@ -108,6 +109,7 @@ src/
 │       ├── PlatformIcon.tsx # Web / Android / Windows / Mac / iOS icons
 │       ├── GameDetail.tsx   # Expanded game view (blurred cover wash + desc + Play)
 │       ├── FavoriteGemButton.tsx # Facet-diamond favorite toggle (animates red)
+│       ├── DevGamesView.tsx # Empty WIP / idea games tab under Game library
 │       ├── FriendsView.tsx  # Friends search, requests, Online / Offline lists
 │       ├── FriendToasts.tsx # Friend request / accept / came-online popups (under profile)
 │       ├── NotificationBell.tsx # Inbox bell beside the profile pill
@@ -117,7 +119,7 @@ src/
 │   ├── AuthContext.tsx      # Supabase auth state & methods
 │   └── ThemeContext.tsx     # Dark / light theme (localStorage `kryogames-theme`)
 ├── data/
-│   └── games.ts             # Catalog (platform, playUrl, coverImage)
+│   └── games.ts             # Catalog + `devGames` (platform, playUrl, coverImage)
 ├── lib/
 │   ├── supabase.ts          # Supabase client init
 │   ├── siteUrl.ts           # Site URL helper (VITE_SITE_URL fallback)
@@ -158,12 +160,13 @@ src/
 - **KryoCursor** (site-wide, `App.tsx`): custom ice-shard pointer that tracks the mouse 1:1 (no name tag). Aims fully in the move direction (down looks down, etc.), then eases back to an upward-diagonal rest. Yellow facet in dark (`#ffd23a`); black in light. Native cursor hidden on fine pointers; restored over text fields; skipped on touch. Portals into an open `dialog:modal` (Log in / Sign up) so it paints above the top-layer popup. Not the React Bits Pro User Cursor package.
 
 ### Library (signed-in)
-- Sidebar: **Home** (web catalog) + **Game library** (nested **My Games**, **Favorites**) + **Friends**
+- Sidebar: **Home** (web catalog) + **Game library** (nested **My Games**, **Favorites**, **Dev Games**) + **Friends**
 - Sidebar nav uses a **vertical Dock** adaptation (`Dock.tsx` + `motion`): mouse-Y proximity springs grow row height; hover tooltips sit to the right of the pill; sliding active indicator and Game library submenu unchanged; theme tokens + game-wash frost (no dark `#120F17` dock chrome); `prefers-reduced-motion` disables springs
 - Profile dropdown (View profile / Appearance / Settings / Log out + theme radios) uses the same Dock springs inside the existing panel (`dock-panel--menu`); no side tooltips (labels already visible); wash frost styles target dock rows
-- Search filters current tab by title (client-side) on Home / Favorites; Friends uses the same top search for usernames. The library search input is marked non-auth (`data-1p-ignore` / `autocomplete=off`) so password managers don’t treat tab switches as login prompts
+- Search filters current tab by title (client-side) on Home / Favorites / Dev Games; Friends uses the same top search for usernames. The library search input is marked non-auth (`data-1p-ignore` / `autocomplete=off`) so password managers don’t treat tab switches as login prompts
 - Home tab lists `platform: 'web'` titles from `games.ts`
 - My Games: empty placeholder for now
+- **Dev Games:** incomplete / idea builds from `devGames` in `games.ts` (`DevGamesView`); nested under Game library below Favorites. **Maze-Ops** is listed here, not on Home. Search filters by title; favorites from this tab also appear under Favorites
 - **Friends:** top-bar search switches to “Search usernames” (games search hidden); send friend requests, accept/decline incoming (section only when pending); **Online** section only when someone is present (neon green status dot on the Online header + live presence via Supabase Realtime `lib/presence.ts`), then **Offline** for everyone else; each friend row uses a ⋮ menu with **Invite to** (placeholder) and **Remove**; data in Supabase `profiles` + `friendships` (see `supabase/friends.sql`). **Presence** starts when the library mounts for a signed-in user and clears on logout / leave. **Toasts** (`FriendToasts`) appear upper-right under the profile pill: incoming request (Accept / Decline), “accepted your friend request”, and online-now. Fresh sign-in waits ~1.6s, then one **grouped** “A, B and N others are online” toast (not one per friend); later joins debounce ~480ms into the same grouped toast. Pending requests land in the inbox after that greet (no burst of request toasts). Auto-dismiss after 6s with a short Web Audio chime; Supabase Realtime plus an 8s poll fallback. **Notification bell** (`NotificationBell`) sits beside the profile pill — unread badge + dropdown of friend requests and other notices (`lib/notices.ts`, `sessionStorage` `kryogames-notices:<userId>`); Accept / Decline from the inbox. Opening the panel marks items read. Logout clears the session greet so the next sign-in greets again.
 - Each game card has a bottom meta bar: title + platform icon (`PlatformIcon`)
 - Clicking a game card expands to **GameDetail** (cover, description, tags, Play / Coming soon, favorite gem)
@@ -181,6 +184,8 @@ src/
 - **Fruit Rally** (`fruit-rally`) — comic-book arcade racer; Web, `status: playable`, Cloudflare R2: `https://pub-e379ba287a9f4d8ba4cdbd6b6095cb6c.r2.dev/fruit-rally/index.html`
 - **Tutorial Game 1** (`tut-1`) — q5play platformer; Web, `status: playable`, Cloudflare R2: `https://pub-e379ba287a9f4d8ba4cdbd6b6095cb6c.r2.dev/tut-1/index.html`
 - **Tutorial Game 2** (`tut-2`) — q5play maze (“Escape the MAZE”); Web, `status: playable`, Cloudflare R2: `https://pub-e379ba287a9f4d8ba4cdbd6b6095cb6c.r2.dev/tut-2/index.html`
+- **Maze-Ops** (`maze-ops`) — Dev Games only (not Home); Web, `status: playable`, Cloudflare R2: `https://pub-e379ba287a9f4d8ba4cdbd6b6095cb6c.r2.dev/Maze-Ops/index.html`
+- Cover art: `public/games/maze-ops.jpg` — 738×575 military title card; white side bars cropped so art bleeds edge to edge (native ratio `738 / 575`)
 - Cover art: `public/games/tut-1.png` — 874×575 geometric title card (red player, grey steps, gold finish) matching Fruit Rally’s ratio
 - Cover art: `public/games/tut-2.png` — 874×575 maze title card (blue player, red wall tiles) matching Fruit Rally’s ratio
 - Cover art: `public/games/fruit-rally.jpg` — comic hero cropped to 874×575 (`874 / 575` ≈ Snake Run's 1.52) so the card matches Snake Run's shape; source screenshot's white side bars are cropped off, art bleeds edge to edge. Full parity with Snake Run (grid cover, GameDetail media slot, blurred wash, light + dark chrome)
@@ -259,6 +264,7 @@ src/
 
 - In-page game embed (Play currently opens hosted URL in a new tab)
 - Additional games beyond Snake Run, Fruit Rally, Tutorial Game 1, and Tutorial Game 2
+- More Dev Games beyond Maze-Ops
 - Per-game routes (e.g. `/play/games/:id`)
 - Favorites sync across devices (currently localStorage only)
 - Played-games list UI (count + tracker exist in Supabase)
@@ -283,6 +289,7 @@ src/
 - Game cards show a bottom meta bar: title + platform icon
 - **GameDetail wash (locked):** full-library blurred cover; light-on-dark type in both themes. Frost: light = white glass; dark = bluish glass. White Play button. No dark text or milky overlay on the wash. Favorite gem on wash stays white when off and red when on.
 - Favorites: per-user `localStorage` via `lib/favorites.ts`; UI toggle is `FavoriteGemButton`
+- Dev Games: Game library tab (`dev-games`) for unfinished builds; catalog is `devGames` in `games.ts` (kept out of Home). `DevGamesView` reuses the library grid
 - Games played: Supabase `played_games` via `lib/playedGames.ts`; recorded on Play click
 - Play activity: Supabase `play_activity` via `lib/playActivity.ts`; heatmap on profile; requires `supabase/play-stats.sql`
 - Friends: `lib/friends.ts` + `FriendsView` + `FriendToasts` + `NotificationBell`; requires `supabase/friends.sql` applied (and `friends-realtime.sql` if that schema was already live)
@@ -309,6 +316,16 @@ When making changes to this project:
 ## Recent edits (auto)
 
 <!-- AUTO:RECENT_EDITS -->
+- `2026-08-29 00:34` — `src/data/games.ts`
+- `2026-08-29 00:31` — `src/components/library/LibraryView.tsx`
+- `2026-08-29 00:31` — `src/components/library/LibraryGameGrid.tsx`
+- `2026-08-29 00:31` — `src/components/library/DevGamesView.tsx`
+- `2026-08-29 00:31` — `src/data/games.ts`
+- `2026-08-29 00:30` — `../../../../../../Users/elmopr77/.cursor/projects/Volumes-REDDRIVE-App-Portfolio-Development-Builds-Personal-website-portfolio-KryoGames/assets/Kryogames_3_-1a4c43ec-6aac-41b7-aa82-e33a81a577ed.jpg`
+- `2026-08-29 00:12` — `src/components/library/LibraryGameGrid.tsx`
+- `2026-08-29 00:12` — `src/components/library/LibraryView.tsx`
+- `2026-08-29 00:12` — `src/components/library/LibrarySidebar.tsx`
+- `2026-08-29 00:12` — `src/components/library/DevGamesView.tsx`
 - `2026-08-23 20:04` — `src/components/KryoCursor.tsx`
 - `2026-08-23 20:04` — `src/components/AuthModal.tsx`
 - `2026-08-23 19:56` — `src/components/AuthModal.tsx`
@@ -329,16 +346,6 @@ When making changes to this project:
 - `2026-08-23 19:20` — `src/components/KryoCursor.css`
 - `2026-08-23 19:20` — `src/App.tsx`
 - `2026-08-23 19:20` — `src/components/KryoCursor.tsx`
-- `2026-08-23 19:13` — `src/components/library/LibraryView.css`
-- `2026-08-23 19:13` — `src/components/library/FriendsView.tsx`
-- `2026-08-23 19:12` — `src/components/library/FriendsView.tsx`
-- `2026-08-23 05:24` — `src/components/HomeView.css`
-- `2026-08-23 05:24` — `src/components/HomeView.tsx`
-- `2026-08-23 05:05` — `src/components/library/LibraryView.css`
-- `2026-08-23 05:05` — `src/components/library/FriendToasts.tsx`
-- `2026-08-23 05:04` — `src/components/library/FriendToasts.tsx`
-- `2026-08-23 05:04` — `src/components/library/NotificationBell.tsx`
-- `2026-08-23 05:04` — `src/components/library/LibraryTopBar.tsx`
 <!-- /AUTO:RECENT_EDITS -->
 -->
 -->

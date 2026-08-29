@@ -6,12 +6,14 @@ const titles: Record<Exclude<LibraryTab, 'friends'>, string> = {
   web: 'Home',
   'my-games': 'My Games',
   favorites: 'Favorites',
+  'dev-games': 'Dev Games',
 }
 
 const emptyMessages: Record<Exclude<LibraryTab, 'friends'>, string> = {
   web: 'No games yet',
   'my-games': 'No games yet',
   favorites: 'No favorites yet',
+  'dev-games': 'No dev games yet',
 }
 
 interface LibraryGameGridProps {
